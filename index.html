@@ -1947,6 +1947,65 @@
   };
 </script>
 
+<script>
+  /* =====================================================================
+     KEEPING THINGS AFTER THE PAGE CLOSES
+     Contributor accounts, cases, donations and the rest used to live only
+     in the page's memory, so a refresh wiped them. They are now written to
+     the visitor's own browser storage and read back when the page opens.
+     Note this is per-device: what one person's browser holds is not visible
+     to anyone else. Only a real server can do that.
+     To wipe it on a device, run uuffundsResetStoredData() in the console.
+  ===================================================================== */
+  (function () {
+    const KEY = 'uuffunds_state_v1';
+    const FIELDS = [
+      'UUFFUNDS_ACCOUNTS', 'UUFFUNDS_CASES', 'UUFFUNDS_CASE_SEQ',
+      'UUFFUNDS_DONATIONS', 'UUFFUNDS_DONATION_SEQ', 'UUFFUNDS_DONATIONS_USED',
+      'UUFFUNDS_CONTRIBUTOR_HISTORY', 'UUFFUNDS_HISTORY_SEQ',
+      'UUFFUNDS_DISPUTES', 'UUFFUNDS_DISPUTE_SEQ',
+      'UUFFUNDS_AUDIT_LOG', 'UUFFUNDS_ADMINS'
+    ];
+
+    function snapshot() {
+      const out = {};
+      FIELDS.forEach(f => { if (window[f] !== undefined) out[f] = window[f]; });
+      return JSON.stringify(out);
+    }
+
+    // read back whatever this browser saved last time
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        FIELDS.forEach(f => { if (saved[f] !== undefined) window[f] = saved[f]; });
+      }
+    } catch (e) {
+      // storage switched off or the saved copy is unreadable: carry on with the samples
+    }
+
+    let last = snapshot();
+    function save() {
+      try {
+        const now = snapshot();
+        if (now !== last) { localStorage.setItem(KEY, now); last = now; }
+      } catch (e) {
+        // private browsing or a full disk: nothing to do but keep the page working
+      }
+    }
+
+    setInterval(save, 2000);
+    window.addEventListener('beforeunload', save);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+
+    window.uuffundsSaveNow = save;
+    window.uuffundsResetStoredData = function () {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    };
+  })();
+</script>
+
 
 <script>
   window.UUFFUNDS_TRANSLATIONS = {
@@ -3274,9 +3333,9 @@
         <h1 data-i18n="hero_h1">When one of us is called home, all of us answer.</h1>
         <p class="lede" data-i18n="hero_lede">United Ummah Funeral Funds is a contributors' covenant of mutual support &mdash; takaful for the hardest day. When a death occurs in our community, the cost of the janazah and burial is shared equally across every contributor, so no family carries it alone &mdash; whether or not they were a contributor themselves.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary js-join-btn" href="mailto:UUFFUND@gmail.com?subject=I%27d%20like%20to%20join%20UUFFUNDS&body=Assalamu%20alaikum%2C%0A%0AI%27d%20like%20to%20become%20a%20contributor%20to%20the%20fund.%20My%20details%3A%0A%0AFull%20name%3A%0ADate%20of%20birth%3A%0APhone%20number%3A%0AArea%20I%20live%20in%3A%0A%0AJazakum%20Allahu%20khayran.%0A" data-i18n="btn_become_contributor">Become a contributor</a>
+          <a class="btn btn-primary js-open-join" href="#join" data-i18n="btn_become_contributor">Become a contributor</a>
           <a class="btn btn-ghost js-open-report" href="#" data-i18n="btn_report_death">Report a death</a>
-          <a class="btn btn-ghost js-donate-btn" href="mailto:UUFFUND@gmail.com?subject=Donation%20to%20UUFFUNDS&body=Assalamu%20alaikum%2C%0A%0AI%27d%20like%20to%20give%20Sadaqah%20to%20the%20fund.%20Please%20let%20me%20know%20how%20to%20send%20it.%0A%0AAmount%20I%20have%20in%20mind%3A%0AMy%20name%3A%0A%0AJazakum%20Allahu%20khayran.%0A">Make a donation</a>
+          <a class="btn btn-ghost js-open-donate" href="#">Make a donation</a>
         </div>
         <p class="hero-note" data-i18n="hero_note">Non-profit, contributor-owned, and built on equal contribution &mdash; not premiums or profit.</p>
       </div>
@@ -3414,7 +3473,6 @@
           <li data-i18n="join_li3">Full transparency on every funeral cost and every contributor's equal share</li>
           <li data-i18n="join_li4">Leave anytime; you're only responsible for shares billed while you're a contributor</li>
         </ul>
-        <p><strong>To join, email <a href="mailto:UUFFUND@gmail.com?subject=I%27d%20like%20to%20join%20UUFFUNDS&body=Assalamu%20alaikum%2C%0A%0AI%27d%20like%20to%20become%20a%20contributor%20to%20the%20fund.%20My%20details%3A%0A%0AFull%20name%3A%0ADate%20of%20birth%3A%0APhone%20number%3A%0AArea%20I%20live%20in%3A%0A%0AJazakum%20Allahu%20khayran.%0A">UUFFUND@gmail.com</a></strong> with your full name, date of birth, phone number and the area you live in. Or press <strong>Become a contributor</strong> at the top of the page. We sign contributors up by hand while payments are being set up, and we will write back to confirm.</p>
       </div>
     </div>
   </section>
@@ -3428,9 +3486,8 @@
         <h2>Give Sadaqah to support the fund</h2>
         <p>Prefer to give without becoming a contributor? A donation here is Sadaqah &mdash; voluntary charity. Available donations are applied to reduce what a funeral costs before any equal-share charge goes out to contributors &mdash; so your gift can directly lower, or even fully cover, someone's cost. The Prophet Muhammad (peace be upon him) described ongoing charity as one of the few deeds whose reward continues after a person's own life has ended.</p>
       </div>
-      <p><strong>To donate, email <a href="mailto:UUFFUND@gmail.com?subject=Donation%20to%20UUFFUNDS&body=Assalamu%20alaikum%2C%0A%0AI%27d%20like%20to%20give%20Sadaqah%20to%20the%20fund.%20Please%20let%20me%20know%20how%20to%20send%20it.%0A%0AAmount%20I%20have%20in%20mind%3A%0AMy%20name%3A%0A%0AJazakum%20Allahu%20khayran.%0A">UUFFUND@gmail.com</a></strong> or press <strong>Make a donation</strong> below, and we will tell you how to send it.</p>
       <div class="donate-cta">
-        <a class="btn btn-primary js-donate-btn" href="mailto:UUFFUND@gmail.com?subject=Donation%20to%20UUFFUNDS&body=Assalamu%20alaikum%2C%0A%0AI%27d%20like%20to%20give%20Sadaqah%20to%20the%20fund.%20Please%20let%20me%20know%20how%20to%20send%20it.%0A%0AAmount%20I%20have%20in%20mind%3A%0AMy%20name%3A%0A%0AJazakum%20Allahu%20khayran.%0A">Make a donation</a>
+        <a class="btn btn-primary js-open-donate" href="#">Make a donation</a>
       </div>
     </div>
   </section>
@@ -7361,197 +7418,6 @@
   })();
 </script>
 
-
-<!-- ===== SIGN-UP AND DONATION FORMS THAT REALLY SUBMIT ==========================
-     Paste the form address from your form service into ENDPOINT below (one line).
-     While ENDPOINT is empty, the buttons keep opening an email instead, so the
-     site is never pretending to save something it cannot save.
-============================================================================== -->
-<div class="modal-overlay" id="uf-signup-modal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="uf-signup-heading">
-    <button class="modal-close" id="uf-signup-close" aria-label="Close">&times;</button>
-
-    <form id="uf-signup-form" novalidate>
-      <div class="modal-step">
-      <h3 id="uf-signup-heading">Become a contributor</h3>
-      <p class="modal-subtext">Send us your details and we will write back to confirm your place, in sha'Allah. No payment is taken here.</p>
-      <input type="text" name="First name" id="su-first" placeholder="First name" required>
-      <input type="text" name="Last name" id="su-last" placeholder="Last name" required>
-      <input type="text" name="Date of birth" id="su-dob" inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="Date of birth (MM/DD/YYYY)" aria-label="Date of birth" required>
-      <input type="email" name="Email" id="su-email" placeholder="Email address" required>
-      <input type="tel" name="Phone" id="su-phone" placeholder="Phone number" required>
-      <input type="text" name="Area" id="su-area" placeholder="Area you live in (e.g. Queens, NY)" required>
-      <input type="text" name="Notes" id="su-notes" placeholder="Anything we should know (optional)">
-      <label class="terms-check" for="su-agree">
-        <input type="checkbox" id="su-agree" name="Agreed to terms" value="yes" required>
-        <span>I understand that contributors share each funeral cost equally, and that a payment method will be arranged with me directly before anything is charged.</span>
-      </label>
-      <p class="join-note" id="su-error" style="display:none; color:#b3554a;"></p>
-      <div class="modal-actions">
-        <span></span>
-        <button type="submit" class="btn btn-primary" id="su-submit">Send my details</button>
-      </div>
-      </div>
-    </form>
-
-    <div id="uf-signup-done" class="modal-step" hidden>
-      <h3 id="su-done-heading">Jazak Allah khayr.</h3>
-      <p class="modal-subtext">We have your details and will write back to confirm your place. If you do not hear from us within a few days, email UUFFUND@gmail.com.</p>
-      <div class="modal-actions"><span></span><button type="button" class="btn btn-ghost" id="su-done-close">Done</button></div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="uf-donate-modal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="uf-donate-heading">
-    <button class="modal-close" id="uf-donate-close" aria-label="Close">&times;</button>
-
-    <form id="uf-donate-form" novalidate>
-      <div class="modal-step">
-      <h3 id="uf-donate-heading">Make a donation</h3>
-      <p class="modal-subtext">Tell us what you would like to give as Sadaqah and we will reply with how to send it. No payment is taken here.</p>
-      <input type="text" name="Name" id="dn-name" placeholder="Your name" required>
-      <input type="email" name="Email" id="dn-email" placeholder="Email address" required>
-      <input type="text" name="Amount" id="dn-amount" placeholder="Amount you have in mind (e.g. $50)" required>
-      <input type="text" name="Notes" id="dn-notes" placeholder="Anything you would like to add (optional)">
-      <label class="terms-check" for="dn-anon">
-        <input type="checkbox" id="dn-anon" name="Anonymous" value="yes">
-        <span>Keep my gift anonymous</span>
-      </label>
-      <p class="join-note" id="dn-error" style="display:none; color:#b3554a;"></p>
-      <div class="modal-actions">
-        <span></span>
-        <button type="submit" class="btn btn-primary" id="dn-submit">Send</button>
-      </div>
-      </div>
-    </form>
-
-    <div id="uf-donate-done" class="modal-step" hidden>
-      <h3>Jazak Allah khayr.</h3>
-      <p class="modal-subtext">We have your message and will reply with how to send your gift.</p>
-      <div class="modal-actions"><span></span><button type="button" class="btn btn-ghost" id="dn-done-close">Done</button></div>
-    </div>
-  </div>
-</div>
-
-<script>
-  (function () {
-    // ---- PASTE YOUR FORM ADDRESS HERE -------------------------------------
-    // From Formspree it looks like: https://formspree.io/f/abcdwxyz
-    const ENDPOINT = '';
-    // ----------------------------------------------------------------------
-    if (!ENDPOINT) return; // no address yet: the buttons keep opening an email
-
-    function dobToPlain(raw) {
-      if (window.uuffundsParseDob) return window.uuffundsParseDob(raw);
-      return /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(String(raw).trim()) ? raw : null;
-    }
-
-    function autoSlash(input) {
-      input.addEventListener('input', (e) => {
-        const deleting = !!(e.inputType && e.inputType.startsWith('delete'));
-        const digits = input.value.replace(/\D/g, '').slice(0, 8);
-        let out = digits.slice(0, 2);
-        if (digits.length > 2) out += '/' + digits.slice(2, 4);
-        else if (digits.length === 2 && !deleting) out += '/';
-        if (digits.length > 4) out += '/' + digits.slice(4, 8);
-        else if (digits.length === 4 && !deleting) out += '/';
-        input.value = out;
-        input.style.borderColor = '';
-      });
-    }
-
-    function wire(opts) {
-      const overlay = document.getElementById(opts.overlay);
-      const form = document.getElementById(opts.form);
-      const done = document.getElementById(opts.done);
-      const errorEl = document.getElementById(opts.error);
-      const submitBtn = document.getElementById(opts.submit);
-      const submitLabel = submitBtn.textContent;
-
-      function open() {
-        form.hidden = false; done.hidden = true;
-        errorEl.style.display = 'none';
-        overlay.hidden = false;
-        document.body.style.overflow = 'hidden';
-        const first = form.querySelector('input');
-        setTimeout(() => first && first.focus(), 50);
-      }
-      function close() {
-        overlay.hidden = true;
-        document.body.style.overflow = '';
-      }
-
-      document.querySelectorAll(opts.buttons).forEach(btn => {
-        btn.addEventListener('click', (e) => { e.preventDefault(); open(); });
-      });
-      document.getElementById(opts.close).addEventListener('click', close);
-      document.getElementById(opts.doneClose).addEventListener('click', close);
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) close(); });
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorEl.style.display = 'none';
-
-        let ok = true;
-        form.querySelectorAll('[required]').forEach(f => {
-          const filled = f.type === 'checkbox' ? f.checked : !!f.value.trim();
-          if (!filled) { ok = false; if (f.type !== 'checkbox') f.style.borderColor = '#b3554a'; }
-          else if (f.type !== 'checkbox') f.style.borderColor = '';
-        });
-        const dobField = form.querySelector('input[name="Date of birth"]');
-        if (dobField && !dobToPlain(dobField.value)) {
-          ok = false; dobField.style.borderColor = '#b3554a';
-          errorEl.textContent = 'Please enter a real date of birth as MM/DD/YYYY.';
-          errorEl.style.display = 'block';
-        }
-        if (!ok) {
-          if (errorEl.style.display !== 'block') {
-            errorEl.textContent = 'Please fill in the highlighted boxes.';
-            errorEl.style.display = 'block';
-          }
-          return;
-        }
-
-        const data = new FormData(form);
-        data.append('_subject', opts.subject);
-        submitBtn.disabled = true; submitBtn.textContent = 'Sending…';
-        try {
-          const res = await fetch(ENDPOINT, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-          if (!res.ok) {
-            let msg = '';
-            try { const j = await res.json(); msg = (j.errors || []).map(x => x.message).join(', '); } catch (err) {}
-            throw new Error(msg || 'That did not go through.');
-          }
-          if (opts.greet) {
-            const name = (form.querySelector('input[name="First name"]') || {}).value || '';
-            if (name.trim()) document.getElementById('su-done-heading').textContent = 'Jazak Allah khayr, ' + name.trim() + '.';
-          }
-          form.reset();
-          form.hidden = true; done.hidden = false;
-        } catch (err) {
-          let m = err.message || 'That did not go through.';
-          if (!/[.!?]$/.test(m)) m += '.';
-          errorEl.textContent = m + ' Please try again, or email UUFFUND@gmail.com.';
-          errorEl.style.display = 'block';
-        } finally {
-          submitBtn.disabled = false; submitBtn.textContent = submitLabel;
-        }
-      });
-    }
-
-    autoSlash(document.getElementById('su-dob'));
-
-    wire({ overlay: 'uf-signup-modal', form: 'uf-signup-form', done: 'uf-signup-done', error: 'su-error',
-           submit: 'su-submit', close: 'uf-signup-close', doneClose: 'su-done-close',
-           buttons: '.js-join-btn', subject: 'New contributor sign-up (UUFFUNDS website)', greet: true });
-
-    wire({ overlay: 'uf-donate-modal', form: 'uf-donate-form', done: 'uf-donate-done', error: 'dn-error',
-           submit: 'dn-submit', close: 'uf-donate-close', doneClose: 'dn-done-close',
-           buttons: '.js-donate-btn', subject: 'Donation offer (UUFFUNDS website)', greet: false });
-  })();
-</script>
 
 </body>
 </html>
