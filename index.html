@@ -7419,5 +7419,249 @@
 </script>
 
 
+<!-- ============================================================
+     FIREBASE: real contributor accounts
+     Sign-up, log-in, password reset and status changes now go to
+     Firebase (project: united-ummah-funeral-funds), so accounts work
+     from any device and every sign-up shows up in the Firebase console
+     under Authentication and Firestore > contributors.
+     Card details are NOT collected here - Stripe will handle cards.
+     ============================================================ -->
+<style id="uuf-firebase-style">
+#mf-card-simulated, #mf-card-real { display: none !important; }
+#account-update-payment-anchor, #af-new-card, #account-update-card-btn, #account-update-status,
+#account-update-payment-anchor + input + .modal-row,
+#account-backup-anchor, #account-backup-anchor + .join-note, #account-backup-cards-list,
+#af-backup-simulated, #af-backup-real, #account-add-backup-btn, #account-backup-status,
+.js-account-menu-scroll[data-target="account-update-payment-anchor"],
+.js-account-menu-scroll[data-target="account-backup-anchor"],
+[data-i18n="acct_demo_tip"], #uuf-old-reset-note,
+#fp-code-section, #fp-newpass-section { display: none !important; }
+#join-modal .donation-section { display: none !important; }
+#forgot-password-status { margin-top: 10px; }
+.uuf-fb-note { font-size: 0.85rem; color: var(--teal-dark); background: var(--sage); border-radius: 4px; padding: 12px 14px; margin: 0 0 16px; line-height: 1.5; }
+</style>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+  sendPasswordResetEmail, sendEmailVerification, setPersistence,
+  browserLocalPersistence, browserSessionPersistence
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+
+// Public web config - safe to be in the page. Access is controlled by
+// the Firestore security rules in the Firebase console, not by hiding this.
+const firebaseConfig = {
+  apiKey: 'AIzaSyBb2GsahCX-Ue8Zdze-j0sEN4Abm1g1J_4',
+  authDomain: 'united-ummah-funeral-funds.firebaseapp.com',
+  projectId: 'united-ummah-funeral-funds',
+  storageBucket: 'united-ummah-funeral-funds.firebasestorage.app',
+  messagingSenderId: '783984253394',
+  appId: '1:783984253394:web:63adb7d14ac967c17ad00b'
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+window.UUFFUNDS_FIREBASE = { app, auth, db };
+
+const $ = (id) => document.getElementById(id);
+
+function friendlyError(err) {
+  const code = (err && err.code) || '';
+  if (code === 'auth/email-already-in-use') return 'An account with this email already exists. Try logging in instead, or use a different email.';
+  if (code === 'auth/weak-password') return 'Please choose a password with at least 6 characters.';
+  if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
+  if (code === 'auth/network-request-failed') return 'Could not reach the server. Check your connection and try again.';
+  if (code === 'auth/too-many-requests') return 'Too many attempts. Please wait a few minutes and try again.';
+  return 'Something went wrong. Please try again.';
+}
+
+function toAccount(user, data) {
+  data = data || {};
+  return {
+    uid: user.uid,
+    firstName: data.firstName || '',
+    lastName: data.lastName || '',
+    dob: data.dob || '',
+    phone: data.phone || '',
+    email: user.email,
+    status: data.status || 'Active',
+    cardLast4: '',
+    joined: data.joined || new Date().toISOString().slice(0, 10),
+    backupCards: []
+  };
+}
+
+function showNoCardYet() {
+  setTimeout(() => {
+    const el = $('account-payment-value');
+    if (el) el.textContent = 'Not added yet (Stripe, coming soon)';
+  }, 0);
+}
+
+// ---- Sign-up ---------------------------------------------------------
+let joinBusy = false;
+const joinForm = $('join-modal-form');
+if (joinForm) {
+  // stop a double-click from starting a second sign-up while one is running
+  joinForm.addEventListener('submit', (e) => {
+    if (joinBusy) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+}
+const emailErr = $('mf-email-error');
+const emailErrDefault = emailErr ? emailErr.textContent : '';
+
+window.uuffundsCreateAccount = async function (data) {
+  joinBusy = true;
+  const submitBtn = joinForm && joinForm.querySelector('[data-step="3"] button[type="submit"]');
+  const oldLabel = submitBtn ? submitBtn.textContent : '';
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Setting up your account…'; }
+  try {
+    const email = data.email.trim().toLowerCase();
+    const cred = await createUserWithEmailAndPassword(auth, email, data.password);
+    const donation = parseFloat(($('mf-donation-amount') || {}).value) || 0;
+    const profile = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      dob: data.dob,
+      email,
+      phone: data.phone,
+      status: 'Active',
+      joined: new Date().toISOString().slice(0, 10),
+      createdAt: serverTimestamp(),
+      agreedToTerms: true,
+      agreedAt: serverTimestamp(),
+      donationPledge: donation,
+      donationAnonymous: !!($('mf-donation-anonymous') || {}).checked,
+      lang: window.UUFFUNDS_CURRENT_LANG || 'en'
+    };
+    await setDoc(doc(db, 'contributors', cred.user.uid), profile);
+    try { await sendEmailVerification(cred.user); } catch (_) { /* not critical */ }
+    if (emailErr) emailErr.textContent = emailErrDefault;
+    return toAccount(cred.user, profile);
+  } catch (err) {
+    console.error('Sign-up failed', err);
+    if (emailErr) emailErr.textContent = friendlyError(err);
+    return null; // the form shows the message above and returns to step 1
+  } finally {
+    joinBusy = false;
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = oldLabel; }
+  }
+};
+
+// ---- Log-in ----------------------------------------------------------
+window.uuffundsLogin = async function (email, password) {
+  const remember = !!($('af-remember-me') || {}).checked;
+  try {
+    let user = auth.currentUser;
+    const wanted = String(email || '').trim().toLowerCase();
+    // already signed in on this device (remembered) - no password needed
+    if (!(user && password === '' && user.email === wanted)) {
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+      user = (await signInWithEmailAndPassword(auth, wanted, password)).user;
+    }
+    const snap = await getDoc(doc(db, 'contributors', user.uid));
+    showNoCardYet();
+    return toAccount(user, snap.exists() ? snap.data() : null);
+  } catch (err) {
+    console.error('Log-in failed', err);
+    return null; // shows "incorrect email or password"
+  }
+};
+
+// Reopen the account straight away if this device is still signed in.
+let authReady = false;
+auth.onAuthStateChanged(() => { authReady = true; });
+document.querySelectorAll('.js-open-account').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    setTimeout(() => {
+      const user = auth.currentUser;
+      const acctForm = $('account-modal-form');
+      if (!authReady || !user || !acctForm) return;
+      $('af-email').value = user.email;
+      $('af-password').value = '';
+      $('af-remember-me').checked = true;
+      acctForm.requestSubmit();
+    }, 30);
+  });
+});
+
+// ---- Log-out ---------------------------------------------------------
+function doSignOut() { signOut(auth).catch(() => {}); }
+// when the 15-minute inactivity timer logs someone out, sign out of Firebase too
+const origTimer = window.uuffundsStartSessionTimer;
+if (origTimer) {
+  window.uuffundsStartSessionTimer = (onExpire) => origTimer(() => { doSignOut(); onExpire(); });
+}
+document.querySelectorAll('.js-account-menu-logout, #account-modal-done').forEach((b) => b.addEventListener('click', doSignOut));
+
+// ---- Hold / resume / withdraw ----------------------------------------
+const origSetStatus = window.uuffundsSetContributorStatus;
+window.uuffundsSetContributorStatus = function (email, newStatus) {
+  const user = auth.currentUser;
+  if (user) {
+    updateDoc(doc(db, 'contributors', user.uid), { status: newStatus, updatedAt: serverTimestamp() })
+      .catch((err) => {
+        console.error('Status update failed', err);
+        const note = $('account-manage-status-note');
+        if (note) note.textContent = 'Could not save your status change. Please try again.';
+      });
+  }
+  return origSetStatus ? origSetStatus(email, newStatus) : true;
+};
+
+// ---- Forgot password: real reset email from Firebase -------------------
+const sendBtn = $('fp-send-code-btn');
+if (sendBtn) {
+  sendBtn.textContent = 'Email me a reset link';
+  sendBtn.addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopImmediatePropagation();
+    const status = $('forgot-password-status');
+    const email = ($('fp-email').value || '').trim().toLowerCase();
+    if (!email) { status.style.color = '#b3554a'; status.textContent = 'Enter your email address first.'; return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (err) {
+      if (err && err.code === 'auth/invalid-email') { status.style.color = '#b3554a'; status.textContent = 'Please enter a valid email address.'; return; }
+      if (err && err.code === 'auth/network-request-failed') { status.style.color = '#b3554a'; status.textContent = friendlyError(err); return; }
+    }
+    // same message either way, so nobody can use this to check who has an account
+    status.style.color = 'var(--teal-dark)';
+    status.textContent = 'If that email has an account, a password reset link is on its way. Check your inbox (and spam folder).';
+  }, true);
+}
+const fpPanel = $('forgot-password-panel');
+if (fpPanel) {
+  const old = Array.from(fpPanel.parentElement.querySelectorAll('.join-note')).find((p) => /prototype reset/i.test(p.textContent));
+  if (old) old.id = 'uuf-old-reset-note';
+  const intro = fpPanel.querySelector('.modal-subtext');
+  if (intro) intro.textContent = 'Enter your email and we’ll send you a link to set a new password.';
+}
+
+// ---- Join step 3: no card here; Stripe will handle it ------------------
+const step3 = joinForm && joinForm.querySelector('.modal-step[data-step="3"]');
+if (step3) {
+  const h = step3.querySelector('h3');
+  if (h) { h.removeAttribute('data-i18n'); h.textContent = 'Almost done'; }
+  const note = document.createElement('p');
+  note.className = 'uuf-fb-note';
+  note.textContent = 'No card is needed today and nothing is charged. When card payments open, you’ll add your card through Stripe’s secure page — card numbers never touch this website.';
+  const sub = step3.querySelector('.modal-subtext');
+  (sub || h).insertAdjacentElement('afterend', note);
+}
+
+// ---- Account view: explain where the card goes -------------------------
+const summary = document.querySelector('#account-modal .account-summary');
+if (summary) {
+  const note = document.createElement('p');
+  note.className = 'uuf-fb-note';
+  note.textContent = 'Card payments are being set up with Stripe. You’ll be able to add your card securely here soon — nothing is charged until then.';
+  summary.insertAdjacentElement('afterend', note);
+}
+</script>
 </body>
 </html>
