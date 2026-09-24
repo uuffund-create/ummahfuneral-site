@@ -5903,8 +5903,8 @@
               <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
-          <label class="terms-check" style="margin: -6px 0 12px;">
-            <input type="checkbox" id="af-remember-me">
+          <label class="terms-check" style="display:none;">
+            <input type="checkbox" id="af-remember-me" checked>
             <span>Remember me on this device</span>
           </label>
           <p class="join-note" id="account-login-error" style="display:none; color:#b3554a;"></p>
@@ -6415,7 +6415,7 @@
       e.preventDefault();
       const email = document.getElementById('af-email').value.trim();
       const password = document.getElementById('af-password').value;
-      const rememberMe = document.getElementById('af-remember-me').checked;
+      const rememberMe = true; // always stay signed in on this device
 
       if (window.UUFFUNDS_BACKEND_CONNECTED) {
         try {
@@ -7555,7 +7555,7 @@ window.uuffundsCreateAccount = async function (data) {
 
 // ---- Log-in ----------------------------------------------------------
 window.uuffundsLogin = async function (email, password) {
-  const remember = !!($('af-remember-me') || {}).checked;
+  const remember = true; // always stay signed in on this device
   try {
     let user = auth.currentUser;
     const wanted = String(email || '').trim().toLowerCase();
@@ -7578,10 +7578,11 @@ let authReady = false;
 auth.onAuthStateChanged(() => { authReady = true; });
 document.querySelectorAll('.js-open-account').forEach((btn) => {
   btn.addEventListener('click', () => {
-    setTimeout(() => {
+    setTimeout(async () => {
+      await auth.authStateReady();
       const user = auth.currentUser;
       const acctForm = $('account-modal-form');
-      if (!authReady || !user || !acctForm) return;
+      if (!user || !acctForm) return;
       $('af-email').value = user.email;
       $('af-password').value = '';
       $('af-remember-me').checked = true;
