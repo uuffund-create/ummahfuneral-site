@@ -7805,7 +7805,7 @@ if (FB) {
   }
 
   // "Continue with Google" on the log-in form
-  const loginCore = document.querySelector('#account-modal-form .account-login-core');
+  const loginCore = document.getElementById('account-login-core');
   if (loginCore) {
     const blk = makeBlock('Continue with Google', 'or log in with email');
     loginCore.before(blk);
