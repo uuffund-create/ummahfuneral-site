@@ -7664,5 +7664,169 @@ if (summary) {
   summary.insertAdjacentElement('afterend', note);
 }
 </script>
+
+<!-- Google sign-in (sign up and log in with a Google account) -->
+<style>
+.uuf-google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border:1px solid #d6d3cc;border-radius:6px;background:#fff;color:#1f1f1f;font:500 0.95rem Inter,system-ui,sans-serif;cursor:pointer;margin:6px 0 4px}
+.uuf-google-btn:hover{background:#f6f5f2}
+.uuf-google-btn:disabled{opacity:.6;cursor:wait}
+.uuf-or{display:flex;align-items:center;gap:10px;color:#7a776f;font-size:.8rem;margin:12px 0}
+.uuf-or:before,.uuf-or:after{content:"";flex:1;height:1px;background:#e2dfd8}
+.uuf-google-err{color:#b3554a;font-size:.85rem;margin:6px 0 0;display:none}
+</style>
+<script type="module">
+import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+const FB = window.UUFFUNDS_FIREBASE;
+if (FB) {
+  const { auth, db } = FB;
+  const $ = (id) => document.getElementById(id);
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  const G_ICON = '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>';
+
+  const isGoogle = (u) => !!(u && u.providerData.some((p) => p.providerId === 'google.com'));
+  const sameEmail = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+  const hasRecord = async (u) => (await getDoc(doc(db, 'contributors', u.uid))).exists();
+
+  function makeBlock(label, orText) {
+    const wrap = document.createElement('div');
+    wrap.className = 'uuf-google-block';
+    wrap.innerHTML = '<button type="button" class="uuf-google-btn">' + G_ICON + '<span>' + label + '</span></button><p class="uuf-google-err"></p><div class="uuf-or">' + orText + '</div>';
+    return wrap;
+  }
+  function showErr(block, msg) {
+    const p = block.querySelector('.uuf-google-err');
+    if (!p) return;
+    p.textContent = msg; p.style.display = msg ? 'block' : 'none';
+  }
+  function googleError(err) {
+    const c = (err && err.code) || '';
+    if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request') return '';
+    if (c === 'auth/popup-blocked') return 'Your browser blocked the Google window. Please allow pop-ups for this site and try again.';
+    if (c === 'auth/network-request-failed') return 'Could not reach Google. Check your connection and try again.';
+    return 'Google sign-in did not work. Please try again, or use your email instead.';
+  }
+  function randomPassword() {
+    const a = new Uint8Array(18); crypto.getRandomValues(a);
+    return 'Gg1!' + Array.from(a, (b) => b.toString(36)).join('').slice(0, 20);
+  }
+
+  // Fill the join form with what Google gave us; they only add the rest.
+  function prefillJoin(user) {
+    const parts = String(user.displayName || '').trim().split(/\s+/);
+    const first = parts.shift() || '';
+    const last = parts.join(' ');
+    if ($('mf-first') && !$('mf-first').value) $('mf-first').value = first;
+    if ($('mf-last') && !$('mf-last').value) $('mf-last').value = last;
+    const em = $('mf-email'); if (em) { em.value = user.email; em.readOnly = true; }
+    const pw = $('mf-password');
+    if (pw) {
+      pw.value = randomPassword(); // never used - they log in with Google
+      const w = pw.closest('.password-field-wrap');
+      if (w) {
+        w.style.display = 'none';
+        const n = w.nextElementSibling;
+        if (n && n.classList.contains('join-note')) n.style.display = 'none';
+      }
+    }
+    const blk = document.querySelector('#join-modal-form .uuf-google-block');
+    if (blk) {
+      blk.innerHTML = '<p class="uuf-fb-note">Signed in with Google as <strong></strong>. Please fill in the rest to finish joining.</p>';
+      blk.querySelector('strong').textContent = user.email;
+    }
+  }
+  function openJoinFor(user) {
+    const b = document.querySelector('.js-open-join'); if (b) b.click();
+    setTimeout(() => prefillJoin(user), 60);
+  }
+  function openAccount() {
+    const b = document.querySelector('.js-open-account'); if (b) b.click();
+  }
+
+  // Google users skip the password part of sign-up.
+  const origCreate = window.uuffundsCreateAccount;
+  window.uuffundsCreateAccount = async function (data) {
+    const user = auth.currentUser;
+    if (!(isGoogle(user) && sameEmail(data.email, user.email))) return origCreate(data);
+    const emailErr = $('mf-email-error');
+    try {
+      const profile = {
+        firstName: data.firstName, lastName: data.lastName, dob: data.dob,
+        email: user.email, phone: data.phone, status: 'Active',
+        joined: new Date().toISOString().slice(0, 10), createdAt: serverTimestamp(),
+        agreedToTerms: true, agreedAt: serverTimestamp(),
+        donationPledge: parseFloat(($('mf-donation-amount') || {}).value) || 0,
+        donationAnonymous: !!($('mf-donation-anonymous') || {}).checked,
+        lang: window.UUFFUNDS_CURRENT_LANG || 'en'
+      };
+      await setDoc(doc(db, 'contributors', user.uid), profile);
+      return { uid: user.uid, firstName: profile.firstName, lastName: profile.lastName, dob: profile.dob,
+        phone: profile.phone, email: user.email, status: 'Active', cardLast4: '', joined: profile.joined, backupCards: [] };
+    } catch (err) {
+      console.error('Google sign-up failed', err);
+      if (emailErr) emailErr.textContent = 'Something went wrong saving your details. Please try again.';
+      return null;
+    }
+  };
+
+  // A Google user who never finished joining is sent back to the join form.
+  const origLogin = window.uuffundsLogin;
+  window.uuffundsLogin = async function (email, password) {
+    const user = auth.currentUser;
+    if (isGoogle(user) && password === '' && sameEmail(email, user.email)) {
+      try {
+        if (!(await hasRecord(user))) {
+          const c = $('account-modal-close'); if (c) c.click();
+          openJoinFor(user);
+          return null;
+        }
+      } catch (_) { /* fall through */ }
+    }
+    return origLogin(email, password);
+  };
+
+  // "Sign up with Google" on the join form
+  const joinStep = document.querySelector('#join-modal-form [data-step="1"]');
+  if (joinStep) {
+    const blk = makeBlock('Sign up with Google', 'or sign up with email');
+    const sub = joinStep.querySelector('.modal-subtext');
+    (sub || joinStep.firstElementChild).after(blk);
+    blk.querySelector('button').addEventListener('click', async () => {
+      const b = blk.querySelector('button');
+      showErr(blk, ''); b.disabled = true;
+      try {
+        const { user } = await signInWithPopup(auth, provider);
+        if (await hasRecord(user)) { const c = $('modal-close'); if (c) c.click(); openAccount(); }
+        else prefillJoin(user);
+      } catch (err) { console.error(err); showErr(blk, googleError(err)); }
+      finally { b.disabled = false; }
+    });
+  }
+
+  // "Continue with Google" on the log-in form
+  const loginCore = document.querySelector('#account-modal-form .account-login-core');
+  if (loginCore) {
+    const blk = makeBlock('Continue with Google', 'or log in with email');
+    loginCore.before(blk);
+    blk.querySelector('button').addEventListener('click', async () => {
+      const b = blk.querySelector('button');
+      showErr(blk, ''); b.disabled = true;
+      try {
+        const { user } = await signInWithPopup(auth, provider);
+        if (await hasRecord(user)) {
+          $('af-email').value = user.email;
+          $('af-password').value = '';
+          $('account-modal-form').requestSubmit();
+        } else {
+          const c = $('account-modal-close'); if (c) c.click();
+          openJoinFor(user);
+        }
+      } catch (err) { console.error(err); showErr(blk, googleError(err)); }
+      finally { b.disabled = false; }
+    });
+  }
+}
+</script>
 </body>
 </html>
