@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · United Ummah Funeral Funds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #23241f;
+    --ivory: #f6f2e9;
+    --ivory-2: #efe9dc;
+    --teal: #1f4436;
+    --teal-dark: #14302a;
+    --gold: #b08d57;
+    --sage: #e4e8de;
+    --line: rgba(31, 68, 54, 0.16);
+    --white: #fffdf8;
+    --muted: #5d6259;
+    --danger: #a4493f;
+    --danger-bg: #f6e3df;
+    --hold: #7d5f27;
+    --hold-bg: #f3ead8;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ivory);
+    color: var(--ink);
+    font: 400 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal); }
+  h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.2;
+    color: var(--teal-dark);
+    margin: 0 0 6px;
+  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Top bar */
+  .top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--ivory);
+  }
+  .brand { font-family: Fraunces, Georgia, serif; font-size: 18px; color: var(--teal-dark); white-space: nowrap; }
+  .brand-b { color: var(--gold); }
+  .tag {
+    font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--teal); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: 2px;
+  }
+  .who { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); min-width: 0; }
+  .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  /* Cards and forms */
+  .card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 6px;
+    padding: 28px; margin: 24px auto; max-width: 440px;
+  }
+  .sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin: 14px 0 6px; }
+  input[type=email], input[type=password], input[type=text], input[type=search], select {
+    width: 100%; font: inherit; color: var(--ink);
+    background: var(--ivory); border: 1px solid var(--line); border-radius: 3px; padding: 11px 13px;
+  }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  input[readonly] { color: var(--muted); }
+  .pw { position: relative; }
+  .pw input { padding-right: 64px; }
+  .pw-toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    border: 0; background: none; color: var(--teal); font: 500 13px Inter, sans-serif; cursor: pointer; padding: 6px 8px;
+  }
+  .btn {
+    display: inline-block; font: 600 15px Inter, sans-serif; color: var(--white); background: var(--teal);
+    border: 1px solid var(--teal); border-radius: 3px; padding: 12px 24px; cursor: pointer; margin-top: 20px;
+  }
+  .btn:hover { background: var(--teal-dark); border-color: var(--teal-dark); }
+  .btn:disabled { opacity: .6; cursor: wait; }
+  .btn.ghost { background: transparent; color: var(--teal); }
+  .btn.ghost:hover { background: var(--sage); }
+  .btn.danger { background: transparent; color: var(--danger); border-color: rgba(164, 73, 63, .45); }
+  .btn.danger:hover { background: var(--danger-bg); }
+  .btn.small { font-size: 13px; padding: 6px 12px; margin: 0; }
+  .btn-link {
+    border: 0; background: none; padding: 0; color: var(--teal); font: 500 14px Inter, sans-serif;
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer; white-space: nowrap;
+  }
+  .links { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 20px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .row .btn { margin-top: 8px; }
+  .msg { font-size: 14px; margin: 14px 0 0; padding: 10px 12px; border-radius: 3px; background: var(--sage); color: var(--teal-dark); }
+  .msg.error { background: var(--danger-bg); color: var(--danger); }
+  .muted { color: var(--muted); text-align: center; margin-top: 64px; }
+
+  /* Dashboard */
+  .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .tile { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .tile-n { display: block; font-family: Fraunces, Georgia, serif; font-size: 28px; font-weight: 600; color: var(--teal-dark); line-height: 1.1; }
+  .tile-l { font-size: 13px; color: var(--muted); }
+  .toolbar { display: flex; gap: 10px; margin-bottom: 14px; }
+  .toolbar input { flex: 1; min-width: 0; }
+  .toolbar select { width: auto; min-width: 150px; }
+  .table-wrap { background: var(--white); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .03em;
+    background: var(--ivory-2); padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; overflow-wrap: break-word; }
+  td.nowrap { white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.name { font-weight: 600; color: var(--teal-dark); }
+  td.actions { text-align: right; min-width: 120px; }
+  td.actions .btn { margin: 3px 0 3px 6px; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 10px; background: var(--ivory-2); color: var(--muted); white-space: nowrap; }
+  .badge.ok { background: var(--sage); color: var(--teal); }
+  .badge.hold { background: var(--hold-bg); color: var(--hold); }
+  .badge.out { background: var(--danger-bg); color: var(--danger); }
+  .empty { text-align: center; color: var(--muted); padding: 28px 12px; margin: 0; }
+  .foot-note { font-size: 12px; color: var(--muted); margin-top: 18px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 10;
+    background: var(--teal-dark); color: var(--white); padding: 12px 18px; border-radius: 6px;
+    font-size: 14px; box-shadow: 0 6px 24px rgba(20, 48, 42, .25); max-width: calc(100% - 32px);
+  }
+  .toast.error { background: var(--danger); }
+
+  /* Narrower screens: each contributor becomes a card instead of a table row. */
+  @media (max-width: 1100px) {
+    .table-wrap { background: none; border: 0; overflow: visible; }
+    table, tbody, tr, td { display: block; }
+    tbody { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    thead { display: none; }
+    tr { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 6px 14px; }
+    td { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; text-align: right; }
+    td::before { content: attr(data-label); color: var(--muted); font-size: 12px; font-weight: 500; text-align: left; flex-shrink: 0; white-space: nowrap; }
+    td.nowrap { white-space: normal; }
+    td.actions { justify-content: flex-end; flex-wrap: wrap; border-bottom: 0; padding-top: 10px; min-width: 0; }
+    td.actions::before { content: none; }
+    tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+    tbody tr td:last-child { border-bottom: 0; }
+    .empty { background: var(--white); border: 1px solid var(--line); border-radius: 6px; }
+  }
+
+  @media (max-width: 760px) {
+    .top { padding: 12px 16px; }
+    .brand { font-size: 16px; }
+    .who span { display: none; }
+    main { padding: 20px 16px 48px; }
+    .card { padding: 22px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .toolbar { flex-direction: column; }
+    .toolbar select { width: 100%; }
+    tbody { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">United Ummah <span class="brand-b">Funeral Funds</span><span class="tag">Admin</span></div>
+  <div class="who" id="who" hidden>
+    <span id="who-email"></span>
+    <button type="button" class="btn-link js-signout">Sign out</button>
+  </div>
+</header>
+
+<main>
+  <section id="view-loading">
+    <p class="muted">Checking your log-in…</p>
+  </section>
+
+  <section id="view-login" class="card" hidden>
+    <h1>Admin log in</h1>
+    <p class="sub">For the fund administrator only.</p>
+    <form id="login-form" novalidate>
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" autocomplete="username" value="uuffund@gmail.com">
+      <label for="login-password">Password</label>
+      <div class="pw">
+        <input id="login-password" type="password" autocomplete="current-password">
+        <button type="button" class="pw-toggle" data-for="login-password" aria-label="Show password">Show</button>
+      </div>
+      <p class="msg error" id="login-error" role="alert" hidden></p>
+      <button type="submit" class="btn" id="login-btn">Log in</button>
+    </form>
+    <div class="links">
+      <button type="button" class="btn-link" data-go="forgot">Forgot password?</button>
+      <button type="button" class="btn-link" data-go="setup">First time? Set up your admin log-in</button>
+    </div>
+  </section>
+
+  <section id="view-setup" class="card" hidden>
+    <h1>Set up your admin log-in</h1>
+    <p class="sub">Only this email can be the administrator. Choose a password only you know, and not the same one as your Google account.</p>
+    <form id="setup-form" novalidate>
+      <label for="setup-email">Email</label>
+      <input id="setup-email" type="email" value="uuffund@gmail.com" readonly>
+      <label for="setup-password">New password (at least 8 characters)</label>
+      <div class="pw">
+        <input id="setup-password" type="password" autocomplete="new-password">
+        <button type="button" class="pw-toggle" data-for="setup-password" aria-label="Show password">Show</button>
+      </div>
+      <label for="setup-password2">Type the password again</label>
+      <input id="setup-password2" type="password" autocomplete="new-password">
+      <p class="msg error" id="setup-error" role="alert" hidden></p>
+      <button type="submit" class="btn" id="setup-btn">Create admin log-in</button>
+    </form>
+    <div class="links">
+      <button type="button" class="btn-link" data-go="login">Back to log in</button>
+    </div>
+  </section>
+
+  <section id="view-forgot" class="card" hidden>
+    <h1>Reset your password</h1>
+    <p class="sub">We'll email you a link to choose a new password.</p>
+    <form id="forgot-form" novalidate>
+      <label for="forgot-email">Email</label>
+      <input id="forgot-email" type="email" autocomplete="username" value="uuffund@gmail.com">
+      <p class="msg" id="forgot-msg" role="status" hidden></p>
+      <button type="submit" class="btn" id="forgot-btn">Email me a reset link</button>
+    </form>
+    <div class="links">
+      <button type="button" class="btn-link" data-go="login">Back to log in</button>
+    </div>
+  </section>
+
+  <section id="view-verify" class="card" hidden>
+    <h1>Confirm your email</h1>
+    <p class="sub">We sent a confirmation link to <strong id="verify-email"></strong>. It comes from noreply@ummahfuneral.org, so check Spam if you don't see it. Open the link, then come back here.</p>
+    <p class="msg" id="verify-msg" role="status" hidden></p>
+    <div class="row">
+      <button type="button" class="btn" id="verify-done">I've confirmed it</button>
+      <button type="button" class="btn ghost" id="verify-resend">Send the link again</button>
+    </div>
+    <div class="links">
+      <button type="button" class="btn-link js-signout">Sign out</button>
+    </div>
+  </section>
+
+  <section id="view-notadmin" class="card" hidden>
+    <h1>Not the admin account</h1>
+    <p class="sub">You're logged in as <strong id="notadmin-email"></strong>. Only the fund administrator can use this page.</p>
+    <button type="button" class="btn js-signout">Sign out</button>
+  </section>
+
+  <section id="view-dashboard" hidden>
+    <div class="dash-head">
+      <h1>Contributors</h1>
+      <button type="button" class="btn ghost small" id="refresh-btn">Refresh</button>
+    </div>
+    <div class="tiles">
+      <div class="tile"><span class="tile-n" id="n-all">0</span><span class="tile-l">Total</span></div>
+      <div class="tile"><span class="tile-n" id="n-active">0</span><span class="tile-l">Active</span></div>
+      <div class="tile"><span class="tile-n" id="n-hold">0</span><span class="tile-l">On hold</span></div>
+      <div class="tile"><span class="tile-n" id="n-withdrawn">0</span><span class="tile-l">Withdrawn</span></div>
+    </div>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search by name, email or phone" aria-label="Search contributors">
+      <select id="filter" aria-label="Show status">
+        <option value="">All statuses</option>
+        <option value="Active">Active</option>
+        <option value="On hold">On hold</option>
+        <option value="Withdrawn">Withdrawn</option>
+      </select>
+    </div>
+    <p class="msg error" id="dash-error" role="alert" hidden></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Date of birth</th><th>Joined</th><th>Status</th><th><span class="sr">Actions</span></th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p class="empty" id="empty" hidden></p>
+    </div>
+    <p class="foot-note">Contributor details are private. Please don't share screenshots of this page.</p>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendEmailVerification, sendPasswordResetEmail, signOut, setPersistence, browserSessionPersistence
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import {
+  getFirestore, collection, getDocs, doc, updateDoc, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+
+// Public web config, the same one the main site uses. It is safe to be in the page:
+// who can read or change contributor records is decided by the Firestore security rules.
+const firebaseConfig = {
+  apiKey: 'AIzaSyBb2GsahCX-Ue8Zdze-j0sEN4Abm1g1J_4',
+  authDomain: 'united-ummah-funeral-funds.firebaseapp.com',
+  projectId: 'united-ummah-funeral-funds',
+  messagingSenderId: '783984253394',
+  appId: '1:783984253394:web:63adb7d14ac967c17ad00b'
+};
+
+// The one administrator account. The security rules check the same email
+// (and that it has been confirmed), so changing it here alone gives no access.
+const ADMIN_EMAIL = 'uuffund@gmail.com';
+const RETURN_URL = 'https://ummahfuneral.org/admin.html';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = (id) => document.getElementById(id);
+const VIEWS = ['loading', 'login', 'setup', 'forgot', 'verify', 'notadmin', 'dashboard'];
+let current = 'loading';
+let contributors = [];
+
+function show(name) {
+  current = name;
+  VIEWS.forEach((v) => { $('view-' + v).hidden = v !== name; });
+  const user = auth.currentUser;
+  $('who').hidden = !(user && (name === 'dashboard' || name === 'verify'));
+  $('who-email').textContent = user ? (user.email || '') : '';
+}
+
+function setMsg(el, text, kind) {
+  el.textContent = text || '';
+  el.hidden = !text;
+  el.classList.toggle('error', kind === 'error');
+}
+
+function clearMsgs() {
+  ['login-error', 'setup-error', 'forgot-msg', 'verify-msg'].forEach((id) => setMsg($(id), ''));
+}
+
+const isAdmin = (user) => !!(user && user.email && user.email.toLowerCase() === ADMIN_EMAIL);
+
+function friendly(err) {
+  const code = (err && err.code) || '';
+  if (['auth/invalid-credential', 'auth/invalid-login-credentials', 'auth/wrong-password', 'auth/user-not-found'].includes(code)) {
+    return 'That email or password is not right.';
+  }
+  if (code === 'auth/too-many-requests') return 'Too many tries. Please wait a few minutes and try again.';
+  if (code === 'auth/network-request-failed' || code === 'unavailable') return 'Could not connect. Check your internet and try again.';
+  if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
+  if (code === 'auth/email-already-in-use') return 'There is already a log-in for this email. Go back and log in, or use "Forgot password?".';
+  if (code === 'auth/weak-password') return 'Please choose a longer password (at least 8 characters).';
+  if (code === 'auth/requires-recent-login') return 'Please sign out and log in again.';
+  if (code === 'permission-denied') return 'This account is not allowed to see contributor information.';
+  return 'Something went wrong. Please try again.';
+}
+
+// Emails come back to this page after the link is used. If the link address is ever
+// refused, send the plain version instead.
+async function withReturnLink(send) {
+  try {
+    await send({ url: RETURN_URL });
+  } catch (err) {
+    if (err && (err.code === 'auth/unauthorized-continue-uri' || err.code === 'auth/invalid-continue-uri')) {
+      await send(undefined);
+    } else {
+      throw err;
+    }
+  }
+}
+
+// ---- Who is here? --------------------------------------------------------
+onAuthStateChanged(auth, async (user) => {
+  clearMsgs();
+  if (!user) {
+    contributors = [];
+    show(current === 'setup' || current === 'forgot' ? current : 'login');
+    return;
+  }
+  if (!isAdmin(user)) {
+    $('notadmin-email').textContent = user.email || 'another account';
+    show('notadmin');
+    return;
+  }
+  if (!user.emailVerified) {
+    $('verify-email').textContent = user.email;
+    show('verify');
+    return;
+  }
+  await openDashboard();
+});
+
+// ---- Log in / set up / forgot --------------------------------------------
+document.querySelectorAll('[data-go]').forEach((btn) => {
+  btn.addEventListener('click', () => { clearMsgs(); show(btn.dataset.go); });
+});
+
+document.querySelectorAll('.pw-toggle').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const input = $(btn.dataset.for);
+    const reveal = input.type === 'password';
+    input.type = reveal ? 'text' : 'password';
+    btn.textContent = reveal ? 'Hide' : 'Show';
+    btn.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+  });
+});
+
+document.querySelectorAll('.js-signout').forEach((btn) => {
+  btn.addEventListener('click', () => { signOut(auth); });
+});
+
+$('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('login-email').value.trim().toLowerCase();
+  const password = $('login-password').value;
+  setMsg($('login-error'), '');
+  if (!email || !password) {
+    setMsg($('login-error'), 'Please enter your email and password.', 'error');
+    return;
+  }
+  $('login-btn').disabled = true;
+  try {
+    // Admin log-ins end when this browser tab or window is closed.
+    await setPersistence(auth, browserSessionPersistence);
+    await signInWithEmailAndPassword(auth, email, password);
+    $('login-password').value = '';
+  } catch (err) {
+    setMsg($('login-error'), friendly(err), 'error');
+  } finally {
+    $('login-btn').disabled = false;
+  }
+});
+
+$('setup-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = $('setup-password').value;
+  const again = $('setup-password2').value;
+  setMsg($('setup-error'), '');
+  if (password.length < 8) {
+    setMsg($('setup-error'), 'Please use at least 8 characters.', 'error');
+    return;
+  }
+  if (password !== again) {
+    setMsg($('setup-error'), "The two passwords don't match.", 'error');
+    return;
+  }
+  $('setup-btn').disabled = true;
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    const { user } = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, password);
+    $('setup-password').value = '';
+    $('setup-password2').value = '';
+    try {
+      await withReturnLink((settings) => sendEmailVerification(user, settings));
+    } catch (err) {
+      console.error(err);
+      setMsg($('verify-msg'), 'Your log-in was created, but the confirmation email did not send. Press "Send the link again".', 'error');
+    }
+  } catch (err) {
+    setMsg($('setup-error'), friendly(err), 'error');
+  } finally {
+    $('setup-btn').disabled = false;
+  }
+});
+
+$('forgot-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('forgot-email').value.trim().toLowerCase();
+  if (!email) {
+    setMsg($('forgot-msg'), 'Enter your email address first.', 'error');
+    return;
+  }
+  $('forgot-btn').disabled = true;
+  try {
+    await withReturnLink((settings) => sendPasswordResetEmail(auth, email, settings));
+    setMsg($('forgot-msg'), 'If that email has a log-in, a reset link is on its way from noreply@ummahfuneral.org. Check Spam too.');
+  } catch (err) {
+    setMsg($('forgot-msg'), friendly(err), 'error');
+  } finally {
+    $('forgot-btn').disabled = false;
+  }
+});
+
+// ---- Confirming the email ------------------------------------------------
+async function checkConfirmed(quiet) {
+  const user = auth.currentUser;
+  if (!user) return;
+  await user.reload();
+  if (!auth.currentUser.emailVerified) {
+    if (!quiet) setMsg($('verify-msg'), 'Not confirmed yet. Open the link in the email first, then press this button again.', 'error');
+    return;
+  }
+  await auth.currentUser.getIdToken(true); // pick up the "confirmed" mark straight away
+  await openDashboard();
+}
+
+$('verify-done').addEventListener('click', async () => {
+  $('verify-done').disabled = true;
+  try {
+    await checkConfirmed(false);
+  } catch (err) {
+    setMsg($('verify-msg'), friendly(err), 'error');
+  } finally {
+    $('verify-done').disabled = false;
+  }
+});
+
+$('verify-resend').addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  $('verify-resend').disabled = true;
+  try {
+    await withReturnLink((settings) => sendEmailVerification(user, settings));
+    setMsg($('verify-msg'), 'Sent. Check your inbox, and Spam too.');
+  } catch (err) {
+    setMsg($('verify-msg'), friendly(err), 'error');
+  } finally {
+    $('verify-resend').disabled = false;
+  }
+});
+
+// Coming back to this tab after clicking the link: check again without a button press.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && current === 'verify') {
+    checkConfirmed(true).catch(() => {});
+  }
+});
+
+// ---- Contributors --------------------------------------------------------
+async function openDashboard() {
+  show('dashboard');
+  await loadContributors();
+}
+
+function sortKey(c) {
+  if (c.createdAt && typeof c.createdAt.toMillis === 'function') return c.createdAt.toMillis();
+  const t = Date.parse(c.joined || '');
+  return Number.isNaN(t) ? 0 : t;
+}
+
+async function loadContributors() {
+  const user = auth.currentUser;
+  if (!user) return;
+  setMsg($('dash-error'), '');
+  $('refresh-btn').disabled = true;
+  try {
+    const token = await user.getIdTokenResult();
+    if (!token.claims.email_verified) await user.getIdToken(true);
+    const snap = await getDocs(collection(db, 'contributors'));
+    contributors = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    contributors.sort((a, b) => sortKey(b) - sortKey(a));
+  } catch (err) {
+    console.error(err);
+    contributors = [];
+    setMsg($('dash-error'), friendly(err), 'error');
+  } finally {
+    $('refresh-btn').disabled = false;
+    render();
+  }
+}
+
+const fullName = (c) => [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || '(no name)';
+
+function formatDob(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ''));
+  return m ? `${m[2]}/${m[3]}/${m[1]}` : (value || '—');
+}
+
+function formatJoined(c) {
+  let date = null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(c.joined || ''));
+  if (m) date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  else if (c.createdAt && typeof c.createdAt.toDate === 'function') date = c.createdAt.toDate();
+  return date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+}
+
+const badgeClass = (s) => (s === 'Active' ? 'ok' : s === 'On hold' ? 'hold' : s === 'Withdrawn' ? 'out' : '');
+
+function actionsFor(status) {
+  if (status === 'Active') return [['Put on hold', 'On hold', false], ['Withdraw', 'Withdrawn', true]];
+  if (status === 'On hold') return [['Resume', 'Active', false], ['Withdraw', 'Withdrawn', true]];
+  if (status === 'Withdrawn') return [['Reinstate', 'Active', false]];
+  return [['Set as Active', 'Active', false]];
+}
+
+function textCell(label, text, className) {
+  const td = document.createElement('td');
+  td.dataset.label = label;
+  if (className) td.className = className;
+  td.textContent = text;
+  return td;
+}
+
+function linkCell(label, text, href, className) {
+  const td = document.createElement('td');
+  td.dataset.label = label;
+  if (className) td.className = className;
+  if (text) {
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = text;
+    td.appendChild(a);
+  } else {
+    td.textContent = '—';
+  }
+  return td;
+}
+
+function rowFor(c) {
+  const tr = document.createElement('tr');
+  tr.appendChild(textCell('Name', fullName(c), 'name'));
+  tr.appendChild(linkCell('Email', c.email, 'mailto:' + encodeURIComponent(c.email || '').replace(/%40/g, '@')));
+  tr.appendChild(linkCell('Phone', c.phone, 'tel:' + String(c.phone || '').replace(/[^\d+]/g, ''), 'nowrap'));
+  tr.appendChild(textCell('Date of birth', formatDob(c.dob), 'nowrap'));
+  tr.appendChild(textCell('Joined', formatJoined(c), 'nowrap'));
+
+  const statusTd = document.createElement('td');
+  statusTd.dataset.label = 'Status';
+  statusTd.className = 'nowrap';
+  const badge = document.createElement('span');
+  badge.className = 'badge ' + badgeClass(c.status);
+  badge.textContent = c.status || 'Unknown';
+  statusTd.appendChild(badge);
+  tr.appendChild(statusTd);
+
+  const actionsTd = document.createElement('td');
+  actionsTd.className = 'actions';
+  actionsFor(c.status).forEach(([label, to, danger]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn small ' + (danger ? 'danger' : 'ghost');
+    b.textContent = label;
+    b.addEventListener('click', () => changeStatus(c, to, b));
+    actionsTd.appendChild(b);
+  });
+  tr.appendChild(actionsTd);
+  return tr;
+}
+
+function render() {
+  const count = (s) => contributors.filter((c) => c.status === s).length;
+  $('n-all').textContent = contributors.length;
+  $('n-active').textContent = count('Active');
+  $('n-hold').textContent = count('On hold');
+  $('n-withdrawn').textContent = count('Withdrawn');
+
+  const q = $('search').value.trim().toLowerCase();
+  const status = $('filter').value;
+  const list = contributors.filter((c) => {
+    if (status && c.status !== status) return false;
+    if (!q) return true;
+    return [fullName(c), c.email, c.phone].some((v) => String(v || '').toLowerCase().includes(q));
+  });
+
+  const tbody = $('rows');
+  tbody.replaceChildren(...list.map(rowFor));
+  const empty = $('empty');
+  empty.hidden = list.length > 0;
+  empty.textContent = contributors.length ? 'No contributors match your search.' : 'No contributors yet.';
+}
+
+async function changeStatus(c, to, btn) {
+  const name = fullName(c);
+  if (!window.confirm(`Change ${name} from "${c.status || 'Unknown'}" to "${to}"?`)) return;
+  btn.disabled = true;
+  try {
+    await updateDoc(doc(db, 'contributors', c.id), {
+      status: to,
+      updatedAt: serverTimestamp()
+    });
+    c.status = to;
+    render();
+    toast(`${name} is now ${to}.`);
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    toast(friendly(err), true);
+  }
+}
+
+$('search').addEventListener('input', render);
+$('filter').addEventListener('change', render);
+$('refresh-btn').addEventListener('click', loadContributors);
+
+let toastTimer;
+function toast(text, isError) {
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.toggle('error', !!isError);
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3500);
+}
+</script>
+</body>
+</html>
