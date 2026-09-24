@@ -1657,11 +1657,7 @@
   // NOTE: same as contributor accounts, passwords are plain in-memory strings here purely
   // for this static demo. A real system needs server-side password hashing (e.g., bcrypt)
   // and real session management \u2014 not something a static file can do securely.
-  window.UUFFUNDS_ADMINS = {
-    'admin@uuffunds.org': { name: 'Fund Administrator', email: 'admin@uuffunds.org', salt: 'uuf-salt-admin', passwordHash: '89eccba5d74bc4b0f7de85ea3e4a4b5087d665cae81391fb0c811357e7932896' },
-    'imam.yusuf@uuffunds.org': { name: 'Imam Yusuf', email: 'imam.yusuf@uuffunds.org', salt: 'uuf-salt-imamyusuf', passwordHash: 'dc46245ddd8832b1f26ae1e4c61e14c50d8a892e79036b2cd2feb99e4565c864' },
-    'sr.amina@uuffunds.org': { name: 'Sister Amina', email: 'sr.amina@uuffunds.org', salt: 'uuf-salt-sramina', passwordHash: 'ae32123a4a39328b5d01bc4a8e0a907534484db7395bee81c800e1ec8b6c9fbd' },
-  };
+  window.UUFFUNDS_ADMINS = {};
 
   window.uuffundsAdminLogin = async function (email, password) {
     const admin = window.UUFFUNDS_ADMINS[email.toLowerCase().trim()];
@@ -1964,7 +1960,7 @@
       'UUFFUNDS_DONATIONS', 'UUFFUNDS_DONATION_SEQ', 'UUFFUNDS_DONATIONS_USED',
       'UUFFUNDS_CONTRIBUTOR_HISTORY', 'UUFFUNDS_HISTORY_SEQ',
       'UUFFUNDS_DISPUTES', 'UUFFUNDS_DISPUTE_SEQ',
-      'UUFFUNDS_AUDIT_LOG', 'UUFFUNDS_ADMINS'
+      'UUFFUNDS_AUDIT_LOG'
     ];
 
     function snapshot() {
@@ -4175,7 +4171,6 @@
             <p class="join-note">This is a prototype reset &mdash; without real email, the verification code is shown on screen instead of sent. A real system would only ever send it to the account's actual inbox.</p>
           </div>
 
-          <p class="join-note">This is a prototype login and is not connected to a real authentication system. Demo: admin@uuffunds.org / admin1234</p>
           <div class="modal-actions">
             <span></span>
             <button type="submit" class="btn btn-primary">Log in</button>
@@ -5867,17 +5862,7 @@
       }, Math.min(chargeableRows.length * 120, 1200) + 500);
     });
 
-    // The footer "Admin log in" link is the main way in, but this URL
-    // shortcut (yoursite.com/#admin-login) also works as a quick alternate
-    // path. Handles both a fresh page load with the hash already present,
-    // and someone typing/pasting the hash into an already-open tab (a
-    // same-document navigation that wouldn't otherwise re-run this check).
-    if (window.location.hash === '#admin-login') {
-      openModal();
-    }
-    window.addEventListener('hashchange', () => {
-      if (window.location.hash === '#admin-login') openModal();
-    });
+    // Admin log in is switched off for now. The real admin panel (Firebase log-in) will replace it.
   })();
 </script>
 
