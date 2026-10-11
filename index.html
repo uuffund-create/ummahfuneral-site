@@ -6945,6 +6945,13 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Pressing Enter (or "Go" on a phone keyboard) on step 1 or 2 used to send
+      // the form straight away, skipping the name checks and the terms step.
+      // Now Enter on those steps works like the Continue button.
+      if (current !== 3) {
+        if ((current === 1 || current === 2) && validateStep(current)) showStep(current + 1);
+        return;
+      }
       if (!validateStep(3)) return;
       const first = document.getElementById('mf-first').value.trim();
       const last = document.getElementById('mf-last').value.trim();
@@ -6955,6 +6962,19 @@
       const password = document.getElementById('mf-password').value;
       const donationAmount = parseFloat(document.getElementById('mf-donation-amount').value) || 0;
       const donationAnonymous = document.getElementById('mf-donation-anonymous').checked;
+
+      // Safety net: never create an account without a name, date of birth,
+      // email, phone, password and a ticked terms box.
+      if (!first || !last || !parseTypedDob(dobTyped) || !email || !phone || !password) {
+        showStep(1);
+        validateStep(1);
+        return;
+      }
+      if (!document.getElementById('mf-agree').checked) {
+        showStep(2);
+        validateStep(2);
+        return;
+      }
 
       if (window.UUFFUNDS_BACKEND_CONNECTED) {
         const submitBtn = form.querySelector('[data-step="3"] button[type="submit"]');
