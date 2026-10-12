@@ -280,12 +280,13 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Date of birth</th><th>Joined</th><th>Status</th><th><span class="sr">Actions</span></th></tr>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Date of birth</th><th>Joined</th><th>Status</th><th>Card</th><th><span class="sr">Actions</span></th></tr>
         </thead>
         <tbody id="rows"></tbody>
       </table>
       <p class="empty" id="empty" hidden></p>
     </div>
+    <p class="foot-note" id="card-note" hidden></p>
     <p class="foot-note">Contributor details are private. Please don't share screenshots of this page.</p>
   </section>
 </main>
@@ -317,6 +318,12 @@ const firebaseConfig = {
 const ADMIN_EMAIL = 'uuffund@gmail.com';
 const RETURN_URL = 'https://ummahfuneral.org/admin.html';
 
+// Saved cards come from the payments server (server/stripe-api), which asks Stripe.
+// Keep LIVE_ON the same as in index.html. admin.html?stripe=test shows test-mode cards.
+const PAYMENTS_API = 'https://stripe-api-783984253394.us-central1.run.app';
+const LIVE_ON = false;
+const CARD_MODE = new URLSearchParams(location.search).get('stripe') === 'test' ? 'test' : (LIVE_ON ? 'live' : 'off');
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -325,6 +332,7 @@ const $ = (id) => document.getElementById(id);
 const VIEWS = ['loading', 'login', 'setup', 'forgot', 'verify', 'notadmin', 'dashboard'];
 let current = 'loading';
 let contributors = [];
+let cards = null; // login id -> { card, joinPaid }, or null when not loaded
 
 function show(name) {
   current = name;
@@ -555,6 +563,7 @@ async function loadContributors() {
     const snap = await getDocs(collection(db, 'contributors'));
     contributors = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     contributors.sort((a, b) => sortKey(b) - sortKey(a));
+    loadCards();
   } catch (err) {
     console.error(err);
     contributors = [];
@@ -563,6 +572,43 @@ async function loadContributors() {
     $('refresh-btn').disabled = false;
     render();
   }
+}
+
+// ---- Saved cards (from Stripe, through the payments server) --------------
+const BRANDS = { visa: 'Visa', mastercard: 'Mastercard', amex: 'Amex', discover: 'Discover', diners: 'Diners', jcb: 'JCB', unionpay: 'UnionPay' };
+
+function cardText(uid) {
+  if (CARD_MODE === 'off') return '\u2014';
+  if (!cards) return '\u2026';
+  const entry = cards[uid];
+  if (!entry || !entry.card) return 'No card yet';
+  return `${BRANDS[entry.card.brand] || 'Card'} \u00b7\u00b7${entry.card.last4}`;
+}
+
+function setCardNote(text) {
+  $('card-note').textContent = text || '';
+  $('card-note').hidden = !text;
+}
+
+async function loadCards() {
+  cards = null;
+  if (CARD_MODE === 'off') {
+    setCardNote('Card column: card payments are not switched on yet.');
+    return;
+  }
+  setCardNote(CARD_MODE === 'test' ? 'Card column is showing Stripe TEST mode.' : '');
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const res = await fetch(`${PAYMENTS_API}/admin/cards?mode=${CARD_MODE}`, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not load saved cards.');
+    cards = data.cards || {};
+  } catch (err) {
+    console.error(err);
+    cards = {};
+    setCardNote(`Card column: ${err.message || 'could not load saved cards.'}`);
+  }
+  render();
 }
 
 const fullName = (c) => [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || '(no name)';
@@ -628,6 +674,7 @@ function rowFor(c) {
   badge.textContent = c.status || 'Unknown';
   statusTd.appendChild(badge);
   tr.appendChild(statusTd);
+  tr.appendChild(textCell('Card', cardText(c.id), 'nowrap'));
 
   const actionsTd = document.createElement('td');
   actionsTd.className = 'actions';
