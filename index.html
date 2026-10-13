@@ -7749,7 +7749,9 @@ const FONTS = [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@40
 function cardBox(container, options) {
   container.replaceChildren();
   const elements = stripe.elements(Object.assign({
-    appearance: APPEARANCE, fonts: FONTS, currency: 'usd', paymentMethodTypes: ['card']
+    // Cards only (this also leaves out Link, bank and pay-later tabs). The server
+    // creates every payment as card-only too, so the two always match.
+    appearance: APPEARANCE, fonts: FONTS, currency: 'usd', allowedPaymentMethodTypes: ['card']
   }, options));
   const element = elements.create('payment', { layout: 'tabs' });
   element.mount(container);
