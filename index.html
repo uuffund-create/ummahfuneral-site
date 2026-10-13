@@ -7674,8 +7674,8 @@ if (summary) {
      STRIPE: real donations and saved cards
      - Donations: people type an amount and their card right here, in
        Stripe's own secure card box, and Stripe charges it.
-     - Joining: step 3 asks for a card and gives $1.25 as a Sadaqah
-       donation to make sure the card works. Stripe then keeps the card
+     - Joining: step 3 asks for a card and gives a $10 Sadaqah donation
+       to the fund, which also confirms the card works. Stripe then keeps the card
        for future equal-share charges.
      - My Account: shows the saved card and lets people add or change it.
      Card numbers go straight from the browser to Stripe. This page and
@@ -7704,7 +7704,8 @@ const CONFIG = {
   // ummahfuneral.org/?stripe=test runs everything in Stripe test mode.
   LIVE_ON: false
 };
-const JOIN_DONATION = 1.25;
+const JOIN_DONATION = 10; // dollars, charged as Sadaqah when a contributor adds their first card
+const money = (n) => (Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`);
 
 const $ = (id) => document.getElementById(id);
 
@@ -7930,7 +7931,7 @@ if (MODE === 'test' && ACTIVE) {
   }, true);
 })();
 
-// ---- Joining: $1.25 Sadaqah card check ----------------------------------
+// ---- Joining: $10 Sadaqah donation when the card is added ---------------
 (function setupJoin() {
   const form = $('join-modal-form');
   if (!form) return;
@@ -7960,7 +7961,7 @@ if (MODE === 'test' && ACTIVE) {
   step3.querySelectorAll('.uuf-fb-note').forEach((n) => n.remove());
   const note = document.createElement('p');
   note.className = 'uuf-pay-note';
-  note.textContent = `To make sure your card works, we’ll charge $${JOIN_DONATION.toFixed(2)} now as a Sadaqah donation to the fund. Stripe then keeps your card safely for your equal shares, as the terms describe. Card numbers go straight to Stripe and never touch this website.`;
+  note.textContent = `When you join, we’ll charge a ${money(JOIN_DONATION)} Sadaqah donation to the fund. It also confirms your card works. Stripe then keeps your card safely for your equal shares, as the terms describe. Card numbers go straight to Stripe and never touch this website.`;
   (step3.querySelector('.modal-subtext') || heading).after(note);
   const box = document.createElement('div');
   box.className = 'uuf-pay-box';
@@ -7971,7 +7972,7 @@ if (MODE === 'test' && ACTIVE) {
   error.hidden = true;
   note.after(box, error);
   submitBtn.removeAttribute('data-i18n');
-  const JOIN_LABEL = `Give $${JOIN_DONATION.toFixed(2)} and join`;
+  const JOIN_LABEL = `Give ${money(JOIN_DONATION)} and join`;
   submitBtn.textContent = JOIN_LABEL;
 
   let card = null;
@@ -8000,7 +8001,7 @@ if (MODE === 'test' && ACTIVE) {
     $('modal-done-heading').textContent = `You're in, ${first}.`;
     const doneText = form.querySelector('.modal-step[data-step="done"] .modal-done-text');
     if (doneText) {
-      doneText.textContent = `Your ${savedCard ? cardLabel(savedCard) : 'card'} is saved, and your $${JOIN_DONATION.toFixed(2)} Sadaqah went to the fund — jazak Allah khayr. We'll reach out if your equal share is ever needed, in sha'Allah. You can log in anytime from the menu to see or change your card.`;
+      doneText.textContent = `Your ${savedCard ? cardLabel(savedCard) : 'card'} is saved, and your ${money(JOIN_DONATION)} Sadaqah went to the fund — jazak Allah khayr. We'll reach out if your equal share is ever needed, in sha'Allah. You can log in anytime from the menu to see or change your card.`;
     }
     form.querySelectorAll('.modal-step').forEach((s) => { s.hidden = s.dataset.step !== 'done'; });
     const progress = overlay && overlay.querySelector('.modal-progress');
@@ -8119,7 +8120,7 @@ if (MODE === 'test' && ACTIVE) {
     payValue.textContent = label || 'No card yet';
     text.textContent = label
       ? `${label} is saved with Stripe for your equal shares.`
-      : `No card yet. Adding one gives $${JOIN_DONATION.toFixed(2)} as Sadaqah to make sure it works.`;
+      : `No card yet. Adding your first card gives a ${money(JOIN_DONATION)} Sadaqah donation to the fund.`;
     openBtn.textContent = label ? 'Change card' : 'Add a card';
     openBtn.hidden = false;
   }
@@ -8145,9 +8146,9 @@ if (MODE === 'test' && ACTIVE) {
   function openForm() {
     const paying = !state.joinPaid;
     noteEl.textContent = paying
-      ? `To make sure your card works, we’ll charge $${JOIN_DONATION.toFixed(2)} now as a Sadaqah donation to the fund. Card numbers go straight to Stripe and never touch this website.`
+      ? `We’ll charge a ${money(JOIN_DONATION)} Sadaqah donation to the fund now. It also confirms your card works. Card numbers go straight to Stripe and never touch this website.`
       : 'Your new card replaces the old one for future equal shares. Nothing is charged now.';
-    saveBtn.textContent = paying ? `Give $${JOIN_DONATION.toFixed(2)} and save card` : 'Save card';
+    saveBtn.textContent = paying ? `Give ${money(JOIN_DONATION)} and save card` : 'Save card';
     card = cardBox(box, paying
       ? { mode: 'payment', amount: Math.round(JOIN_DONATION * 100), setupFutureUsage: 'off_session' }
       : { mode: 'setup' });
