@@ -7,7 +7,7 @@
 // What it does
 //   POST /donate      anyone       starts a donation and returns its client secret
 //   POST /card        contributor  starts the card step: the first time it is a
-//                                  $1.25 Sadaqah donation that also checks the card
+//                                  $10 Sadaqah donation that also checks the card
 //                                  and saves it; after that it saves a new card with
 //                                  no charge
 //   POST /card/done   contributor  after Stripe confirms: makes it the main card
@@ -26,7 +26,7 @@ const crypto = require('node:crypto');
 
 const PROJECT_ID = 'united-ummah-funeral-funds';
 const ADMIN_EMAIL = 'uuffund@gmail.com';
-const JOIN_DONATION_CENTS = 125; // $1.25 when a contributor first adds a card
+const JOIN_DONATION_CENTS = 1000; // $10 Sadaqah when a contributor first adds a card
 const DONATION_MIN_CENTS = 100; // $1
 const DONATION_MAX_CENTS = 1000000; // $10,000
 const ALLOWED_ORIGINS = ['https://ummahfuneral.org', 'https://www.ummahfuneral.org'];
@@ -276,7 +276,7 @@ async function startCardStep(mode, req) {
   const metadata = { firebaseUID: user.uid, source: 'ummahfuneral.org' };
 
   // Saving a new card with no charge is only for people who already gave
-  // the $1.25 when they joined.
+  // the joining donation.
   if (body.want === 'setup' && (await joinDonationPaid(mode, customer))) {
     const setup = await stripe(mode, 'POST', '/setup_intents', {
       customer: customer.id,
@@ -286,7 +286,7 @@ async function startCardStep(mode, req) {
     });
     return { kind: 'setup', clientSecret: setup.client_secret };
   }
-  if (body.want === 'setup') throw httpError(409, 'A $1.25 card check is needed first.');
+  if (body.want === 'setup') throw httpError(409, 'The joining donation is needed first.');
 
   const intent = await stripe(mode, 'POST', '/payment_intents', {
     amount: JOIN_DONATION_CENTS,
@@ -294,7 +294,7 @@ async function startCardStep(mode, req) {
     customer: customer.id,
     setup_future_usage: 'off_session',
     payment_method_types: ['card'],
-    description: 'Sadaqah donation - card check when joining',
+    description: 'Sadaqah donation - joining',
     receipt_email: user.email,
     metadata: Object.assign({ type: 'joining_donation' }, metadata)
   });
