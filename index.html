@@ -7753,7 +7753,8 @@ function cardBox(container, options) {
     // creates every payment as card-only too, so the two always match.
     appearance: APPEARANCE, fonts: FONTS, currency: 'usd', allowedPaymentMethodTypes: ['card']
   }, options));
-  const element = elements.create('payment', { layout: 'tabs' });
+  // Link is Stripe's own checkout network; it adds "Bank" and pay-later tabs, so keep it off.
+  const element = elements.create('payment', { layout: 'tabs', wallets: { link: 'never' } });
   element.mount(container);
   return { elements, element, mode: options.mode };
 }
