@@ -321,7 +321,7 @@ const RETURN_URL = 'https://ummahfuneral.org/admin.html';
 // Saved cards come from the payments server (server/stripe-api), which asks Stripe.
 // Keep LIVE_ON the same as in index.html. admin.html?stripe=test shows test-mode cards.
 const PAYMENTS_API = 'https://stripe-api-783984253394.us-central1.run.app';
-const LIVE_ON = false;
+const LIVE_ON = true;
 const CARD_MODE = new URLSearchParams(location.search).get('stripe') === 'test' ? 'test' : (LIVE_ON ? 'live' : 'off');
 
 const app = initializeApp(firebaseConfig);

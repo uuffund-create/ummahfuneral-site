@@ -7702,7 +7702,7 @@ const CONFIG = {
   // Turn on once the live Stripe secret key is saved on the server
   // (server/deploy.sh live). Until then visitors see "opening soon", and
   // ummahfuneral.org/?stripe=test runs everything in Stripe test mode.
-  LIVE_ON: false
+  LIVE_ON: true
 };
 const JOIN_DONATION = 10; // dollars, charged as Sadaqah when a contributor adds their first card
 const money = (n) => (Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`);
