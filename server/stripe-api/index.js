@@ -13,6 +13,8 @@
 //   POST /card/done   contributor  after Stripe confirms: makes it the main card
 //   GET  /card        contributor  which card is saved (brand + last 4 digits)
 //   GET  /admin/cards admin only   saved card for every contributor, by login id
+//   POST /admin/charge-shares      admin only: charges a funeral's equal share (plus
+//                                  Stripe's fee) to every listed contributor's saved card
 //
 // Card numbers never reach this server. The browser sends them straight to
 // Stripe, and Stripe gives us back only the brand and the last 4 digits.
@@ -30,6 +32,13 @@ const JOIN_DONATION_CENTS = 1000; // $10 Sadaqah when a contributor first adds a
 const DONATION_MIN_CENTS = 100; // $1
 const DONATION_MAX_CENTS = 1000000; // $10,000
 const ALLOWED_ORIGINS = ['https://ummahfuneral.org', 'https://www.ummahfuneral.org'];
+// Stripe's US card price (2.9% + 30c). Each funeral share includes it, so the
+// fund receives the full share. Whole cents only, rounded up.
+const FEE_FIXED_CENTS = 30;
+const FEE_KEEP_PER_THOUSAND = 971; // 1000 - 29 (2.9%)
+const withFee = (shareCents) => Math.ceil(((shareCents + FEE_FIXED_CENTS) * 1000) / FEE_KEEP_PER_THOUSAND);
+const MAX_SHARE_CENTS = 500000; // $5,000 per person, as a safety limit
+
 const DESTINATIONS = {
   funeral: 'Funeral fund',
   platform: 'Platform support',
@@ -100,7 +109,7 @@ function secretKey(mode) {
   return key;
 }
 
-async function stripe(mode, method, path, params) {
+async function stripe(mode, method, path, params, idempotencyKey) {
   const key = secretKey(mode);
   const query = params ? formEncode(params).join('&') : '';
   let url = `https://api.stripe.com/v1${path}`;
@@ -110,12 +119,14 @@ async function stripe(mode, method, path, params) {
   } else {
     init.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     init.body = query;
+    if (idempotencyKey) init.headers['Idempotency-Key'] = idempotencyKey;
   }
   const res = await fetch(url, init);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const err = new Error(`Stripe ${method} ${path} failed: ${(data.error && data.error.message) || res.status}`);
     err.status = 502;
+    err.stripeError = data.error || {};
     throw err;
   }
   return data;
@@ -329,10 +340,15 @@ async function cardStatus(mode, req) {
   return { card, joinPaid };
 }
 
-async function adminCards(mode, req) {
+async function requireAdmin(req) {
   const user = await requireUser(req);
   if (user.email !== ADMIN_EMAIL || !user.emailVerified) throw httpError(403, 'For the fund administrator only.');
-  const cards = {};
+  return user;
+}
+
+// Every contributor's Stripe customer and saved card, by Firebase login id.
+async function contributorCards(mode) {
+  const byUid = {};
   let startingAfter;
   for (let page = 0; page < 20; page += 1) {
     const list = await stripe(mode, 'GET', '/customers', {
@@ -344,14 +360,111 @@ async function adminCards(mode, req) {
       const uid = customer.metadata && customer.metadata.firebaseUID;
       if (!uid) continue;
       const card = await ensureDefaultCard(mode, customer);
-      if (card || !cards[uid]) {
-        cards[uid] = { card, joinPaid: customer.metadata.joinDonationPaid === 'true' };
+      const current = customer.invoice_settings && customer.invoice_settings.default_payment_method;
+      const pmId = current && typeof current === 'object' ? current.id : null;
+      if (card || !byUid[uid]) {
+        byUid[uid] = { customer, card, pmId, joinPaid: customer.metadata.joinDonationPaid === 'true' };
       }
     }
     if (!list.has_more || !list.data.length) break;
     startingAfter = list.data[list.data.length - 1].id;
   }
+  return byUid;
+}
+
+async function adminCards(mode, req) {
+  await requireAdmin(req);
+  const byUid = await contributorCards(mode);
+  const cards = {};
+  for (const [uid, entry] of Object.entries(byUid)) cards[uid] = { card: entry.card, joinPaid: entry.joinPaid };
   return { cards };
+}
+
+function declineReason(err) {
+  const e = (err && err.stripeError) || {};
+  const code = e.decline_code || e.code || '';
+  if (code === 'authentication_required') return 'Their bank wants them to approve it. Ask them to pay on the website.';
+  if (code === 'insufficient_funds') return 'Not enough money on the card.';
+  if (code === 'expired_card') return 'The card has expired.';
+  if (code === 'card_declined' || code === 'generic_decline' || code === 'do_not_honor') return 'The card was declined.';
+  return e.message || 'The charge did not go through.';
+}
+
+// Charge one funeral's equal share to every listed contributor's saved card.
+// The admin page sends the Active contributors and the per-person amount it
+// showed in the preview; the server works the amount out again and refuses
+// if they differ, so nobody is charged a number the admin did not see.
+async function chargeShares(mode, req) {
+  await requireAdmin(req);
+  const body = req.body || {};
+  const caseName = cleanText(body.caseName, 60);
+  const caseId = String(body.caseId || '');
+  const totalCents = Number(body.totalCents);
+  const donationCents = Number(body.donationCents || 0);
+  const uids = Array.isArray(body.uids) ? [...new Set(body.uids.map(String))] : [];
+  if (!caseName) throw httpError(400, 'Please name the funeral (for example, Funeral of [name]).');
+  if (!/^case_[A-Za-z0-9_-]{6,60}$/.test(caseId)) throw httpError(400, 'Missing case id.');
+  if (!Number.isInteger(totalCents) || totalCents < 100) throw httpError(400, 'Please enter the total funeral cost.');
+  if (!Number.isInteger(donationCents) || donationCents < 0) throw httpError(400, 'Donations to apply must be $0 or more.');
+  if (donationCents >= totalCents) throw httpError(400, 'Donations already cover this cost, so nobody needs to be charged.');
+  if (!uids.length || uids.length > 2000) throw httpError(400, 'No contributors to charge.');
+
+  const byUid = await contributorCards(mode);
+  const eligible = uids.filter((uid) => byUid[uid] && byUid[uid].card && byUid[uid].pmId);
+  if (!eligible.length) throw httpError(400, 'None of these contributors has a saved card.');
+  const shareCents = Math.ceil((totalCents - donationCents) / eligible.length);
+  const chargeCents = withFee(shareCents);
+  if (chargeCents > MAX_SHARE_CENTS) throw httpError(400, 'Each share would be over $5,000. Please check the amount.');
+  if (Number(body.expectedChargeCents) !== chargeCents || Number(body.expectedCount) !== eligible.length) {
+    const err = httpError(409, 'The numbers changed since your preview (someone added or removed a card). Please preview again.');
+    throw err;
+  }
+
+  const results = [];
+  const chargeOne = async (uid) => {
+    const { customer, pmId } = byUid[uid];
+    try {
+      const intent = await stripe(mode, 'POST', '/payment_intents', {
+        amount: chargeCents,
+        currency: 'usd',
+        customer: customer.id,
+        payment_method: pmId,
+        payment_method_types: ['card'],
+        off_session: 'true',
+        confirm: 'true',
+        description: `Funeral equal share - ${caseName}`,
+        receipt_email: customer.email || undefined,
+        metadata: {
+          type: 'funeral_share',
+          caseId,
+          caseName,
+          shareCents: String(shareCents),
+          feeCents: String(chargeCents - shareCents),
+          firebaseUID: uid,
+          source: 'ummahfuneral.org admin'
+        }
+      }, `${caseId}-${uid}`);
+      const ok = intent.status === 'succeeded' || intent.status === 'processing';
+      results.push({ uid, status: ok ? 'charged' : 'failed', amountCents: chargeCents, reason: ok ? '' : 'The charge did not go through.' });
+    } catch (err) {
+      if (!err.stripeError) console.error('charge-shares:', err.message);
+      results.push({ uid, status: 'failed', amountCents: chargeCents, reason: declineReason(err) });
+    }
+  };
+  for (let i = 0; i < eligible.length; i += 5) {
+    await Promise.all(eligible.slice(i, i + 5).map(chargeOne));
+  }
+  const charged = results.filter((r) => r.status === 'charged');
+  return {
+    caseId,
+    shareCents,
+    chargeCents,
+    feeCents: chargeCents - shareCents,
+    charged: charged.length,
+    failed: results.length - charged.length,
+    collectedCents: charged.length * chargeCents,
+    results
+  };
 }
 
 const ROUTES = {
@@ -359,7 +472,8 @@ const ROUTES = {
   'POST /card': startCardStep,
   'POST /card/done': finishCardStep,
   'GET /card': cardStatus,
-  'GET /admin/cards': adminCards
+  'GET /admin/cards': adminCards,
+  'POST /admin/charge-shares': chargeShares
 };
 
 async function handler(req, res) {
