@@ -130,6 +130,21 @@
   .empty { text-align: center; color: var(--muted); padding: 28px 12px; margin: 0; }
   .foot-note { font-size: 12px; color: var(--muted); margin-top: 18px; }
 
+  /* Charge a funeral share */
+  .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .share { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; margin-bottom: 18px; }
+  .share h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 21px; color: var(--teal-dark); margin: 0 0 4px; }
+  .share-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+  .share-grid label { margin-top: 10px; }
+  .share-mode { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 10px; margin-left: 8px; vertical-align: 3px; background: var(--hold-bg); color: var(--hold); }
+  .share-box { background: var(--ivory); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; margin-top: 16px; font-size: 14px; }
+  .share-box p { margin: 0 0 8px; }
+  .share-big { font-size: 17px; font-weight: 600; color: var(--teal-dark); }
+  .share-list { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .share-results td.ok { color: var(--teal); font-weight: 600; }
+  .share-results td.bad { color: var(--danger); font-weight: 600; }
+  @media (max-width: 760px) { .share-grid { grid-template-columns: 1fr; } }
+
   .toast {
     position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 10;
     background: var(--teal-dark); color: var(--white); padding: 12px 18px; border-radius: 6px;
@@ -259,8 +274,27 @@
   <section id="view-dashboard" hidden>
     <div class="dash-head">
       <h1>Contributors</h1>
-      <button type="button" class="btn ghost small" id="refresh-btn">Refresh</button>
+      <div class="dash-actions">
+        <button type="button" class="btn small" id="share-open-btn">Charge a funeral share</button>
+        <button type="button" class="btn ghost small" id="refresh-btn">Refresh</button>
+      </div>
     </div>
+    <section class="share" id="share-panel" hidden>
+      <h2>Charge a funeral share<span class="share-mode" id="share-mode" hidden></span></h2>
+      <p class="sub" style="margin-bottom:8px">Splits a funeral's cost equally across <strong>Active</strong> contributors who have a saved card. Stripe's fee is added to each share, so the fund receives the full cost. Nobody is charged until you confirm.</p>
+      <div class="share-grid">
+        <div><label for="share-case">Funeral (shown on receipts)</label><input id="share-case" type="text" maxlength="60" placeholder="Funeral of [name]"></div>
+        <div><label for="share-total">Total funeral cost ($)</label><input id="share-total" type="text" inputmode="decimal" placeholder="6400"></div>
+        <div><label for="share-donations">Donations to apply first ($)</label><input id="share-donations" type="text" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="row">
+        <button type="button" class="btn" id="share-preview-btn">Preview the charge</button>
+        <button type="button" class="btn ghost" id="share-close-btn">Close</button>
+      </div>
+      <p class="msg error" id="share-error" role="alert" hidden></p>
+      <div class="share-box" id="share-preview" hidden></div>
+      <div class="share-box share-results" id="share-results" hidden></div>
+    </section>
     <div class="tiles">
       <div class="tile"><span class="tile-n" id="n-all">0</span><span class="tile-l">Total</span></div>
       <div class="tile"><span class="tile-n" id="n-active">0</span><span class="tile-l">Active</span></div>
@@ -610,6 +644,151 @@ async function loadCards() {
   }
   render();
 }
+
+// ---- Charge a funeral share --------------------------------------------
+// Same rounding as the payments server: share rounded up to the cent, then
+// Stripe's 2.9% + 30c added on top (rounded up), so the fund nets the share.
+const withFee = (shareCents) => Math.ceil(((shareCents + 30) * 1000) / 971);
+const money = (cents) => '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function toCents(text) {
+  const clean = String(text || '').replace(/[$,\s]/g, '');
+  if (!clean) return 0;
+  if (!/^\d+(\.\d{1,2})?$/.test(clean)) return NaN;
+  return Math.round(parseFloat(clean) * 100);
+}
+let sharePlan = null;
+
+function shareMsg(text) { setMsg($('share-error'), text, 'error'); }
+
+function openShare() {
+  $('share-panel').hidden = false;
+  $('share-mode').hidden = CARD_MODE !== 'test';
+  $('share-mode').textContent = 'TEST MODE: test cards only';
+  shareMsg(CARD_MODE === 'off' ? 'Card payments are not switched on yet, so nobody can be charged.' : '');
+  $('share-preview-btn').disabled = CARD_MODE === 'off';
+  $('share-case').focus();
+}
+
+function previewShare() {
+  shareMsg('');
+  $('share-results').hidden = true;
+  const caseName = $('share-case').value.trim();
+  const totalCents = toCents($('share-total').value);
+  const donationCents = toCents($('share-donations').value);
+  if (!caseName) return shareMsg('Please name the funeral, for example: Funeral of [name].');
+  if (!(totalCents >= 100)) return shareMsg('Please enter the total funeral cost in dollars, for example 6400.');
+  if (Number.isNaN(donationCents) || donationCents < 0) return shareMsg('Donations to apply must be a dollar amount, or leave it empty.');
+  if (donationCents >= totalCents) return shareMsg('Donations already cover this cost, so nobody needs to be charged.');
+  if (!cards) return shareMsg('Saved cards are still loading. Press Refresh and try again.');
+  const active = contributors.filter((c) => c.status === 'Active');
+  const eligible = active.filter((c) => cards[c.id] && cards[c.id].card);
+  const noCard = active.filter((c) => !(cards[c.id] && cards[c.id].card));
+  if (!eligible.length) return shareMsg('No Active contributor has a saved card yet, so nobody can be charged.');
+  const netCents = totalCents - donationCents;
+  const shareCents = Math.ceil(netCents / eligible.length);
+  const chargeCents = withFee(shareCents);
+  if (chargeCents > 500000) return shareMsg('Each share would be over $5,000. Please check the amounts.');
+  sharePlan = {
+    caseId: 'case_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8),
+    caseName, totalCents, donationCents, shareCents, chargeCents,
+    uids: eligible.map((c) => c.id), names: Object.fromEntries(contributors.map((c) => [c.id, fullName(c)]))
+  };
+  const box = $('share-preview');
+  box.replaceChildren();
+  const p = (text, cls) => { const el = document.createElement('p'); el.textContent = text; if (cls) el.className = cls; box.appendChild(el); return el; };
+  p(eligible.length === 1 ? `1 contributor will be charged ${money(chargeCents)}` : `${eligible.length} contributors will each be charged ${money(chargeCents)}`, 'share-big');
+  p(`That is a ${money(shareCents)} share of ${money(netCents)}${donationCents ? ` (${money(totalCents)} cost minus ${money(donationCents)} in donations)` : ''}, plus ${money(chargeCents - shareCents)} for Stripe's fee. Total charged: ${money(chargeCents * eligible.length)}.`);
+  p(`Receipts will say: "Funeral equal share - ${caseName}".`);
+  const list = document.createElement('ul');
+  list.className = 'share-list';
+  eligible.forEach((c) => { const li = document.createElement('li'); li.textContent = `${fullName(c)}: ${cardText(c.id)}`; list.appendChild(li); });
+  box.appendChild(list);
+  if (noCard.length) p(`Not charged (Active but no saved card yet): ${noCard.map(fullName).join(', ')}.`);
+  const others = contributors.length - active.length;
+  if (others) p(`Not charged (On hold or Withdrawn): ${others}.`);
+  const row = document.createElement('div');
+  row.className = 'row';
+  const yes = document.createElement('button');
+  yes.type = 'button';
+  yes.className = 'btn danger';
+  yes.id = 'share-confirm-btn';
+  yes.textContent = eligible.length === 1 ? `Yes, charge 1 contributor ${money(chargeCents)}` : `Yes, charge ${eligible.length} contributors ${money(chargeCents)} each`;
+  yes.addEventListener('click', () => confirmShare(yes));
+  const no = document.createElement('button');
+  no.type = 'button';
+  no.className = 'btn ghost';
+  no.textContent = 'Cancel';
+  no.addEventListener('click', () => { box.hidden = true; sharePlan = null; });
+  row.append(yes, no);
+  box.appendChild(row);
+  box.hidden = false;
+}
+
+async function confirmShare(btn) {
+  if (!sharePlan) return;
+  const plan = sharePlan;
+  btn.disabled = true;
+  btn.textContent = 'Charging… please keep this page open';
+  $('share-preview-btn').disabled = true;
+  shareMsg('');
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const res = await fetch(`${PAYMENTS_API}/admin/charge-shares?mode=${CARD_MODE}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        caseId: plan.caseId, caseName: plan.caseName, totalCents: plan.totalCents, donationCents: plan.donationCents,
+        uids: plan.uids, expectedChargeCents: plan.chargeCents, expectedCount: plan.uids.length
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'The charge could not be started.');
+    showShareResults(plan, data);
+    $('share-preview').hidden = true;
+    sharePlan = null;
+    toast(`${data.charged} charged, ${data.failed} failed.`, data.failed > 0);
+  } catch (err) {
+    console.error(err);
+    shareMsg(err.message || 'Something went wrong. Nobody new was charged twice; you can preview and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Try again';
+  } finally {
+    $('share-preview-btn').disabled = false;
+  }
+}
+
+function showShareResults(plan, data) {
+  const box = $('share-results');
+  box.replaceChildren();
+  const head = document.createElement('p');
+  head.className = 'share-big';
+  head.textContent = `${plan.caseName}: ${data.charged} charged (${money(data.collectedCents)}), ${data.failed} failed`;
+  box.appendChild(head);
+  const table = document.createElement('table');
+  const tbody = document.createElement('tbody');
+  data.results.forEach((r) => {
+    const tr = document.createElement('tr');
+    const name = document.createElement('td'); name.textContent = plan.names[r.uid] || r.uid;
+    const amt = document.createElement('td'); amt.textContent = money(r.amountCents);
+    const st = document.createElement('td'); st.className = r.status === 'charged' ? 'ok' : 'bad';
+    st.textContent = r.status === 'charged' ? 'Charged' : `Failed: ${r.reason}`;
+    tr.append(name, amt, st);
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  box.appendChild(table);
+  if (data.failed) {
+    const note = document.createElement('p');
+    note.style.marginTop = '10px';
+    note.textContent = 'Failed charges were not taken. Contact those contributors to update their card, or collect their share another way.';
+    box.appendChild(note);
+  }
+  box.hidden = false;
+}
+
+$('share-open-btn').addEventListener('click', openShare);
+$('share-close-btn').addEventListener('click', () => { $('share-panel').hidden = true; });
+$('share-preview-btn').addEventListener('click', previewShare);
 
 const fullName = (c) => [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || '(no name)';
 
