@@ -23,6 +23,8 @@
 //   POST /admin/test-email         admin only: sends a test email to the admin
 //   POST /admin/run-reminders      admin only: sends any reminder emails that are due now
 //   POST /tasks/reminders          Google Cloud Scheduler only (every 15 minutes): same
+//   POST /report                   anyone: a death report or a funeral home invoice, emailed
+//                                  straight to the fund's inbox with any documents attached
 //
 // What the site's terms promise when a card is declined (and what this does):
 //   - the share is reassigned right away across the other contributors, so the
@@ -431,7 +433,7 @@ const failedCardOf = (pi) => {
 
 const emailReady = () => /^re_/.test(String(process.env.RESEND_API_KEY || '').trim());
 
-async function sendEmail({ to, subject, text, html, key }) {
+async function sendEmail({ to, subject, text, html, key, replyTo, attachments }) {
   const apiKey = String(process.env.RESEND_API_KEY || '').trim();
   if (!/^re_/.test(apiKey)) return { ok: false, notReady: true };
   let res;
@@ -439,7 +441,15 @@ async function sendEmail({ to, subject, text, html, key }) {
     res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': key },
-      body: JSON.stringify({ from: EMAIL_FROM, to: [to], reply_to: EMAIL_REPLY_TO, subject, text, html })
+      body: JSON.stringify({
+        from: EMAIL_FROM,
+        to: [to],
+        reply_to: replyTo || EMAIL_REPLY_TO,
+        subject,
+        text,
+        html,
+        attachments: attachments && attachments.length ? attachments : undefined
+      })
     });
   } catch (err) {
     console.error('email: could not reach Resend:', err.message);
@@ -513,6 +523,127 @@ async function emailAboutShare(mode, pi, customer, step) {
   if (!to) return { ok: false, noAddress: true };
   const content = shareEmail(mode, pi, customer, step);
   return sendEmail(Object.assign({ to, key: `${pi.id}-email-${step}` }, content));
+}
+
+// ---- death reports and funeral home invoices -----------------------------
+// "Report a death" and the funeral home form on the site send here. Nothing is
+// kept on this server: each report is emailed straight to the fund's inbox,
+// with any documents attached. If email is not set up yet (or Resend refuses
+// it), the site asks the visitor to send the report from their own email app.
+
+const REPORT_FILE_MAX_BYTES = 8 * 1024 * 1024; // 8 MB per document
+const REPORT_FILES_MAX_BYTES = 15 * 1024 * 1024; // 15 MB for all documents together
+const REPORT_FILE_TYPES = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' };
+const REPORT_DOCUMENTS = [
+  ['invoice', 'Invoice'],
+  ['deathCertificate', 'Death certificate'],
+  ['burialPermit', 'Burial permit']
+];
+
+// A short reference the family and the funeral home can both quote, e.g. R-7KQ2MX.
+function reportRef() {
+  const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return `R-${Array.from(crypto.randomBytes(6), (b) => letters[b % letters.length]).join('')}`;
+}
+
+// One uploaded document ({ name, type, data } with base64 data), checked and
+// ready to attach to the email. Returns null when nothing was uploaded.
+function reportDocument(file, label) {
+  if (!file || typeof file !== 'object' || !file.data) return null;
+  const ext = REPORT_FILE_TYPES[String(file.type || '').toLowerCase()];
+  if (!ext) throw httpError(400, `${label}: please use a PDF, JPG or PNG file.`);
+  const content = String(file.data).replace(/^data:[^,]*,/, '').replace(/\s+/g, '');
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(content)) throw httpError(400, `${label}: the file could not be read. Please try again.`);
+  const bytes = Math.floor((content.length * 3) / 4);
+  if (bytes > REPORT_FILE_MAX_BYTES) throw httpError(413, `${label} is too large. Please keep each file under 8 MB.`);
+  const base = cleanText(file.name, 80).replace(/\.[A-Za-z0-9]{1,5}$/, '').replace(/[^A-Za-z0-9 ._-]+/g, '').trim() || label;
+  return { filename: `${base}.${ext}`, content, bytes };
+}
+
+async function submitReport(_mode, req) {
+  if (tooMany(`report:${clientIp(req)}`, 6, 10 * 60 * 1000)) {
+    throw httpError(429, 'Too many reports from this connection. Please wait a few minutes, or email uuffund@gmail.com.');
+  }
+  const body = req.body || {};
+  const kind = body.kind === 'invoice' ? 'invoice' : 'death';
+  const ref = reportRef();
+  // A hidden form field that people never see. Bots fill it in: pretend it worked.
+  if (cleanText(body.website, 200)) return { ref };
+
+  const field = (name, max) => cleanText(body[name], max || 200);
+  const need = (value, what) => {
+    if (!value) throw httpError(400, `Please fill in ${what}.`);
+    return value;
+  };
+  const deceased = need(field('deceased', 120), 'the full name of the person who passed away');
+  const lines = [`Reference: ${ref}`, `Deceased's full name: ${deceased}`];
+  const attachments = [];
+  let subject;
+  let replyTo;
+
+  if (kind === 'death') {
+    const hospital = need(field('hospital'), 'the hospital name');
+    const hospitalAddress = field('hospitalAddress', 300);
+    const relationship = need(field('relationship', 80), 'your relationship to them');
+    const name = need(field('name', 120), 'your full name');
+    const phone = need(field('phone', 40), 'your phone number');
+    const address = need(field('address', 300), 'your address');
+    subject = `Death report: ${deceased} [${ref}]`;
+    lines.push(
+      `Hospital name: ${hospital}`,
+      `Hospital address: ${hospitalAddress || '(not given)'}`,
+      `Reporter's relationship to deceased: ${relationship}`,
+      `Reporter's full name: ${name}`,
+      `Reporter's phone number: ${phone}`,
+      `Reporter's address: ${address}`
+    );
+  } else {
+    const funeralHome = need(field('funeralHome', 150), 'the funeral home name');
+    const contactName = need(field('contactName', 120), 'the contact name');
+    const contactPhone = need(field('contactPhone', 40), 'the funeral home phone number');
+    const contactEmail = cleanEmail(body.contactEmail);
+    if (!contactEmail) throw httpError(400, 'Please enter a valid funeral home email address.');
+    const amount = Number(body.amount);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1000000) throw httpError(400, 'Please enter the invoice amount.');
+    const files = body.files && typeof body.files === 'object' ? body.files : {};
+    let total = 0;
+    for (const [key, label] of REPORT_DOCUMENTS) {
+      const doc = reportDocument(files[key], label);
+      if (!doc) {
+        if (key === 'invoice') throw httpError(400, 'Please attach the invoice.');
+        continue;
+      }
+      total += doc.bytes;
+      attachments.push({ filename: doc.filename, content: doc.content });
+    }
+    if (total > REPORT_FILES_MAX_BYTES) throw httpError(413, 'The files are too large together. Please keep them under 15 MB in total.');
+    replyTo = contactEmail;
+    subject = `Funeral invoice: ${deceased} (${funeralHome}) [${ref}]`;
+    lines.push(
+      `Reference from the family: ${field('familyRef', 40) || '(none)'}`,
+      `Funeral home: ${funeralHome}`,
+      `Contact name: ${contactName}`,
+      `Phone: ${contactPhone}`,
+      `Email: ${contactEmail}`,
+      `Invoice amount: ${money(Math.round(amount * 100))}`,
+      `Documents attached: ${attachments.map((a) => a.filename).join(', ')}`
+    );
+  }
+
+  if (!emailReady()) throw httpError(503, 'Reports can’t be sent from the site right now.');
+  const intro = kind === 'death' ? 'A death was reported on ummahfuneral.org.' : 'A funeral home sent an invoice on ummahfuneral.org.';
+  const result = await sendEmail({
+    to: ADMIN_EMAIL,
+    subject,
+    text: `${[intro, '', ...lines].join('\n')}\n`,
+    html: emailHtml([intro, ...lines], null),
+    key: `report-${ref}`,
+    replyTo,
+    attachments
+  });
+  if (!result.ok) throw httpError(502, 'Reports can’t be sent from the site right now.');
+  console.log(`report ${ref}: ${kind} emailed to the fund`);
+  return { ref };
 }
 
 // ---- routes ------------------------------------------------------------
@@ -1136,10 +1267,11 @@ const ROUTES = {
   'GET /admin/owed': adminOwed,
   'POST /admin/test-email': adminTestEmail,
   'POST /admin/run-reminders': adminRunReminders,
-  'POST /tasks/reminders': scheduledReminders
+  'POST /tasks/reminders': scheduledReminders,
+  'POST /report': submitReport
 };
-// Routes that work for both payment modes at once.
-const NO_MODE = new Set(['POST /tasks/reminders']);
+// Routes that don't use a payment mode (reminders run both modes at once).
+const NO_MODE = new Set(['POST /tasks/reminders', 'POST /report']);
 
 async function handler(req, res) {
   const origin = (req.get && req.get('origin')) || '';
