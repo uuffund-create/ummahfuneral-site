@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UUFFUNDS | United Ummah Funeral Funds</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231f4436'/%3E%3Cpath d='M50 18 L58 40 L82 40 L62 54 L70 76 L50 62 L30 76 L38 54 L18 40 L42 40 Z' fill='%23b08d57'/%3E%3C/svg%3E">
-<meta name="description" content="A community covenant that shares funeral costs equally, so no family carries it alone. Non-profit, contributor-owned mutual aid for the Muslim community.">
+<meta name="description" content="A community covenant that shares funeral costs equally, so no family carries it alone. Non-profit mutual aid for the Muslim community.">
 <meta property="og:title" content="United Ummah Funeral Funds">
 <meta property="og:description" content="A community covenant that shares funeral costs equally, so no family carries it alone.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231f4436'/%3E%3Cpath d='M50 18 L58 40 L82 40 L62 54 L70 76 L50 62 L30 76 L38 54 L18 40 L42 40 Z' fill='%23b08d57'/%3E%3C/svg%3E">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://ummahfuneral.org/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="United Ummah Funeral Funds — When one of us is called home, all of us answer.">
+  <meta property="og:url" content="https://ummahfuneral.org/">
+  <meta property="og:site_name" content="United Ummah Funeral Funds">
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://ummahfuneral.org/og-image.png">
 <meta name="twitter:title" content="United Ummah Funeral Funds">
 <meta name="twitter:description" content="A community covenant that shares funeral costs equally, so no family carries it alone.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1378,7 +1384,29 @@
     text-decoration: none;
   }
   .footer-admin-link:hover { color: rgba(246, 242, 233, 0.75); }
-  .footer-bottom-sep { color: rgba(246, 242, 233, 0.3); font-size: 0.82rem; margin: 0 4px; }
+  .footer-contact {
+  margin-top: 14px;
+  font-size: 0.92rem;
+  color: rgba(246, 242, 233, 0.75);
+}
+.footer-contact a { color: var(--ivory); text-decoration: underline; text-underline-offset: 3px; }
+.hp-field { position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important; }
+.report-send-row { margin: 16px 0 18px; }
+.report-copy {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  font: 0.86rem/1.5 Inter, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  resize: vertical;
+}
+.upload-optional { font-weight: 400; font-size: 0.85em; color: rgba(35, 36, 31, 0.55); }
+.footer-bottom-sep { color: rgba(246, 242, 233, 0.3); font-size: 0.82rem; margin: 0 4px; }
 
   @media (max-width: 860px) {
     .hero-grid, .mission-grid { grid-template-columns: 1fr; }
@@ -2018,9 +2046,9 @@
     "hero_lede": "United Ummah Funeral Funds is a contributors' covenant of mutual support &mdash; takaful for the hardest day. When a death occurs in our community, the cost of the janazah and burial is shared equally across every contributor, so no family carries it alone &mdash; whether or not they were a contributor themselves.",
     "btn_become_contributor": "Become a contributor",
     "btn_report_death": "Report a death",
-    "hero_note": "Non-profit, contributor-owned, and built on equal contribution &mdash; not premiums or profit.",
+    "hero_note": "Non-profit and built on equal contribution &mdash; not premiums or profit.",
     "mission_h2": "A covenant, not a policy.",
-    "mission_p": "Traditional funeral insurance is built around premiums, underwriting, and profit. Our fund works differently: it is owned by its contributors, and every dollar collected for a funeral goes directly to the family in need &mdash; contributor or not. There is no markup and no waiting on a claims department &mdash; only neighbors covering neighbors, in equal share.",
+    "mission_p": "Traditional funeral insurance is built around premiums, underwriting, and profit. Our fund works differently: every dollar collected for a funeral goes directly to the family in need &mdash; contributor or not. There is no markup and no waiting on a claims department &mdash; only neighbors covering neighbors, in equal share.",
     "mission_p2": "Islam calls for burial without unnecessary delay — ghusl, kafan, and the janazah prayer completed as soon as the family is ready, ideally within a day. That urgency is exactly why this fund is built to move fast: no claims process standing between a death and the funds a family needs, in sha'Allah.",
     "quote_text": "“The believers, in their mutual love, mercy, and compassion, are like one body: when a limb suffers, the whole body responds with wakefulness and fever.”",
     "quote_cite": "The principle our fund is built on",
@@ -2067,9 +2095,9 @@
     "faq9_q": "Can I make a donation without becoming a contributor?",
     "faq9_a": "Yes. Donating and becoming a contributor are entirely separate — you can donate on its own, add a donation while signing up as a contributor, or do both. Neither is required to do the other.",
     "faq10_q": "How is a death verified before anyone is charged?",
-    "faq10_a": "A funeral home submits the invoice along with a death certificate and burial permit, linked to the case. An administrator reviews and approves those documents before the case can be charged — no funeral is charged for based on a report alone.",
+    "faq10_a": "An administrator reviews every reported death and contacts the funeral home before anyone is charged. Sending a death certificate and burial permit with the invoice is welcome, but not required.",
     "faq11_q": "What if someone else already reported the same death?",
-    "faq11_a": "The system flags likely duplicate reports automatically when the same name comes in twice. An administrator resolves it before either case can be charged, so contributors are never billed twice for the same funeral.",
+    "faq11_a": "An administrator matches reports of the same death to a single case before anything is charged, and our payment system never charges anyone twice for the same funeral.",
     "faq12_q": "How exactly do donations reduce what I'm charged?",
     "faq12_a": "Before a funeral cost is split among contributors, an administrator can apply whatever donations are currently available to reduce the total first. Contributors are only charged their equal share of what's left after that. If enough has been donated, a funeral may be fully covered and no contributor charged at all.",
     "join_p": "Membership is open to the community. There's no premium to pay today &mdash; only your commitment to contribute your equal share when it's needed, for any funeral in the community, not only a fellow contributor's.",
@@ -2077,8 +2105,8 @@
     "join_li2": "One payment method on file, charged only when a funeral occurs",
     "join_li3": "Full transparency on every funeral cost and every contributor's equal share",
     "join_li4": "Leave anytime; you're only responsible for shares billed while you're a contributor",
-    "footer_tag": "A contributor-owned covenant of mutual support, built so no family faces the cost of burying a loved one alone.",
-    "footer_disclaimer": "This site is a working prototype. Automatically charging contributors' stored cards and pooling funeral contributions involves real payment-processor integration (such as Stripe) and, depending on your state, may involve money-transmission or insurance-related licensing requirements. Consult a payment processor and a lawyer before handling real contributor funds.",
+    "footer_tag": "A covenant of mutual support, built so no family faces the cost of burying a loved one alone.",
+    "footer_disclaimer": "UUFFUNDS is a non-profit mutual-aid fund, not an insurance company. Card payments are processed securely by Stripe.",
     "footer_privacy_link": "Privacy Policy",
     "footer_admin_link": "Admin log in",
     "join_step1_h": "Tell us about you",
@@ -2116,7 +2144,7 @@
     "btn_submit_report": "Submit report",
     "death_done_h3": "Report received.",
     "death_condolence": "Inna lillahi wa inna ilayhi raji'un — verily we belong to Allah, and to Him we shall return.",
-    "death_done_text": "We're sorry for the loss. We'll reach out to the funeral home directly to arrange payment once they submit the invoice, death certificate, and burial permit.",
+    "death_done_text": "We're sorry for your loss. We'll reach out to the funeral home directly to arrange payment.",
     "acct_login_h": "Log in to your account",
     "acct_login_sub": "Use the email and password you set when you became a contributor.",
     "ph_login_password": "Password",
@@ -2167,7 +2195,20 @@
     "admin_search_placeholder": "Search by name, email, or phone",
     "admin_clear_btn": "Clear",
     "acct_running_total": "You've been charged {count} time(s) in the last 30 days, totaling ${amount}.",
-    "acct_running_total_zero": "No charges in the last 30 days."
+    "acct_running_total_zero": "No charges in the last 30 days.",
+    "footer_contact": "Questions? Email us:",
+    "death_ref": "Your reference number is {ref}. Please share it with the funeral home.",
+    "death_send_h3": "One more step: please send your report",
+    "death_send_text": "We couldn't send your report automatically. Tap the button below to open your email app with the report already filled in, then press Send.",
+    "death_send_btn": "Open my email app",
+    "death_send_alt": "If your email app doesn't open, copy the report below and send it to",
+    "death_copy_btn": "Copy report",
+    "death_copied": "Copied",
+    "death_sending": "Sending…",
+    "nav_donate": "Donate",
+    "btn_make_donation": "Make a donation",
+    "donate_h2": "Give Sadaqah to support the fund",
+    "donate_p": "Prefer to give without becoming a contributor? A donation here is Sadaqah &mdash; voluntary charity. Available donations are applied to reduce what a funeral costs before any equal-share charge goes out to contributors &mdash; so your gift can directly lower, or even fully cover, someone's cost. The Prophet Muhammad (peace be upon him) described ongoing charity as one of the few deeds whose reward continues after a person's own life has ended."
   },
   "ar": {
     "nav_how": "كيف يعمل الصندوق",
@@ -2182,9 +2223,9 @@
     "hero_lede": "صندوق جنازات الأمة المتحدة هو ميثاق تكافل بين المساهمين &mdash; تكافل لأصعب يوم. عندما تقع وفاة في مجتمعنا، يُقسَّم تكلفة الجنازة والدفن بالتساوي بين كل مساهم، فلا تتحمل أي أسرة ذلك وحدها &mdash; سواء كانت مساهمة أم لا.",
     "btn_become_contributor": "انضم كمساهم",
     "btn_report_death": "الإبلاغ عن وفاة",
-    "hero_note": "غير ربحي، مملوك للمساهمين، وقائم على المساهمة المتساوية &mdash; لا على أقساط أو أرباح.",
+    "hero_note": "غير ربحي، وقائم على المساهمة المتساوية &mdash; لا على أقساط أو أرباح.",
     "mission_h2": "ميثاق، لا بوليصة.",
-    "mission_p": "تقوم بوالص الجنائز التقليدية على الأقساط والاكتتاب والربح. صندوقنا يعمل بشكل مختلف: فهو مملوك للمساهمين فيه، وكل دولار يُجمع لأجل جنازة يذهب مباشرة إلى الأسرة المحتاجة &mdash; سواء كانت مساهمة أم لا. لا توجد أي زيادة ولا انتظار لقسم المطالبات &mdash; فقط جيران يتكاتفلون فيما بينهم، بالتساوي.",
+    "mission_p": "يقوم تأمين الجنازات التقليدي على الأقساط والاكتتاب والربح. صندوقنا يعمل بشكل مختلف: كل دولار يُجمع لأجل جنازة يذهب مباشرة إلى الأسرة المحتاجة &mdash; سواء كانت مساهمة أم لا. لا توجد أي زيادة ولا انتظار لقسم المطالبات &mdash; فقط جيران يتكافلون فيما بينهم، بالتساوي.",
     "quote_text": "«مثل المؤمنين في توادّهم وتراحمهم وتعاطفهم مثل الجسد الواحد، إذا اشتكى منه عضو، تداعى له سائر الجسد بالسهر والحمى»",
     "quote_cite": "المبدأ الذي يقوم عليه صندوقنا",
     "how_h2": "كيف يعمل الصندوق",
@@ -2230,8 +2271,8 @@
     "join_li2": "طريقة دفع واحدة مسجّلة، يُخصَم منها فقط عند حدوث جنازة",
     "join_li3": "شفافية كاملة في كل تكلفة جنازة وحصة كل مساهم المتساوية",
     "join_li4": "المغادرة في أي وقت؛ أنت مسؤول فقط عن الحصص المخصومة أثناء عضويتك",
-    "footer_tag": "ميثاق تكافل متبادل مملوك للمساهمين، أُنشئ لكي لا تواجه أي أسرة تكلفة دفن أحبائها وحدها.",
-    "footer_disclaimer": "هذا الموقع نموذج أولي قيد التطوير. خصم بطاقات المساهمين المحفوظة تلقائياً وتجميع المساهمات يتطلّب تكاملاً حقيقياً مع معالج دفع (مثل Stripe)، وقد يتطلّب حسب ولايتك تراخيص تحويل أموال أو تأمين. استشر معالج دفع ومحامياً قبل التعامل مع أموال المساهمين الحقيقية.",
+    "footer_tag": "ميثاق تكافل متبادل، أُنشئ لكي لا تواجه أي أسرة تكلفة دفن أحبائها وحدها.",
+    "footer_disclaimer": "UUFFUNDS صندوق تكافلي غير ربحي، وليس شركة تأمين. تتم معالجة المدفوعات بالبطاقات بأمان عبر Stripe.",
     "footer_privacy_link": "سياسة الخصوصية",
     "footer_admin_link": "تسجيل دخول المشرف",
     "join_step1_h": "أخبرنا عن نفسك",
@@ -2268,7 +2309,7 @@
     "ph_your_address": "عنوانك",
     "btn_submit_report": "إرسال الإبلاغ",
     "death_done_h3": "تم استلام الإبلاغ.",
-    "death_done_text": "نواسيكم المصاب. سنتواصل مباشرة مع دار الجنازة لترتيب الدفع بمجرد تقديمهم الفاتورة وشهادة الوفاة وتصريح الدفن.",
+    "death_done_text": "نواسيكم في مصابكم. سنتواصل مباشرة مع دار الجنازة لترتيب الدفع.",
     "acct_login_h": "سجّل الدخول إلى حسابك",
     "acct_login_sub": "استخدم البريد الإلكتروني وكلمة المرور اللذين حددتهما عندما أصبحت مساهماً.",
     "ph_login_password": "كلمة المرور",
@@ -2319,7 +2360,32 @@
     "admin_search_placeholder": "ابحث بالاسم أو البريد أو الهاتف",
     "admin_clear_btn": "مسح",
     "acct_running_total": "تم خصم مبلغ منك {count} مرة خلال آخر 30 يوماً، بإجمالي $‏{amount}.",
-    "acct_running_total_zero": "لا توجد خصومات خلال آخر 30 يوماً."
+    "acct_running_total_zero": "لا توجد خصومات خلال آخر 30 يوماً.",
+    "footer_contact": "لديك سؤال؟ راسلنا على:",
+    "mission_p2": "يدعو الإسلام إلى الدفن دون تأخير غير ضروري — تُتمّ الأسرة الغُسل والكفن وصلاة الجنازة حالما تكون مستعدة، ويُستحسن أن يكون ذلك خلال يوم واحد. ولهذا تحديداً صُمّم هذا الصندوق ليتحرك بسرعة: لا إجراءات مطالبات تقف بين الوفاة والمال الذي تحتاجه الأسرة، إن شاء الله.",
+    "faq8_q": "ما الفرق بين أن تصبح مساهماً وأن تقدّم تبرعاً؟",
+    "faq8_a": "أن تصبح مساهماً يعني الانضمام إلى نظام الحصص المتساوية — تُحمَّل نصيبك من تكلفة الجنازة المتبقية بعد استخدام التبرعات المتاحة أولاً. أما التبرع فهو عطاء لمرة واحدة دون أي التزام مستمر، ويُستخدم لتخفيض ما يُحمَّل على المساهمين لجنازة ما — بل وأحياناً لتغطيته بالكامل.",
+    "faq9_q": "هل يمكنني التبرع دون أن أصبح مساهماً؟",
+    "faq9_a": "نعم. التبرع والانضمام كمساهم أمران منفصلان تماماً — يمكنك التبرع وحده، أو إضافة تبرع أثناء تسجيلك كمساهم، أو القيام بالأمرين معاً. ولا يُشترط أحدهما للقيام بالآخر.",
+    "faq10_q": "كيف يتم التحقق من الوفاة قبل تحصيل أي مبلغ؟",
+    "faq10_a": "يراجع أحد المسؤولين كل وفاة يتم الإبلاغ عنها ويتواصل مع دار الجنازة قبل تحصيل أي مبلغ من أحد. يُرحَّب بإرسال شهادة الوفاة وتصريح الدفن مع الفاتورة، لكن ذلك ليس إلزامياً.",
+    "faq11_q": "ماذا لو أبلغ شخص آخر عن الوفاة نفسها من قبل؟",
+    "faq11_a": "يجمع أحد المسؤولين البلاغات عن الوفاة نفسها في حالة واحدة قبل تحصيل أي مبلغ، ولا يحمّل نظام الدفع لدينا أي شخص مرتين للجنازة نفسها أبداً.",
+    "faq12_q": "كيف تخفّض التبرعات بالضبط المبلغ الذي أدفعه؟",
+    "faq12_a": "قبل تقسيم تكلفة الجنازة على المساهمين، يمكن للمسؤول استخدام التبرعات المتاحة حالياً لتخفيض المجموع أولاً. ولا يُحمَّل المساهمون إلا حصتهم المتساوية مما يتبقى بعد ذلك. وإذا كانت التبرعات كافية، فقد تُغطّى الجنازة بالكامل دون تحميل أي مساهم شيئاً.",
+    "death_condolence": "إنا لله وإنا إليه راجعون.",
+    "death_ref": "رقمك المرجعي هو {ref}. يُرجى مشاركته مع دار الجنازة.",
+    "death_send_h3": "خطوة أخيرة: يُرجى إرسال بلاغك",
+    "death_send_text": "لم نتمكن من إرسال بلاغك تلقائياً. اضغط على الزر أدناه لفتح تطبيق البريد الإلكتروني والبلاغ مكتوب مسبقاً، ثم اضغط إرسال.",
+    "death_send_btn": "افتح تطبيق البريد",
+    "death_send_alt": "إذا لم يُفتح تطبيق البريد، انسخ البلاغ أدناه وأرسله إلى",
+    "death_copy_btn": "نسخ البلاغ",
+    "death_copied": "تم النسخ",
+    "death_sending": "جارٍ الإرسال…",
+    "nav_donate": "تبرّع",
+    "btn_make_donation": "قدّم تبرعاً",
+    "donate_h2": "تصدّق لدعم الصندوق",
+    "donate_p": "تفضّل العطاء دون أن تصبح مساهماً؟ التبرع هنا صدقة &mdash; عطاء تطوعي. تُستخدم التبرعات المتاحة لتخفيض تكلفة الجنازة قبل تحصيل أي حصة متساوية من المساهمين &mdash; فقد يخفّض عطاؤك تكلفة أحدهم مباشرةً، بل وقد يغطيها بالكامل. وقد ذكر النبي محمد ﷺ أن الصدقة الجارية من الأعمال القليلة التي يستمر أجرها بعد موت صاحبها."
   },
   "ur": {
     "nav_how": "یہ کیسے کام کرتا ہے",
@@ -2334,9 +2400,9 @@
     "hero_lede": "United Ummah Funeral Funds ایک دوسروں کی مدد کا عہدنامہ ہے &mdash; مشکل ترین دن کے لیے تکافل۔ جب ہمارے کمیونٹی میں کوئی انتقال ہوتا ہے، تو جنازہ اور تدفین کا خرچ ہر دوسر پر برابر تقسیم ہوتا ہے، تاکہ کوئی بھی خاندان اکیلا بوجھ نہ اٹھائے &mdash; چاہے وہ خود دوسر ہوں یا نہ۔",
     "btn_become_contributor": "دوسر بنیں",
     "btn_report_death": "انتقال کی اطلاع دیں",
-    "hero_note": "غیر منافع بخش، دوسروں کی ملکیت، اور برابر تعاون پر مبنی &mdash; پریمیم یا منافع نہیں۔",
+    "hero_note": "غیر منافع بخش، اور برابر تعاون پر مبنی &mdash; پریمیم یا منافع پر نہیں۔",
     "mission_h2": "ایک عہد، پالیسی نہیں۔",
-    "mission_p": "روایتی جنازہ انشورنس پریمیم، انڈر رائٹنگ اور منافع پر مبنی ہوتی ہے۔ ہمارا فنڈ مختلف انداز میں کام کرتا ہے: یہ اپنے دوسروں کی ملکیت ہے، اور جنازہ کے لیے جمع ہونے والا ہر ڈالر براہ راست ضرورت مند 62 خاندان تک پہنچتا ہے &mdash; چاہے وہ دوسر ہو یا نہ۔ کوئی اضافی نفع یا کلیمز ڈی پارٹمنٹ کا انتظار نہیں &mdash; صرف ہمسایہ برابر حصی میں ایک دوسرے کی مدد۔",
+    "mission_p": "روایتی جنازہ انشورنس پریمیم، انڈر رائٹنگ اور منافع پر مبنی ہوتی ہے۔ ہمارا فنڈ مختلف طریقے سے کام کرتا ہے: جنازے کے لیے جمع ہونے والا ہر ڈالر براہِ راست ضرورت مند خاندان تک پہنچتا ہے &mdash; چاہے وہ معاون ہو یا نہ ہو۔ نہ کوئی اضافی منافع، نہ کلیمز ڈیپارٹمنٹ کا انتظار &mdash; بس پڑوسی برابر حصے میں پڑوسیوں کا ساتھ دیتے ہیں۔",
     "quote_text": "“ایمان والے اپنی باہمی محبت، رحمت اور ہمدردی میں ایک جسم کی طرح ہیں: جب ایک عضو درد میں ہوتا ہے، تو پورا جسم بیداری اور بخار کے ساتھ ردعمل دیتا ہے”",
     "quote_cite": "وہ اصول جس پر ہمارا فنڈ قائم ہے",
     "how_h2": "فنڈ کیسے کام کرتا ہے",
@@ -2382,8 +2448,8 @@
     "join_li2": "ایک ادائیگی طریقہ درج شدہ، جس سے صرف جنازہ ہونے پر ہی پیسے وصول کیے جاتے ہیں",
     "join_li3": "ہر جنازہ کے خرچ اور ہر دوسر کے برابر حصہ پر مکمل شفافیت",
     "join_li4": "کسی بھی وقت چھوڑ دیں؛ آپ صرف ان حصوں کے ذمہ دار ہیں جو دوسر رہتے ہوئے وصول کیے گئے",
-    "footer_tag": "دوستوں کی ملکیت والا باہمی تعاون کا عہد، تاکہ کوئی بھی خاندان اپنے پیارے کی تدفین کا خرچ اکیلے نہ اٹھائے۔",
-    "footer_disclaimer": "یہ سائٹ ایک فعال پروٹوٹائپ ​​ہے۔ دوستوں کے محفوظ کارڊز خودکار چارج کرنا اور جنازہ کے عطیات جمع کرنا اصل پیمنٹ پراسیسر (جیسے Stripe) کے ساتھ انضمام کا تقاضا کرتا ہے، اور آپ کی ریاست کے لحاظ سے رقم کی منتقلی یا انشورنس سے متعلق لائسنس کی ضرورت ہو سکتی ہے۔ اصل دوستوں کی رقم سنبھالنے سے پہلے پیمنٹ پراسیسر اور وکیل سے مشورہ کریں۔",
+    "footer_tag": "باہمی تعاون کا ایک عہد، تاکہ کسی خاندان کو اپنے پیارے کی تدفین کا خرچ اکیلے نہ اٹھانا پڑے۔",
+    "footer_disclaimer": "UUFFUNDS ایک غیر منافع بخش باہمی امداد کا فنڈ ہے، انشورنس کمپنی نہیں۔ کارڈ کی ادائیگیاں Stripe کے ذریعے محفوظ طریقے سے ہوتی ہیں۔",
     "footer_privacy_link": "رازداری کی پالیسی",
     "footer_admin_link": "ایڊمن لاگ ان",
     "join_step1_h": "ہمیں اپنے بارے میں بتائیں",
@@ -2420,7 +2486,7 @@
     "ph_your_address": "آپ کا پتہ",
     "btn_submit_report": "رپورٹ جمع کروائیں",
     "death_done_h3": "رپورٹ وصول ہو گیا۔",
-    "death_done_text": "ہمیں افسوس کا بہت افسوس ہے۔ جب جنازہ گہ رسید، موت کا سرٹیفکیٹ اور دفن کا پرمٹ جمع کروائیں گے، ہم ادائیگی کا انتظام کرنے کے لیے براہ راست جنازہ گہ سے رابطہ کریں گے۔",
+    "death_done_text": "ہمیں آپ کے نقصان کا بہت افسوس ہے۔ ادائیگی کا انتظام کرنے کے لیے ہم براہِ راست جنازہ گاہ سے رابطہ کریں گے۔",
     "acct_login_h": "اپنے اکاؤنٹ میں لاگ ان کریں",
     "acct_login_sub": "وہ ای میل اور پاس ورڊ استعمال کریں جو آپ نے دوسر بنتے وقت مقرر کیا تھا۔",
     "ph_login_password": "پاس ورڊ",
@@ -2471,7 +2537,32 @@
     "admin_search_placeholder": "نام، ای میل، یا فون سے تلاش کریں",
     "admin_clear_btn": "صاف کریں",
     "acct_running_total": "گزشتہ 30 دنوں میں آپ سے {count} بار رقم وصول کی گئی ہے، کل ${amount}۔",
-    "acct_running_total_zero": "گزشتہ 30 دنوں میں کوئی رقم وصول نہیں کی گئی۔"
+    "acct_running_total_zero": "گزشتہ 30 دنوں میں کوئی رقم وصول نہیں کی گئی۔",
+    "footer_contact": "کوئی سوال؟ ہمیں ای میل کریں:",
+    "mission_p2": "اسلام بلا ضرورت تاخیر کے بغیر تدفین کی تعلیم دیتا ہے — غسل، کفن اور نمازِ جنازہ اسی وقت ادا کی جائیں جب خاندان تیار ہو، بہتر ہے کہ ایک دن کے اندر۔ اسی جلدی کی وجہ سے یہ فنڈ تیزی سے کام کرنے کے لیے بنایا گیا ہے: موت اور خاندان کو درکار رقم کے درمیان کوئی کلیم کا عمل حائل نہیں، ان شاء اللہ۔",
+    "faq8_q": "معاون بننے اور عطیہ دینے میں کیا فرق ہے؟",
+    "faq8_a": "معاون بننے کا مطلب برابر حصے کے نظام میں شامل ہونا ہے — دستیاب عطیات پہلے استعمال کرنے کے بعد جنازے کی جو لاگت باقی رہے، اس میں سے آپ کا حصہ آپ سے لیا جائے گا۔ عطیہ ایک بار کا تحفہ ہے جس کی کوئی مستقل ذمہ داری نہیں، اور اسے اس رقم کو کم کرنے — یا پوری طرح ادا کرنے — کے لیے استعمال کیا جاتا ہے جو کسی جنازے کے لیے معاونین سے لی جاتی ہے۔",
+    "faq9_q": "کیا میں معاون بنے بغیر عطیہ دے سکتا/سکتی ہوں؟",
+    "faq9_a": "جی ہاں۔ عطیہ دینا اور معاون بننا بالکل الگ الگ ہیں — آپ صرف عطیہ دے سکتے ہیں، معاون کے طور پر شامل ہوتے وقت عطیہ شامل کر سکتے ہیں، یا دونوں کر سکتے ہیں۔ ایک کے لیے دوسرا ضروری نہیں۔",
+    "faq10_q": "کسی سے رقم لینے سے پہلے موت کی تصدیق کیسے کی جاتی ہے؟",
+    "faq10_a": "کسی سے رقم لینے سے پہلے ایک منتظم ہر اطلاع شدہ موت کا جائزہ لیتا ہے اور جنازہ گاہ سے رابطہ کرتا ہے۔ بل کے ساتھ موت کا سرٹیفکیٹ اور تدفین کا اجازت نامہ بھیجنا خوش آئند ہے، لیکن ضروری نہیں۔",
+    "faq11_q": "اگر کسی اور نے پہلے ہی اسی موت کی اطلاع دے دی ہو تو کیا ہوگا؟",
+    "faq11_a": "کوئی بھی رقم لینے سے پہلے ایک منتظم ایک ہی موت کی تمام اطلاعات کو ایک کیس میں جمع کرتا ہے، اور ہمارا ادائیگی کا نظام کسی سے بھی ایک ہی جنازے کے لیے کبھی دو بار رقم نہیں لیتا۔",
+    "faq12_q": "عطیات میری ادائیگی کو بالکل کیسے کم کرتے ہیں؟",
+    "faq12_a": "جنازے کی لاگت معاونین میں تقسیم کرنے سے پہلے، منتظم دستیاب عطیات استعمال کر کے پہلے کل رقم کم کر سکتا ہے۔ اس کے بعد جو باقی رہے، معاونین سے صرف اسی کا برابر حصہ لیا جاتا ہے۔ اگر کافی عطیات موجود ہوں تو جنازے کا پورا خرچ ادا ہو سکتا ہے اور کسی معاون سے کچھ بھی نہیں لیا جاتا۔",
+    "death_condolence": "إنا لله وإنا إليه راجعون — بے شک ہم اللہ ہی کے ہیں اور اسی کی طرف لوٹ کر جانے والے ہیں۔",
+    "death_ref": "آپ کا حوالہ نمبر {ref} ہے۔ براہِ کرم یہ نمبر جنازہ گاہ کو بتا دیں۔",
+    "death_send_h3": "ایک اور قدم: براہِ کرم اپنی رپورٹ بھیجیں",
+    "death_send_text": "ہم آپ کی رپورٹ خود بخود نہیں بھیج سکے۔ نیچے دیا گیا بٹن دبائیں، آپ کی ای میل ایپ رپورٹ کے ساتھ پہلے سے بھری ہوئی کھل جائے گی، پھر Send دبائیں۔",
+    "death_send_btn": "میری ای میل ایپ کھولیں",
+    "death_send_alt": "اگر آپ کی ای میل ایپ نہ کھلے تو نیچے دی گئی رپورٹ کاپی کر کے اس پتے پر بھیجیں:",
+    "death_copy_btn": "رپورٹ کاپی کریں",
+    "death_copied": "کاپی ہو گئی",
+    "death_sending": "بھیجی جا رہی ہے…",
+    "nav_donate": "عطیہ دیں",
+    "btn_make_donation": "عطیہ دیں",
+    "donate_h2": "فنڈ کی مدد کے لیے صدقہ دیں",
+    "donate_p": "معاون بنے بغیر دینا چاہتے ہیں؟ یہاں دیا گیا عطیہ صدقہ ہے &mdash; رضاکارانہ خیرات۔ دستیاب عطیات کسی بھی برابر حصے کی وصولی سے پہلے جنازے کی لاگت کم کرنے کے لیے استعمال ہوتے ہیں &mdash; اس طرح آپ کا عطیہ کسی کا خرچ براہِ راست کم، بلکہ پورا بھی کر سکتا ہے۔ نبی کریم ﷺ نے صدقۂ جاریہ کو ان چند اعمال میں شمار فرمایا جن کا اجر انسان کی وفات کے بعد بھی جاری رہتا ہے۔"
   },
   "bn": {
     "nav_how": "এটি কীভাবে কাজ করে",
@@ -2486,9 +2577,9 @@
     "hero_lede": "ইউনাইটেড উম্মাহ ফিউনারেল ফান্ডস হলো পারস্পরিক সহায়তার একটি চুক্তি &mdash; সবচেয়ে কঃকর দিনের জন্য তাকাফুল। আমাদের কমিউনিটিতে মৃত্যু ঘটলে জানাজা ও দাফনের খরচ প্রতিটি অবদানকারীর মধ্যে সমানভাবে ভাগ করা হয়, যাতে কোনো পরিবারকে একা বহন করতে না হয় &mdash; সে অবদানকারী হোক বা না হোক।",
     "btn_become_contributor": "অবদানকারী হোন",
     "btn_report_death": "মৃত্যু আলাম করুন",
-    "hero_note": "অলাভজনক, অবদানকারীদের মালিকানাধীন, এবং সমান অবদানের ভিত্তিতে গঠিত &mdash; প্রিমিয়াম বা মুনাফা নয়।",
+    "hero_note": "অলাভজনক, এবং সমান অবদানের ভিত্তিতে গঠিত &mdash; প্রিমিয়াম বা মুনাফা নয়।",
     "mission_h2": "একটি চুক্তি, বীমা পলিসি নয়।",
-    "mission_p": "প্রচলিত ফিউনারেল বীমা প্রিমিয়াম, আন্ডাররাইটিং এবং মুনাফার উপর নির্ভরশীল। আমাদের ফান্ড আলাদা ভাবে কাজ করে: এটি এর অবদানকারীদের মালিকানাধীন, এবং একটি জানাজার জন্য সংগৃহীত প্রতিটি ডলার সরাসরি প্রয়োজনীয় পরিবারের কাছে যায় &mdash; অবদানকারী হোক বা না হোক। কোনো অতিরিক্ত মুনাফা বা দাবি প্রক্রিয়ার অপেক্ষা নেই &mdash; শুধু প্রতিবেশীরা পরস্পরকে সাহায্য করে, সমান ভাগে।",
+    "mission_p": "প্রচলিত ফিউনারেল বীমা প্রিমিয়াম, আন্ডাররাইটিং এবং মুনাফার উপর নির্ভরশীল। আমাদের ফান্ড আলাদা ভাবে কাজ করে: একটি জানাজার জন্য সংগৃহীত প্রতিটি ডলার সরাসরি প্রয়োজনীয় পরিবারের কাছে যায় &mdash; অবদানকারী হোক বা না হোক। কোনো অতিরিক্ত মুনাফা বা দাবি প্রক্রিয়ার অপেক্ষা নেই &mdash; শুধু প্রতিবেশীরা পরস্পরকে সাহায্য করে, সমান ভাগে।",
     "quote_text": "“মুমিনরা পরস্পরের প্রতি ভালোবাসা, দয়া ও সহানুভূতিতে একটি শরীরের মতো: যখন একটি অঙ্গ কষ্ট পায়়, পুরো শরীর জ্বর ও নিদ্রহীনতা দিয়ে সাড়া দেয়।”",
     "quote_cite": "এই ভিত্তির উপরই আমাদের ফান্ড গঠিত",
     "how_h2": "ফান্ড কীভাবে কাজ করে",
@@ -2534,8 +2625,8 @@
     "join_li2": "একটি পেয়়মেন্ট পদ্ধতি নিবন্ধন, শুধু জানাজা হলেই চার্জ হয়",
     "join_li3": "প্রতিটি জানাজা খরচ এবং প্রতি অবদানকারীর সমান অংশে সসম্পূর্ণ স্বচ্ছতা",
     "join_li4": "যেকোনো সময়ে ছেড়ে দিন; আপনি শুধু অবদানকারী থাকাকালীন চার্জকৃত অংশগুলির জন্য দায়়বদ্ধ",
-    "footer_tag": "অবদানকারী-মালিকানাধীন পারস্পরিক সহায়তার একটি চুক্তি, যাতে কোনো পরিবারকে একা কারো প্রিয়জনকে সমাধিস্থ করার খরচ বহন করতে না হয়।",
-    "footer_disclaimer": "এই সাইটটি একটি কার্যকর প্রোটোটাইপ। অবদানকারীদের সংরক্ষিত কার্ড স্বয়ংক্রিয়ভাবে চার্জ করা এবং জানাজার অর্থ একত্রিত করার জন্য প্রকৃত পেয়়মেন্ট-প্রসেসর একীকরণ প্রয়োজন (যেমন Stripe), এবং আপনার রাজ্যের উপর নির্ভর করে অর্থ স্থানান্তর বা বীমা সংক্রান্ত লাইসেন্সিংয়ের প্রয়োজন হতে পারে। প্রকৃত অবদানকারীর অর্থ পরিচালনার আগে একজন পেয়়মেন্ট-প্রসেসর এবং আইনজীবীর সাথে পরামর্শ করুন।",
+    "footer_tag": "পারস্পরিক সহায়তার একটি অঙ্গীকার, যাতে কোনো পরিবারকে প্রিয়জনকে দাফনের খরচ একা বহন করতে না হয়।",
+    "footer_disclaimer": "UUFFUNDS একটি অলাভজনক পারস্পরিক সহায়তা তহবিল, কোনো বীমা কোম্পানি নয়। কার্ডের পেমেন্ট নিরাপদে Stripe-এর মাধ্যমে প্রক্রিয়া করা হয়।",
     "footer_privacy_link": "গোপনীয়তা নীতি",
     "footer_admin_link": "অ্যাডমিন লগইন",
     "join_step1_h": "আমাদের বলুন আপনার সম্পর্কে",
@@ -2572,7 +2663,7 @@
     "ph_your_address": "আপনার ঠিকানা",
     "btn_submit_report": "প্রতিবেদন জমা দিন",
     "death_done_h3": "প্রতিবেদন পাওয়া গেছে।",
-    "death_done_text": "আমরা আপনার শোকে ব্যথিত। জানাজা গৃহ চালান, মৃত্যুসনদ এবং সমাধির অনুমতিপত্র জমা দেওয়ার পর আমরা প্রত্যক্ষভাবে জানাজা গৃহের সাথে যোগাযোগ করে অর্থ পরিশোধ করব।",
+    "death_done_text": "আপনার এই ক্ষতিতে আমরা গভীরভাবে দুঃখিত। অর্থ পরিশোধের ব্যবস্থা করতে আমরা সরাসরি ফিউনারেল হোমের সাথে যোগাযোগ করব।",
     "acct_login_h": "আপনার অ্যাকাউন্টে লগইন করুন",
     "acct_login_sub": "অবদানকারী হওয়ার সময় আপনি যে ইমেইল এবং পাসওয়ার্ড সেট করেছিলেন তা ব্যবহার করুন।",
     "ph_login_password": "পাসওয়ার্ড",
@@ -2623,7 +2714,32 @@
     "admin_search_placeholder": "নাম, ইমেইল বা ফোন দিয়ে অনুসন্ধান করুন",
     "admin_clear_btn": "মুছুন",
     "acct_running_total": "গত ৩০ দিনে আপনার কাছ থেকে {count} বার টাকা নেওয়া হয়েছে, মোট ${amount}।",
-    "acct_running_total_zero": "গত ৩০ দিনে কোনও চার্জ নেওয়া হয়নি।"
+    "acct_running_total_zero": "গত ৩০ দিনে কোনও চার্জ নেওয়া হয়নি।",
+    "footer_contact": "কোনো প্রশ্ন? আমাদের ইমেইল করুন:",
+    "mission_p2": "ইসলাম অপ্রয়োজনীয় দেরি না করে দাফনের নির্দেশ দেয় — পরিবার প্রস্তুত হলেই গোসল, কাফন ও জানাজার নামাজ সম্পন্ন করা হয়, সম্ভব হলে এক দিনের মধ্যে। ঠিক এই তাড়ার কারণেই এই তহবিল দ্রুত কাজ করার জন্য তৈরি: মৃত্যু এবং পরিবারের প্রয়োজনীয় অর্থের মাঝে কোনো দাবি প্রক্রিয়া নেই, ইনশাআল্লাহ।",
+    "faq8_q": "অবদানকারী হওয়া এবং দান করার মধ্যে পার্থক্য কী?",
+    "faq8_a": "অবদানকারী হওয়া মানে সমান-ভাগ ব্যবস্থায় যোগ দেওয়া — প্রাপ্ত দান প্রথমে ব্যবহার করার পর জানাজার যে খরচ বাকি থাকে, তার আপনার অংশ আপনার কাছ থেকে নেওয়া হবে। দান হলো এককালীন উপহার, এতে কোনো চলমান বাধ্যবাধকতা নেই, এবং এটি একটি জানাজার জন্য অবদানকারীদের কাছ থেকে নেওয়া অর্থ কমাতে — এমনকি পুরোটা পরিশোধ করতে — ব্যবহার করা হয়।",
+    "faq9_q": "অবদানকারী না হয়ে কি আমি দান করতে পারি?",
+    "faq9_a": "হ্যাঁ। দান করা এবং অবদানকারী হওয়া সম্পূর্ণ আলাদা — আপনি শুধু দান করতে পারেন, অবদানকারী হিসেবে যোগ দেওয়ার সময় দান যোগ করতে পারেন, অথবা দুটোই করতে পারেন। একটির জন্য অন্যটি প্রয়োজন নেই।",
+    "faq10_q": "কারো কাছ থেকে টাকা নেওয়ার আগে মৃত্যু কীভাবে যাচাই করা হয়?",
+    "faq10_a": "কারো কাছ থেকে টাকা নেওয়ার আগে একজন প্রশাসক প্রতিটি জানানো মৃত্যুর তথ্য পর্যালোচনা করেন এবং ফিউনারেল হোমের সাথে যোগাযোগ করেন। চালানের সাথে মৃত্যু সনদ ও দাফনের অনুমতিপত্র পাঠানো স্বাগত, তবে বাধ্যতামূলক নয়।",
+    "faq11_q": "অন্য কেউ যদি একই মৃত্যুর খবর আগেই জানিয়ে থাকেন, তাহলে কী হবে?",
+    "faq11_a": "কোনো টাকা নেওয়ার আগে একজন প্রশাসক একই মৃত্যুর সব খবর একটি কেসে মিলিয়ে নেন, এবং আমাদের পেমেন্ট ব্যবস্থা কখনো একই জানাজার জন্য কারো কাছ থেকে দুবার টাকা নেয় না।",
+    "faq12_q": "দান ঠিক কীভাবে আমার পরিশোধের পরিমাণ কমায়?",
+    "faq12_a": "জানাজার খরচ অবদানকারীদের মধ্যে ভাগ করার আগে, একজন প্রশাসক বর্তমানে প্রাপ্ত দান প্রথমে ব্যবহার করে মোট খরচ কমাতে পারেন। এরপর যা বাকি থাকে, অবদানকারীদের কাছ থেকে শুধু তার সমান ভাগ নেওয়া হয়। যথেষ্ট দান থাকলে একটি জানাজার পুরো খরচ মেটানো যেতে পারে এবং কোনো অবদানকারীর কাছ থেকে কিছুই নেওয়া হয় না।",
+    "death_condolence": "ইন্না লিল্লাহি ওয়া ইন্না ইলাইহি রাজিউন — নিশ্চয়ই আমরা আল্লাহর এবং তাঁর কাছেই ফিরে যাব।",
+    "death_ref": "আপনার রেফারেন্স নম্বর {ref}। অনুগ্রহ করে এটি ফিউনারেল হোমকে জানান।",
+    "death_send_h3": "আরও একটি ধাপ: অনুগ্রহ করে আপনার প্রতিবেদন পাঠান",
+    "death_send_text": "আমরা আপনার প্রতিবেদন স্বয়ংক্রিয়ভাবে পাঠাতে পারিনি। নিচের বোতামে চাপুন — প্রতিবেদনটি লেখা অবস্থায় আপনার ইমেইল অ্যাপ খুলবে, তারপর Send চাপুন।",
+    "death_send_btn": "আমার ইমেইল অ্যাপ খুলুন",
+    "death_send_alt": "ইমেইল অ্যাপ না খুললে, নিচের প্রতিবেদনটি কপি করে এই ঠিকানায় পাঠান:",
+    "death_copy_btn": "প্রতিবেদন কপি করুন",
+    "death_copied": "কপি হয়েছে",
+    "death_sending": "পাঠানো হচ্ছে…",
+    "nav_donate": "দান করুন",
+    "btn_make_donation": "দান করুন",
+    "donate_h2": "তহবিলকে সহায়তা করতে সদকা দিন",
+    "donate_p": "অবদানকারী না হয়ে দান করতে চান? এখানে দেওয়া দান হলো সদকা &mdash; স্বেচ্ছায় দেওয়া দান। অবদানকারীদের কাছ থেকে কোনো সমান ভাগ নেওয়ার আগে প্রাপ্ত দান দিয়ে জানাজার খরচ কমানো হয় &mdash; তাই আপনার দান সরাসরি কারো খরচ কমাতে, এমনকি পুরোটা মেটাতেও পারে। নবী মুহাম্মদ (সা.) সদকায়ে জারিয়াকে সেই অল্প কয়েকটি আমলের একটি বলেছেন, যার সওয়াব মানুষের মৃত্যুর পরও চলতে থাকে।"
   },
   "es": {
     "nav_how": "Cómo funciona",
@@ -2638,9 +2754,9 @@
     "hero_lede": "United Ummah Funeral Funds es un pacto de apoyo mutuo entre contribuyentes &mdash; takaful para el día más difícil. Cuando ocurre una muerte en nuestra comunidad, el costo del janazah y el entierro se comparte equitativamente entre cada contribuyente, para que ninguna familia lo enfrente sola &mdash; sea o no contribuyente.",
     "btn_become_contributor": "Convertirse en contribuyente",
     "btn_report_death": "Reportar un fallecimiento",
-    "hero_note": "Sin fines de lucro, propiedad de los contribuyentes, y basado en la contribución equitativa &mdash; no en primas ni ganancias.",
+    "hero_note": "Sin fines de lucro y basado en la contribución equitativa &mdash; no en primas ni ganancias.",
     "mission_h2": "Un pacto, no una póliza.",
-    "mission_p": "El seguro funerario tradicional se basa en primas, suscripción de riesgos y ganancias. Nuestro fondo funciona de otra manera: es propiedad de sus contribuyentes, y cada dólar recaudado para un funeral va directamente a la familia necesitada &mdash; sea contribuyente o no. No hay margen de ganancia ni espera de un departamento de reclamos &mdash; solo vecinos ayudando a vecinos, en partes iguales.",
+    "mission_p": "El seguro funerario tradicional se basa en primas, suscripción de riesgos y ganancias. Nuestro fondo funciona de otra manera: cada dólar recaudado para un funeral va directamente a la familia necesitada &mdash; sea contribuyente o no. No hay margen de ganancia ni espera de un departamento de reclamos &mdash; solo vecinos ayudando a vecinos, en partes iguales.",
     "quote_text": "“Los creyentes, en su amor mutuo, misericordia y compasión, son como un solo cuerpo: cuando un miembro sufre, todo el cuerpo responde con desvelo y fiebre.”",
     "quote_cite": "El principio sobre el que se basa nuestro fondo",
     "how_h2": "Cómo funciona el fondo",
@@ -2686,8 +2802,8 @@
     "join_li2": "Un método de pago registrado, cobrado solo cuando ocurre un funeral",
     "join_li3": "Transparencia total sobre cada costo funerario y la parte equitativa de cada contribuyente",
     "join_li4": "Puedes salir en cualquier momento; solo eres responsable de las partes cobradas mientras eres contribuyente",
-    "footer_tag": "Un pacto de apoyo mutuo propiedad de los contribuyentes, creado para que ninguna familia enfrente sola el costo de enterrar a un ser querido.",
-    "footer_disclaimer": "Este sitio es un prototipo en funcionamiento. Cobrar automáticamente las tarjetas guardadas de los contribuyentes y agrupar las contribuciones funerarias implica una integración real con un procesador de pagos (como Stripe) y, según tu estado, puede implicar requisitos de licencia relacionados con transmisión de dinero o seguros. Consulta a un procesador de pagos y a un abogado antes de manejar fondos reales de contribuyentes.",
+    "footer_tag": "Un pacto de apoyo mutuo, creado para que ninguna familia enfrente sola el costo de enterrar a un ser querido.",
+    "footer_disclaimer": "UUFFUNDS es un fondo de ayuda mutua sin fines de lucro, no una compañía de seguros. Los pagos con tarjeta se procesan de forma segura a través de Stripe.",
     "footer_privacy_link": "Política de privacidad",
     "footer_admin_link": "Inicio de sesión de administrador",
     "join_step1_h": "Cuéntanos sobre ti",
@@ -2724,7 +2840,7 @@
     "ph_your_address": "Tu dirección",
     "btn_submit_report": "Enviar reporte",
     "death_done_h3": "Reporte recibido.",
-    "death_done_text": "Lamentamos tu pérdida. Nos pondremos en contacto directamente con la funeraria para coordinar el pago una vez que envíen la factura, el acta de defunción y el permiso de entierro.",
+    "death_done_text": "Lamentamos tu pérdida. Nos pondremos en contacto directamente con la funeraria para coordinar el pago.",
     "acct_login_h": "Inicia sesión en tu cuenta",
     "acct_login_sub": "Usa el correo electrónico y la contraseña que estableciste al convertirte en contribuyente.",
     "ph_login_password": "Contraseña",
@@ -2775,7 +2891,32 @@
     "admin_search_placeholder": "Buscar por nombre, correo o teléfono",
     "admin_clear_btn": "Borrar",
     "acct_running_total": "Se te ha cobrado {count} vez/veces en los últimos 30 días, por un total de ${amount}.",
-    "acct_running_total_zero": "Sin cargos en los últimos 30 días."
+    "acct_running_total_zero": "Sin cargos en los últimos 30 días.",
+    "footer_contact": "¿Preguntas? Escríbenos a:",
+    "mission_p2": "El islam pide enterrar sin demoras innecesarias: el gusl, el kafan y la oración del janazah se completan en cuanto la familia está lista, idealmente en un día. Esa urgencia es precisamente la razón por la que este fondo está hecho para actuar rápido: ningún proceso de reclamos se interpone entre un fallecimiento y los fondos que la familia necesita, in sha'Allah.",
+    "faq8_q": "¿Cuál es la diferencia entre hacerse contribuyente y hacer una donación?",
+    "faq8_a": "Hacerse contribuyente significa unirse al sistema de partes iguales: se te cobrará tu parte del costo del funeral que quede después de aplicar primero las donaciones disponibles. Una donación es un regalo único sin obligación continua, y se usa para reducir —o incluso cubrir por completo— lo que se cobra a los contribuyentes por un funeral.",
+    "faq9_q": "¿Puedo hacer una donación sin hacerme contribuyente?",
+    "faq9_a": "Sí. Donar y hacerse contribuyente son cosas totalmente separadas: puedes donar por sí solo, añadir una donación al inscribirte como contribuyente, o hacer ambas cosas. Ninguna es obligatoria para hacer la otra.",
+    "faq10_q": "¿Cómo se verifica un fallecimiento antes de cobrar a alguien?",
+    "faq10_a": "Un administrador revisa cada fallecimiento reportado y se comunica con la funeraria antes de cobrar a nadie. Enviar el acta de defunción y el permiso de entierro junto con la factura es bienvenido, pero no obligatorio.",
+    "faq11_q": "¿Y si otra persona ya reportó el mismo fallecimiento?",
+    "faq11_a": "Un administrador une los reportes del mismo fallecimiento en un solo caso antes de cobrar nada, y nuestro sistema de pagos nunca cobra dos veces a nadie por el mismo funeral.",
+    "faq12_q": "¿Cómo reducen exactamente las donaciones lo que se me cobra?",
+    "faq12_a": "Antes de dividir el costo de un funeral entre los contribuyentes, un administrador puede aplicar primero las donaciones disponibles para reducir el total. A los contribuyentes solo se les cobra su parte igual de lo que queda. Si se ha donado lo suficiente, un funeral puede quedar totalmente cubierto sin cobrar nada a ningún contribuyente.",
+    "death_condolence": "Inna lillahi wa inna ilayhi raji'un — en verdad pertenecemos a Allah, y a Él hemos de volver.",
+    "death_ref": "Tu número de referencia es {ref}. Compártelo con la funeraria.",
+    "death_send_h3": "Un paso más: envía tu reporte",
+    "death_send_text": "No pudimos enviar tu reporte automáticamente. Toca el botón de abajo para abrir tu app de correo con el reporte ya escrito y luego pulsa Enviar.",
+    "death_send_btn": "Abrir mi app de correo",
+    "death_send_alt": "Si tu app de correo no se abre, copia el reporte de abajo y envíalo a",
+    "death_copy_btn": "Copiar reporte",
+    "death_copied": "Copiado",
+    "death_sending": "Enviando…",
+    "nav_donate": "Donar",
+    "btn_make_donation": "Hacer una donación",
+    "donate_h2": "Da Sadaqah para apoyar el fondo",
+    "donate_p": "¿Prefieres dar sin hacerte contribuyente? Una donación aquí es Sadaqah &mdash; caridad voluntaria. Las donaciones disponibles se usan para reducir el costo de un funeral antes de cobrar cualquier parte igual a los contribuyentes &mdash; así tu regalo puede reducir directamente, o incluso cubrir por completo, el costo de alguien. El Profeta Muhammad (la paz sea con él) describió la caridad continua como una de las pocas obras cuya recompensa sigue después de que termina la vida de una persona."
   },
   "fr": {
     "nav_how": "Comment ça marche",
@@ -2790,9 +2931,9 @@
     "hero_lede": "United Ummah Funeral Funds est un pacte d'entraide entre contributeurs &mdash; le takaful pour le jour le plus difficile. Lorsqu'un décès survient dans notre communauté, le coût du janazah et de l'enterrement est partagé équitablement entre chaque contributeur, afin qu'aucune famille ne le supporte seule &mdash; qu'elle soit contributrice ou non.",
     "btn_become_contributor": "Devenir contributeur",
     "btn_report_death": "Signaler un décès",
-    "hero_note": "Sans but lucratif, appartenant aux contributeurs, et fondé sur une contribution égale &mdash; pas sur des primes ni des profits.",
+    "hero_note": "Sans but lucratif et fondé sur une contribution égale &mdash; pas sur des primes ni des profits.",
     "mission_h2": "Un pacte, pas une police.",
-    "mission_p": "L'assurance funéraire traditionnelle repose sur des primes, une souscription et des profits. Notre fonds fonctionne différemment : il appartient à ses contributeurs, et chaque dollar collecté pour des funérailles va directement à la famille dans le besoin &mdash; contributrice ou non. Il n'y a aucune marge et aucune attente d'un service de réclamations &mdash; seulement des voisins qui s'entraident, à parts égales.",
+    "mission_p": "L'assurance funéraire traditionnelle repose sur des primes, une souscription et des profits. Notre fonds fonctionne différemment : chaque dollar collecté pour des funérailles va directement à la famille dans le besoin &mdash; contributrice ou non. Il n'y a aucune marge et aucune attente d'un service de réclamations &mdash; seulement des voisins qui s'entraident, à parts égales.",
     "quote_text": "« Les croyants, dans leur amour mutuel, leur miséricorde et leur compassion, sont comme un seul corps : quand un membre souffre, tout le corps répond par la veille et la fièvre. »",
     "quote_cite": "Le principe fondateur de notre fonds",
     "how_h2": "Comment fonctionne le fonds",
@@ -2838,8 +2979,8 @@
     "join_li2": "Un mode de paiement enregistré, facturé uniquement lors de funérailles",
     "join_li3": "Transparence totale sur chaque coût funéraire et la part égale de chaque contributeur",
     "join_li4": "Partez à tout moment ; vous n'êtes responsable que des parts facturées pendant que vous étiez contributeur",
-    "footer_tag": "Un pacte d'entraide appartenant aux contributeurs, conçu pour qu'aucune famille n'affronte seule le coût d'enterrer un être cher.",
-    "footer_disclaimer": "Ce site est un prototype fonctionnel. Facturer automatiquement les cartes enregistrées des contributeurs et regrouper les contributions funéraires nécessite une véritable intégration avec un processeur de paiement (comme Stripe) et, selon votre État, peut nécessiter des licences liées à la transmission d'argent ou à l'assurance. Consultez un processeur de paiement et un avocat avant de gérer de vrais fonds de contributeurs.",
+    "footer_tag": "Un pacte d'entraide, conçu pour qu'aucune famille n'affronte seule le coût d'enterrer un être cher.",
+    "footer_disclaimer": "UUFFUNDS est un fonds d'entraide à but non lucratif, et non une compagnie d'assurance. Les paiements par carte sont traités en toute sécurité par Stripe.",
     "footer_privacy_link": "Politique de confidentialité",
     "footer_admin_link": "Connexion administrateur",
     "join_step1_h": "Parlez-nous de vous",
@@ -2876,7 +3017,7 @@
     "ph_your_address": "Votre adresse",
     "btn_submit_report": "Envoyer le signalement",
     "death_done_h3": "Signalement reçu.",
-    "death_done_text": "Nous sommes désolés pour cette perte. Nous contacterons directement l'entreprise de pompes funèbres pour organiser le paiement dès qu'elle aura soumis la facture, l'acte de décès et le permis d'inhumation.",
+    "death_done_text": "Nous sommes désolés pour votre perte. Nous contacterons directement l'entreprise de pompes funèbres pour organiser le paiement.",
     "acct_login_h": "Connectez-vous à votre compte",
     "acct_login_sub": "Utilisez l'e-mail et le mot de passe que vous avez définis en devenant contributeur.",
     "ph_login_password": "Mot de passe",
@@ -2927,7 +3068,32 @@
     "admin_search_placeholder": "Rechercher par nom, e-mail ou téléphone",
     "admin_clear_btn": "Effacer",
     "acct_running_total": "Vous avez été facturé {count} fois au cours des 30 derniers jours, pour un total de {amount} $.",
-    "acct_running_total_zero": "Aucun prélèvement au cours des 30 derniers jours."
+    "acct_running_total_zero": "Aucun prélèvement au cours des 30 derniers jours.",
+    "footer_contact": "Des questions ? Écrivez-nous :",
+    "mission_p2": "L'islam appelle à inhumer sans retard inutile — le ghusl, le kafan et la prière du janazah sont accomplis dès que la famille est prête, idéalement dans la journée. C'est précisément pour cette urgence que ce fonds est conçu pour agir vite : aucune procédure de réclamation ne s'interpose entre un décès et les fonds dont la famille a besoin, in sha'Allah.",
+    "faq8_q": "Quelle est la différence entre devenir contributeur et faire un don ?",
+    "faq8_a": "Devenir contributeur, c'est rejoindre le système des parts égales : vous payez votre part du coût d'un enterrement qui reste après l'application des dons disponibles. Un don est un geste ponctuel, sans engagement continu, utilisé pour réduire — voire couvrir entièrement — ce qui est demandé aux contributeurs pour un enterrement.",
+    "faq9_q": "Puis-je faire un don sans devenir contributeur ?",
+    "faq9_a": "Oui. Faire un don et devenir contributeur sont entièrement distincts : vous pouvez faire un don seul, ajouter un don en vous inscrivant comme contributeur, ou faire les deux. Aucun n'est obligatoire pour l'autre.",
+    "faq10_q": "Comment un décès est-il vérifié avant que quiconque soit prélevé ?",
+    "faq10_a": "Un administrateur examine chaque décès signalé et contacte l'entreprise de pompes funèbres avant que quiconque soit prélevé. L'envoi de l'acte de décès et du permis d'inhumer avec la facture est bienvenu, mais pas obligatoire.",
+    "faq11_q": "Et si quelqu'un d'autre a déjà signalé le même décès ?",
+    "faq11_a": "Un administrateur regroupe les signalements d'un même décès en un seul dossier avant tout prélèvement, et notre système de paiement ne prélève jamais deux fois quelqu'un pour le même enterrement.",
+    "faq12_q": "Comment les dons réduisent-ils exactement ce qui m'est prélevé ?",
+    "faq12_a": "Avant de répartir le coût d'un enterrement entre les contributeurs, un administrateur peut d'abord utiliser les dons disponibles pour réduire le total. Les contributeurs ne paient que leur part égale de ce qui reste. Si les dons suffisent, un enterrement peut être entièrement couvert sans qu'aucun contributeur ne soit prélevé.",
+    "death_condolence": "Inna lillahi wa inna ilayhi raji'un — nous appartenons à Allah, et c'est vers Lui que nous retournerons.",
+    "death_ref": "Votre numéro de référence est {ref}. Merci de le communiquer à l'entreprise de pompes funèbres.",
+    "death_send_h3": "Encore une étape : envoyez votre signalement",
+    "death_send_text": "Nous n'avons pas pu envoyer votre signalement automatiquement. Appuyez sur le bouton ci-dessous pour ouvrir votre messagerie avec le signalement déjà rempli, puis appuyez sur Envoyer.",
+    "death_send_btn": "Ouvrir ma messagerie",
+    "death_send_alt": "Si votre messagerie ne s'ouvre pas, copiez le signalement ci-dessous et envoyez-le à",
+    "death_copy_btn": "Copier le signalement",
+    "death_copied": "Copié",
+    "death_sending": "Envoi…",
+    "nav_donate": "Faire un don",
+    "btn_make_donation": "Faire un don",
+    "donate_h2": "Donnez une Sadaqah pour soutenir le fonds",
+    "donate_p": "Vous préférez donner sans devenir contributeur ? Un don ici est une Sadaqah &mdash; une aumône volontaire. Les dons disponibles servent à réduire le coût d'un enterrement avant tout prélèvement de parts égales auprès des contributeurs &mdash; votre don peut donc réduire directement, voire couvrir entièrement, le coût pour quelqu'un. Le Prophète Muhammad (paix sur lui) a décrit l'aumône continue comme l'une des rares œuvres dont la récompense se poursuit après la mort de la personne."
   },
   "so": {
     "nav_how": "Sida ay u shaqeyso",
@@ -2942,9 +3108,9 @@
     "hero_lede": "United Ummah Funeral Funds waa ballan iskaashi ah oo u dhexeeya waxqabadyada &mdash; takaful maalinta ugu adag. Marka dhimasho ka dhacdo bulshadeena, kharashka janaasada iyo aaska si siman ayaa loogu qaybiyaa waxqabad kasta, si aan qoys keliya loogu tagin &mdash; ha ahaado waxqabad iyo hadduusan ahayn.",
     "btn_become_contributor": "Noqo waxqabad",
     "btn_report_death": "Soo sheeg dhimasho",
-    "hero_note": "Aan faa'iido doon ahayn, waxaa iska leh waxqabadyada, waxaana lagu dhisay wax-ka-qaybgal siman &mdash; ma aha khidmad ama faa'iido.",
+    "hero_note": "Aan faa'iido doon ahayn, waxaana lagu dhisay wax-ku-darsi siman &mdash; ma aha khidmad ama faa'iido.",
     "mission_h2": "Ballan, ma aha caymis.",
-    "mission_p": "Caymiska aaska ee dhaqameed wuxuu ku dhisan yahay khidmad, qiimeyn khatar, iyo faa'iido. Sanduuqayagu si kale ayuu u shaqeeyaa: waxaa iska leh waxqabadyadiisa, doollar kastana oo loo ururiyay aaskana si toos ah ayuu ugu tagaa qoyska baahan &mdash; ha ahaado waxqabad iyo hadduusan ahayn. Ma jiro faa'iido dheeraad ah amana sug xafiiska sheegashada &mdash; kaliya deriskaad isku daboolaya, si siman.",
+    "mission_p": "Caymiska aaska ee caadiga ah wuxuu ku dhisan yahay khidmad, qiimeyn khatar, iyo faa'iido. Sanduuqayagu si kale ayuu u shaqeeyaa: doollar kasta oo loo ururiyo aas si toos ah ayuu ugu tagaa qoyska baahan &mdash; ha ahaadeen ka-qaybgalayaal ama yaysan ahaan. Ma jiro faa'iido dheeraad ah, lagamana sugo xafiis sheegasho &mdash; waa deris isu gargaaraya, si siman.",
     "quote_text": "“Mu'miniinta jacaylkooda, naxariistooda iyo isu-kalgacalkooda dhexdooda waxay la mid yihiin hal jidh: marka xubin ka mid ah xanuunto, jidhka oo dhan ayaa la soo jeeda oo qandho la dareemaa.”",
     "quote_cite": "Mabda'a sanduuqayaga lagu dhisay",
     "how_h2": "Sida sanduuqu u shaqeeyo",
@@ -2990,8 +3156,8 @@
     "join_li2": "Hal habka lacag-bixinta oo diiwaan gashan, kaliya lagaa qaadaa marka aas dhaco",
     "join_li3": "Daahfur buuxa oo ku saabsan kharash kasta oo aas ah iyo qayb kasta oo waxqabad siman",
     "join_li4": "Waqti kasta ka bax; waxaad mas'uul ka tahay kaliya qaybaha lagaa qaaday intii aad waxqabad ahayd",
-    "footer_tag": "Ballan iskaashi ah oo ay iska leeyihiin waxqabadyada, loo dhisay si aan qoys keliya loo daboolin kharashka aaska qof jecel.",
-    "footer_disclaimer": "Boggani waa nimuunad shaqeynaysa. Ka qaadista otomaatig ah kaadhadhka waxqabadyada ee la kaydiyay iyo isu-ururinta wax-ka-qaybgalka aaska waxay khusaysaa isku-dhafka dhabta ah ee habka lacag-bixinta (sida Stripe), waxayna ku xiran tahay gobolkaaga u baahan karta shatiyada wareejinta lacagta ama caymiska. La tasho bixiyaha lacag-bixinta iyo qareen ka hor inta aadan maamulin lacagaha dhabta ah ee waxqabadyada.",
+    "footer_tag": "Ballan is-kaalmayn ah, loo dhisay si aan qoysna keligiis u qaadin kharashka aaska qof uu jecel yahay.",
+    "footer_disclaimer": "UUFFUNDS waa sanduuq is-kaalmayn oo aan faa'iido doon ahayn, mana aha shirkad caymis. Lacag-bixinta kaarka waxaa si ammaan ah u maamula Stripe.",
     "footer_privacy_link": "Siyaasadda Sirta",
     "footer_admin_link": "Gelitaanka Maamulaha",
     "join_step1_h": "Noo sheeg macluumaadkaaga",
@@ -3028,7 +3194,7 @@
     "ph_your_address": "Cinwaankaaga",
     "btn_submit_report": "Dir warbixinta",
     "death_done_h3": "Warbixinta waa la helay.",
-    "death_done_text": "Waan kaa xumaanay musiibadaada. Waxaan si toos ah ula xiriiri doonaa guriga aaska si aan u habayno lacag-bixinta marka ay soo gudbiyaan qaansheegashada, shahaadada dhimashada, iyo ogolaanshaha aaska.",
+    "death_done_text": "Waan ka xunnahay geerida. Si toos ah ayaan ula xiriiri doonnaa guriga aaska si aan u habayno lacag-bixinta.",
     "acct_login_h": "Akoonkaaga soo gal",
     "acct_login_sub": "Isticmaal iimaylka iyo furaha sirta ah ee aad dejisay markaad noqotay waxqabad.",
     "ph_login_password": "Furaha sirta ah",
@@ -3079,7 +3245,32 @@
     "admin_search_placeholder": "Ku raadi magac, iimayl, ama taleefan",
     "admin_clear_btn": "Nadiifi",
     "acct_running_total": "Waxaa lagaa qaaday {count} jeer 30-kii maalmood ee la soo dhaafay, oo wadartu tahay ${amount}.",
-    "acct_running_total_zero": "Wax lacag ah lagaa qaadin 30-kii maalmood ee la soo dhaafay."
+    "acct_running_total_zero": "Wax lacag ah lagaa qaadin 30-kii maalmood ee la soo dhaafay.",
+    "footer_contact": "Su'aalo ma qabtaa? Nagu soo qor:",
+    "mission_p2": "Islaamku wuxuu farayaa in qofka la aaso iyada oo aan dib loo dhigin — maydhista, kafanka iyo salaadda janaasada waxaa la dhammeeyaa marka qoysku diyaar yahay, haddii ay suurtagal tahay hal maalin gudaheed. Degdegtaas ayaa sababta sanduuqan loogu dhisay inuu si dhakhso ah u shaqeeyo: ma jiro hannaan sheegasho oo u dhexeeya geerida iyo lacagta qoysku u baahan yahay, haddii Alle idmo.",
+    "faq8_q": "Maxay ku kala duwan yihiin noqoshada ka-qaybgale iyo bixinta deeq?",
+    "faq8_a": "Noqoshada ka-qaybgale waxay ka dhigan tahay inaad ku biirto nidaamka qaybaha siman — waxaa lagaa qaadi doonaa qaybtaada kharashka aaska ee hara kadib marka marka hore la isticmaalo deeqaha la heli karo. Deeqdu waa hadiyad hal mar ah oo aan lahayn waajib joogto ah, waxaana loo isticmaalaa in lagu yareeyo — ama gebi ahaanba lagu daboolo — inta ka-qaybgalayaasha laga qaado aas.",
+    "faq9_q": "Ma bixin karaa deeq anigoon noqon ka-qaybgale?",
+    "faq9_a": "Haa. Deeq bixinta iyo noqoshada ka-qaybgale waa laba arrimood oo gebi ahaanba kala duwan — waxaad bixin kartaa deeq keliya, waxaad deeq ku dari kartaa marka aad isu diiwaangelinayso ka-qaybgale ahaan, ama labadaba. Midna looma baahna si loo sameeyo kan kale.",
+    "faq10_q": "Sidee loo xaqiijiyaa geerida ka hor inta aan qofna lacag laga qaadin?",
+    "faq10_a": "Maamule ayaa dib u eegaya geeri kasta oo la soo sheego, wuxuuna la xiriiraa guriga aaska ka hor inta aan qofna lacag laga qaadin. Soo dirista shahaadada dhimashada iyo ogolaanshaha aaska oo la socda qaansheegashada waa la soo dhaweynayaa, laakiin waajib ma aha.",
+    "faq11_q": "Maxaa dhacaya haddii qof kale horay u soo sheegay isla geeridaas?",
+    "faq11_a": "Maamule ayaa warbixinnada isla geeridaas isugu geeya hal kiis ka hor inta aan wax lacag ah la qaadin, nidaamkayaga lacag-bixintuna weligii qofna laba jeer lacag kama qaado isla aaska.",
+    "faq12_q": "Sidee saxda ah ayay deeqaha u yareeyaan inta lacag ah ee la iga qaado?",
+    "faq12_a": "Ka hor inta aan kharashka aaska loo qaybin ka-qaybgalayaasha, maamule wuxuu marka hore isticmaali karaa deeqaha hadda la heli karo si uu u yareeyo wadarta. Ka-qaybgalayaasha waxaa laga qaadaa oo keliya qaybtooda siman ee inta hartay. Haddii deeq ku filan la bixiyay, aaska gebi ahaanba waa la dabooli karaa, qofna lacag lagama qaado.",
+    "death_condolence": "Inna lillaahi wa inna ilayhi raajicuun — hubaal Alle ayaynu leenahay, xaggiisana waan u noqon doonnaa.",
+    "death_ref": "Lambarkaaga tixraaca waa {ref}. Fadlan la wadaag guriga aaska.",
+    "death_send_h3": "Hal tallaabo oo kale: fadlan dir warbixintaada",
+    "death_send_text": "Si toos ah uma diri karin warbixintaada. Riix badhanka hoose si uu kuugu furmo barnaamijka iimaylkaaga iyadoo warbixintu horay ugu qoran tahay, kadibna riix Dir (Send).",
+    "death_send_btn": "Fur barnaamijka iimaylkayga",
+    "death_send_alt": "Haddii barnaamijka iimaylku uusan furmin, koobiyee warbixinta hoose oo u dir",
+    "death_copy_btn": "Koobiyee warbixinta",
+    "death_copied": "Waa la koobiyeeyay",
+    "death_sending": "Waa la dirayaa…",
+    "nav_donate": "Deeq bixi",
+    "btn_make_donation": "Bixi deeq",
+    "donate_h2": "Bixi Sadaqo si aad u taageerto sanduuqa",
+    "donate_p": "Ma doorbidaysaa inaad wax bixiso adigoon noqon ka-qaybgale? Deeqda halkan la bixiyo waa Sadaqo &mdash; sadaqo ikhtiyaari ah. Deeqaha la heli karo waxaa loo isticmaalaa in lagu yareeyo kharashka aaska ka hor inta aan qayb siman laga qaadin ka-qaybgalayaasha &mdash; sidaas darteed hadiyaddaadu si toos ah ayay u yarayn kartaa, ama gebi ahaanba u dabooli kartaa, kharashka qof. Nabi Muxammad (NNKH) wuxuu sheegay in sadaqada socota ay ka mid tahay camallada yar ee ajarkoodu sii socdo kadib geerida qofka."
   },
   "uz": {
     "nav_how": "Qanday ishlaydi",
@@ -3094,9 +3285,9 @@
     "hero_lede": "United Ummah Funeral Funds a'zolar o'rtasidagi o'zaro yordam ahdnomasidir &mdash; eng og'ir kun uchun takaful. Jamoamizda vafot yuz berganda, janoza va dafn xarajatlari har bir a'zo o'rtasida teng taqsimlanadi, shunda hech bir oila uni yolg'iz ko'tarmaydi &mdash; a'zo bo'lsin yoki bo'lmasin.",
     "btn_become_contributor": "A'zo bo'lish",
     "btn_report_death": "Vafot haqida xabar berish",
-    "hero_note": "Notijorat, a'zolarga tegishli va teng ulush asosida qurilgan &mdash; mukofot yoki foyda emas.",
+    "hero_note": "Notijorat va teng ulush asosida qurilgan &mdash; mukofot yoki foyda emas.",
     "mission_h2": "Ahdnoma, polis emas.",
-    "mission_p": "An'anaviy dafn sug'urtasi mukofotlar, xavf baholash va foydaga asoslangan. Bizning fond boshqacha ishlaydi: u o'z a'zolariga tegishli, va janoza uchun yig'ilgan har bir dollar to'g'ridan-to'g'ri muhtoj oilaga boradi &mdash; a'zo bo'lsin yoki bo'lmasin. Hech qanday ustama yo'q va da'volar bo'limini kutish yo'q &mdash; faqat qo'shnilar bir-birini teng ulushda qo'llab-quvvatlaydi.",
+    "mission_p": "An'anaviy dafn sug'urtasi mukofotlar, xavf baholash va foydaga asoslangan. Bizning fond boshqacha ishlaydi: janoza uchun yig'ilgan har bir dollar to'g'ridan-to'g'ri muhtoj oilaga boradi &mdash; a'zo bo'lsin yoki bo'lmasin. Hech qanday ustama yo'q va da'volar bo'limini kutish yo'q &mdash; faqat qo'shnilar bir-birini teng ulushda qo'llab-quvvatlaydi.",
     "quote_text": "“Mo'minlar o'zaro muhabbat, rahm-shafqat va mehr-oqibatda bitta tanaga o'xshaydi: bir a'zosi og'riganda, butun tana uyqusizlik va isitma bilan javob beradi.”",
     "quote_cite": "Fondimiz qurilgan asosiy tamoyil",
     "how_h2": "Fond qanday ishlaydi",
@@ -3142,8 +3333,8 @@
     "join_li2": "Faylda bitta to'lov usuli, faqat janoza yuz berganda yechiladi",
     "join_li3": "Har bir janoza xarajati va har bir a'zoning teng ulushi bo'yicha to'liq shaffoflik",
     "join_li4": "Istalgan vaqtda chiqing; siz faqat a'zo bo'lgan vaqtingizda hisoblangan ulushlar uchun javobgarsiz",
-    "footer_tag": "A'zolarga tegishli o'zaro yordam ahdnomasi, hech bir oila yaqinini dafn qilish xarajatiga yolg'iz duch kelmasligi uchun qurilgan.",
-    "footer_disclaimer": "Bu sayt ishlaydigan prototip. A'zolarning saqlangan kartalarini avtomatik yechish va janoza hissalarini yig'ish haqiqiy to'lov-protsessor integratsiyasini (masalan, Stripe) talab qiladi va shtatingizga qarab pul o'tkazish yoki sug'urta litsenziyasi talablarini o'z ichiga olishi mumkin. Haqiqiy a'zo mablag'larini boshqarishdan oldin to'lov protsessori va advokat bilan maslahatlashing.",
+    "footer_tag": "O'zaro yordam ahdnomasi, hech bir oila yaqinini dafn qilish xarajatiga yolg'iz duch kelmasligi uchun qurilgan.",
+    "footer_disclaimer": "UUFFUNDS notijorat o'zaro yordam fondi bo'lib, sug'urta kompaniyasi emas. Karta orqali to'lovlar Stripe orqali xavfsiz amalga oshiriladi.",
     "footer_privacy_link": "Maxfiylik siyosati",
     "footer_admin_link": "Administrator kirishi",
     "join_step1_h": "O'zingiz haqingizda ayting",
@@ -3180,7 +3371,7 @@
     "ph_your_address": "Manzilingiz",
     "btn_submit_report": "Xabarni yuborish",
     "death_done_h3": "Xabar qabul qilindi.",
-    "death_done_text": "Yo'qotishingiz uchun ta'ziya bildiramiz. Ular hisob-faktura, o'lim guvohnomasi va dafn ruxsatnomasini taqdim etganidan so'ng, to'lovni tashkil qilish uchun to'g'ridan-to'g'ri dafn byurosiga murojaat qilamiz.",
+    "death_done_text": "Yo'qotishingiz uchun ta'ziya bildiramiz. To'lovni tashkil qilish uchun to'g'ridan-to'g'ri dafn byurosi bilan bog'lanamiz.",
     "acct_login_h": "Hisobingizga kiring",
     "acct_login_sub": "A'zo bo'lganingizda o'rnatgan elektron pochta va paroldan foydalaning.",
     "ph_login_password": "Parol",
@@ -3231,7 +3422,32 @@
     "admin_search_placeholder": "Ism, elektron pochta yoki telefon bo'yicha qidirish",
     "admin_clear_btn": "Tozalash",
     "acct_running_total": "So'nggi 30 kun ichida sizdan {count} marta yechildi, jami ${amount}.",
-    "acct_running_total_zero": "So'nggi 30 kunda hech qanday yechim bo'lmagan."
+    "acct_running_total_zero": "So'nggi 30 kunda hech qanday yechim bo'lmagan.",
+    "footer_contact": "Savollaringiz bormi? Bizga yozing:",
+    "mission_p2": "Islom dafnni keraksiz kechiktirmaslikka chaqiradi — g'usl, kafan va janoza namozi oila tayyor bo'lishi bilanoq, iloji bo'lsa bir kun ichida ado etiladi. Aynan shu shoshilinchlik tufayli bu fond tez harakat qilish uchun qurilgan: vafot va oilaga kerak bo'lgan mablag' o'rtasida hech qanday da'vo jarayoni turmaydi, inshaalloh.",
+    "faq8_q": "A'zo bo'lish va xayriya qilishning farqi nimada?",
+    "faq8_a": "A'zo bo'lish teng ulush tizimiga qo'shilishni anglatadi — avval mavjud xayriyalar qo'llanilgandan so'ng janoza xarajatidan qolgan qismning ulushingiz sizdan olinadi. Xayriya — doimiy majburiyatsiz bir martalik hadya bo'lib, u janoza uchun a'zolardan olinadigan summani kamaytirish — hatto to'liq qoplash — uchun ishlatiladi.",
+    "faq9_q": "A'zo bo'lmasdan xayriya qila olamanmi?",
+    "faq9_a": "Ha. Xayriya qilish va a'zo bo'lish butunlay alohida — siz faqat xayriya qilishingiz, a'zo sifatida ro'yxatdan o'tayotganda xayriya qo'shishingiz yoki ikkalasini ham qilishingiz mumkin. Biri ikkinchisi uchun shart emas.",
+    "faq10_q": "Hech kimdan pul olinishidan oldin vafot qanday tasdiqlanadi?",
+    "faq10_a": "Hech kimdan pul olinishidan oldin administrator har bir xabar qilingan vafotni ko'rib chiqadi va dafn byurosi bilan bog'lanadi. Hisob-faktura bilan birga o'lim guvohnomasi va dafn ruxsatnomasini yuborish mamnuniyat bilan qabul qilinadi, lekin majburiy emas.",
+    "faq11_q": "Agar boshqa kishi xuddi shu vafot haqida allaqachon xabar bergan bo'lsa-chi?",
+    "faq11_a": "Hech narsa undirilishidan oldin administrator bir xil vafot haqidagi xabarlarni bitta ishga birlashtiradi va to'lov tizimimiz hech qachon bir janoza uchun hech kimdan ikki marta pul olmaydi.",
+    "faq12_q": "Xayriyalar mendan olinadigan summani aynan qanday kamaytiradi?",
+    "faq12_a": "Janoza xarajati a'zolar o'rtasida taqsimlanishidan oldin administrator avval mavjud xayriyalarni qo'llab, umumiy summani kamaytirishi mumkin. A'zolardan faqat qolgan qismning teng ulushi olinadi. Agar yetarlicha xayriya qilingan bo'lsa, janoza to'liq qoplanishi va hech bir a'zodan pul olinmasligi mumkin.",
+    "death_condolence": "Inna lillahi va inna ilayhi roji'un — albatta, biz Allohnikimiz va Unga qaytuvchimiz.",
+    "death_ref": "Sizning ma'lumotnoma raqamingiz: {ref}. Iltimos, uni dafn byurosiga ayting.",
+    "death_send_h3": "Yana bir qadam: iltimos, xabaringizni yuboring",
+    "death_send_text": "Xabaringizni avtomatik yubora olmadik. Pastdagi tugmani bosing — xabar allaqachon yozilgan holda email ilovangiz ochiladi, so'ng Yuborish (Send) tugmasini bosing.",
+    "death_send_btn": "Email ilovamni ochish",
+    "death_send_alt": "Agar email ilovangiz ochilmasa, quyidagi xabarni nusxalab, ushbu manzilga yuboring:",
+    "death_copy_btn": "Xabarni nusxalash",
+    "death_copied": "Nusxalandi",
+    "death_sending": "Yuborilmoqda…",
+    "nav_donate": "Xayriya",
+    "btn_make_donation": "Xayriya qilish",
+    "donate_h2": "Fondni qo'llab-quvvatlash uchun sadaqa bering",
+    "donate_p": "A'zo bo'lmasdan xayriya qilishni xohlaysizmi? Bu yerdagi xayriya — sadaqa, ya'ni ixtiyoriy ehson. Mavjud xayriyalar a'zolardan teng ulush olinishidan oldin janoza xarajatini kamaytirishga sarflanadi &mdash; shuning uchun sizning hadyangiz kimningdir xarajatini bevosita kamaytirishi, hatto to'liq qoplashi mumkin. Payg'ambarimiz Muhammad (s.a.v.) davomli sadaqani inson vafotidan keyin ham savobi davom etadigan kam sonli amallardan biri deb aytganlar."
   }
 };
   window.UUFFUNDS_RTL_LANGS = ['ar', 'ur'];
@@ -3289,7 +3505,7 @@
       <div class="nav-links">
         <a href="#how" data-i18n="nav_how">How it works</a>
         <a href="#join" data-i18n="nav_join">Join</a>
-        <a href="#donate">Donate</a>
+        <a href="#donate" data-i18n="nav_donate">Donate</a>
       </div>
       <div class="hamburger-wrap">
         <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Menu" aria-expanded="false">
@@ -3331,9 +3547,9 @@
         <div class="hero-actions">
           <a class="btn btn-primary js-open-join" href="#join" data-i18n="btn_become_contributor">Become a contributor</a>
           <a class="btn btn-ghost js-open-report" href="#" data-i18n="btn_report_death">Report a death</a>
-          <a class="btn btn-ghost js-open-donate" href="#">Make a donation</a>
+          <a class="btn btn-ghost js-open-donate" href="#" data-i18n="btn_make_donation">Make a donation</a>
         </div>
-        <p class="hero-note" data-i18n="hero_note">Non-profit, contributor-owned, and built on equal contribution &mdash; not premiums or profit.</p>
+        <p class="hero-note" data-i18n="hero_note">Non-profit and built on equal contribution &mdash; not premiums or profit.</p>
       </div>
       <div></div>
     </div>
@@ -3355,7 +3571,7 @@
       <div>
         <div class="section-head" style="margin-bottom:0;">
           <h2 data-i18n="mission_h2">A covenant, not a policy.</h2>
-          <p data-i18n="mission_p">Traditional funeral insurance is built around premiums, underwriting, and profit. Our fund works differently: it is owned by its contributors, and every dollar collected for a funeral goes directly to the family in need &mdash; contributor or not. There is no markup and no waiting on a claims department &mdash; only neighbors covering neighbors, in equal share.</p>
+          <p data-i18n="mission_p">Traditional funeral insurance is built around premiums, underwriting, and profit. Our fund works differently: every dollar collected for a funeral goes directly to the family in need &mdash; contributor or not. There is no markup and no waiting on a claims department &mdash; only neighbors covering neighbors, in equal share.</p>
           <p data-i18n="mission_p2" style="margin-top:16px;">Islam calls for burial without unnecessary delay &mdash; ghusl, kafan, and the janazah prayer completed as soon as the family is ready, ideally within a day. That urgency is exactly why this fund is built to move fast: no claims process standing between a death and the funds a family needs, in sha'Allah.</p>
         </div>
       </div>
@@ -3442,11 +3658,11 @@
         </details>
         <details class="faq-item">
           <summary data-i18n="faq10_q">How is a death verified before anyone is charged?</summary>
-          <p data-i18n="faq10_a">A funeral home submits the invoice along with a death certificate and burial permit, linked to the case. An administrator reviews and approves those documents before the case can be charged &mdash; no funeral is charged for based on a report alone.</p>
+          <p data-i18n="faq10_a">An administrator reviews every reported death and contacts the funeral home before anyone is charged. Sending a death certificate and burial permit with the invoice is welcome, but not required.</p>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq11_q">What if someone else already reported the same death?</summary>
-          <p data-i18n="faq11_a">The system flags likely duplicate reports automatically when the same name comes in twice. An administrator resolves it before either case can be charged, so contributors are never billed twice for the same funeral.</p>
+          <p data-i18n="faq11_a">An administrator matches reports of the same death to a single case before anything is charged, and our payment system never charges anyone twice for the same funeral.</p>
         </details>
         <details class="faq-item">
           <summary data-i18n="faq12_q">How exactly do donations reduce what I'm charged?</summary>
@@ -3479,11 +3695,11 @@
   <section id="donate">
     <div class="wrap">
       <div class="section-head">
-        <h2>Give Sadaqah to support the fund</h2>
-        <p>Prefer to give without becoming a contributor? A donation here is Sadaqah &mdash; voluntary charity. Available donations are applied to reduce what a funeral costs before any equal-share charge goes out to contributors &mdash; so your gift can directly lower, or even fully cover, someone's cost. The Prophet Muhammad (peace be upon him) described ongoing charity as one of the few deeds whose reward continues after a person's own life has ended.</p>
+        <h2 data-i18n="donate_h2">Give Sadaqah to support the fund</h2>
+        <p data-i18n="donate_p">Prefer to give without becoming a contributor? A donation here is Sadaqah &mdash; voluntary charity. Available donations are applied to reduce what a funeral costs before any equal-share charge goes out to contributors &mdash; so your gift can directly lower, or even fully cover, someone's cost. The Prophet Muhammad (peace be upon him) described ongoing charity as one of the few deeds whose reward continues after a person's own life has ended.</p>
       </div>
       <div class="donate-cta">
-        <a class="btn btn-primary js-open-donate" href="#">Make a donation</a>
+        <a class="btn btn-primary js-open-donate" href="#" data-i18n="btn_make_donation">Make a donation</a>
       </div>
     </div>
   </section>
@@ -3495,15 +3711,16 @@
     <div class="footer-top">
       <div>
         <a class="logo" href="#top">United Ummah <span>Funeral Funds</span><span class="site-handle" style="color: rgba(246,242,233,0.7) !important; border-color: rgba(246,242,233,0.25);">UUFFUNDS</span></a>
-        <p class="tag" data-i18n="footer_tag">A contributor-owned covenant of mutual support, built so no family faces the cost of burying a loved one alone.</p>
+        <p class="tag" data-i18n="footer_tag">A covenant of mutual support, built so no family faces the cost of burying a loved one alone.</p>
       </div>
       <div class="nav-links" style="color: var(--ivory);">
         <a href="#how" style="color: var(--ivory); opacity:0.75;" data-i18n="nav_how">How it works</a>
         <a href="#join" style="color: var(--ivory); opacity:0.75;" data-i18n="nav_join">Join</a>
-        <a href="#donate" style="color: var(--ivory); opacity:0.75;">Donate</a>
+        <a href="#donate" style="color: var(--ivory); opacity:0.75;" data-i18n="nav_donate">Donate</a>
       </div>
     </div>
-    <p class="footer-disclaimer" data-i18n="footer_disclaimer">This site is a working prototype. Automatically charging contributors' stored cards and pooling funeral contributions involves real payment-processor integration (such as Stripe) and, depending on your state, may involve money-transmission or insurance-related licensing requirements. Consult a payment processor and a lawyer before handling real contributor funds.</p>
+    <p class="footer-disclaimer" data-i18n="footer_disclaimer">UUFFUNDS is a non-profit mutual-aid fund, not an insurance company. Card payments are processed securely by Stripe.</p>
+<p class="footer-contact"><span data-i18n="footer_contact">Questions? Email us:</span> <a href="mailto:uuffund@gmail.com">uuffund@gmail.com</a></p>
     <div class="footer-bottom-row">
       <a href="#" class="js-open-privacy footer-admin-link" data-i18n="footer_privacy_link">Privacy Policy</a>
       <!-- Admin log in link hidden from the public site. To bring it back, delete this comment wrapper.
@@ -3556,7 +3773,7 @@
         <p class="modal-subtext" data-i18n="step_2_of_3">Step 2 of 3</p>
         <p class="terms-lang-note" data-i18n="terms_lang_note"></p>
         <div class="terms-text">
-          <p>UUFFUNDS is a member-owned, non-profit mutual-aid arrangement &mdash; it does not sell insurance, does not underwrite risk for profit, and holds no reserve fund beyond what is collected for a specific, identified funeral. Whenever the fund identifies a qualifying funeral need, the total verified cost is divided equally among all active contributors, up to a maximum amount that UUFFUNDS administrators determine on a case-by-case basis for that funeral; by agreeing below, you authorize UUFFUNDS to automatically charge your payment method on file for your equal share, without requiring additional confirmation for each individual charge. New contributors are subject to a 30-day waiting period before becoming eligible for coverage, unless the death is accidental. Should your payment method be declined, your share is reassigned immediately across the remaining active contributors so the funeral home is always paid in full and on time; you remain personally responsible for your original share, and you'll be reminded by email at 8, 16, 24, and 32 hours, after which UUFFUNDS writes off the unpaid amount rather than pursuing it further &mdash; and if you do pay after your share has already been covered by others, that payment is credited toward your next equal-share charge rather than refunded, since UUFFUNDS holds no reserve to issue refunds from. You may dispute a specific charge within 14 days of it being made by contacting UUFFUNDS through your account; disputing doesn't pause or change your contributor status, and you remain subject to other equal-share charges while it's under review, with an administrator either upholding the charge or crediting the disputed amount toward your next contribution, since disputes aren't resolved by cash refund. Funds collected for a funeral are paid directly to the licensed funeral home or burial-service provider handling the arrangements, never in cash and never directly to the deceased's family, and UUFFUNDS and its administrators hold no liability for the timing, sufficiency, or outcome of any contribution or funeral arrangement except where such liability cannot be waived under applicable law. You may place your account on hold at any time from your account settings, which pauses future equal-share charges without ending your membership, and you may resume at any time; alternatively, you may withdraw from the fund entirely at any time with written notice, remaining responsible only for shares billed before your withdrawal takes effect, and this agreement is governed by the laws of the state in which UUFFUNDS is organized, except where superseded by applicable state insurance, charitable-solicitation, or money-transmission law.</p>
+          <p>UUFFUNDS is a non-profit mutual-aid arrangement &mdash; it does not sell insurance, does not underwrite risk for profit, and holds no reserve fund beyond what is collected for a specific, identified funeral. Whenever the fund identifies a qualifying funeral need, the total verified cost is divided equally among all active contributors, up to a maximum amount that UUFFUNDS administrators determine on a case-by-case basis for that funeral; by agreeing below, you authorize UUFFUNDS to automatically charge your payment method on file for your equal share, without requiring additional confirmation for each individual charge. Should your payment method be declined, your share is reassigned immediately across the remaining active contributors so the funeral home is always paid in full and on time; you remain personally responsible for your original share, and you'll be reminded by email at 8, 16, 24, and 32 hours, after which UUFFUNDS writes off the unpaid amount rather than pursuing it further &mdash; and if you do pay after your share has already been covered by others, that payment is credited toward your next equal-share charge rather than refunded, since UUFFUNDS holds no reserve to issue refunds from. You may dispute a specific charge within 14 days of it being made by contacting UUFFUNDS through your account; disputing doesn't pause or change your contributor status, and you remain subject to other equal-share charges while it's under review, with an administrator either upholding the charge or crediting the disputed amount toward your next contribution, since disputes aren't resolved by cash refund. Funds collected for a funeral are paid directly to the licensed funeral home or burial-service provider handling the arrangements, never in cash and never directly to the deceased's family, and UUFFUNDS and its administrators hold no liability for the timing, sufficiency, or outcome of any contribution or funeral arrangement except where such liability cannot be waived under applicable law. You may place your account on hold at any time from your account settings, which pauses future equal-share charges without ending your membership, and you may resume at any time; alternatively, you may withdraw from the fund entirely at any time with written notice, remaining responsible only for shares billed before your withdrawal takes effect, and this agreement is governed by the laws of the state in which UUFFUNDS is organized, except where superseded by applicable state insurance, charitable-solicitation, or money-transmission law.</p>
         </div>
         <label class="terms-check">
           <input type="checkbox" id="mf-agree" required>
@@ -3618,239 +3835,247 @@
     <button class="modal-close" id="invoice-modal-close" aria-label="Close">&times;</button>
 
     <form id="invoice-modal-form" novalidate>
-      <div class="modal-step" data-step="1">
-        <h3 id="invoice-heading">Submit a funeral invoice</h3>
-        <p class="modal-subtext">For funeral homes only. Submit the deceased's information along with the invoice, death certificate, and burial permit, and we'll begin collecting equal shares from contributors to pay it directly.</p>
+<div class="modal-step" data-step="1">
+<h3 id="invoice-heading">Submit a funeral invoice</h3>
+<p class="modal-subtext">For funeral homes only. Send us the deceased's information and your invoice, and we'll begin collecting equal shares from contributors to pay you directly. A death certificate and burial permit are welcome, but not required.</p>
 
-        <input type="text" id="if-deceased" placeholder="Full name of the deceased" required>
-        <input type="text" id="if-case-id" placeholder="Case ID (if the family already reported this, optional)">
-        <input type="text" id="if-funeral-home" placeholder="Funeral home name" required>
-        <input type="text" id="if-contact-name" placeholder="Funeral home contact name" required>
-        <input type="tel" id="if-contact-phone" placeholder="Funeral home phone number" required>
-        <input type="email" id="if-contact-email" placeholder="Funeral home email" required>
-        <input type="number" id="if-invoice-amount" placeholder="Invoice amount ($)" min="0" step="1" required>
+<input type="text" id="if-deceased" placeholder="Full name of the deceased" required>
+<input type="text" id="if-case-id" placeholder="Reference number from the family (optional)">
+<input type="text" id="if-funeral-home" placeholder="Funeral home name" required>
+<input type="text" id="if-contact-name" placeholder="Funeral home contact name" required>
+<input type="tel" id="if-contact-phone" placeholder="Funeral home phone number" required>
+<input type="email" id="if-contact-email" placeholder="Funeral home email" required>
+<input type="number" id="if-invoice-amount" placeholder="Invoice amount ($)" min="0" step="0.01" required>
+<input type="text" id="if-website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-        <label class="upload-field">
-          <span class="upload-label">Invoice <span class="upload-required">*required</span></span>
-          <input type="file" id="if-invoice-file" accept=".pdf,.jpg,.jpeg,.png" required>
-        </label>
-        <label class="upload-field">
-          <span class="upload-label">Death certificate <span class="upload-required">*required</span></span>
-          <input type="file" id="if-death-cert-file" accept=".pdf,.jpg,.jpeg,.png" required>
-        </label>
-        <label class="upload-field">
-          <span class="upload-label">Burial permit <span class="upload-required">*required</span></span>
-          <input type="file" id="if-burial-permit-file" accept=".pdf,.jpg,.jpeg,.png" required>
-        </label>
-        <p class="join-note">Email can't carry attachments automatically from this form &mdash; after it opens, please attach these three documents yourself before sending.</p>
-        <p class="join-note" id="invoice-report-error" style="display:none; color:#b3554a;"></p>
+<label class="upload-field">
+<span class="upload-label">Invoice <span class="upload-required">*required</span></span>
+<input type="file" id="if-invoice-file" accept=".pdf,.jpg,.jpeg,.png" required>
+</label>
+<label class="upload-field">
+<span class="upload-label">Death certificate <span class="upload-optional">(optional)</span></span>
+<input type="file" id="if-death-cert-file" accept=".pdf,.jpg,.jpeg,.png">
+</label>
+<label class="upload-field">
+<span class="upload-label">Burial permit <span class="upload-optional">(optional)</span></span>
+<input type="file" id="if-burial-permit-file" accept=".pdf,.jpg,.jpeg,.png">
+</label>
+<p class="join-note">PDF, JPG or PNG, up to 8 MB each.</p>
+<p class="join-note" id="invoice-report-error" style="display:none; color:#b3554a;"></p>
 
-        <div class="modal-actions">
-          <span></span>
-          <button type="submit" class="btn btn-primary">Submit invoice</button>
-        </div>
-      </div>
+<div class="modal-actions">
+<span></span>
+<button type="submit" class="btn btn-primary">Submit invoice</button>
+</div>
+</div>
 
-      <div class="modal-step" data-step="done" hidden>
-        <h3>Invoice received.</h3>
-        <p class="modal-subtext modal-done-text">We'll verify the death certificate and burial permit, then begin collecting equal shares from contributors to pay the invoice directly.</p>
-        <div class="case-id-banner" id="invoice-case-id-banner"></div>
-        <div class="modal-actions">
-          <span></span>
-          <button type="button" class="btn btn-primary" id="invoice-done-close">Done</button>
-        </div>
-      </div>
-    </form>
+<div class="modal-step" data-step="done" hidden>
+<h3>Invoice received.</h3>
+<p class="modal-subtext modal-done-text">Thank you. We'll review it and begin collecting equal shares from contributors to pay the invoice directly.</p>
+<div class="case-id-banner" id="invoice-case-id-banner"></div>
+<div class="modal-actions">
+<span></span>
+<button type="button" class="btn btn-primary" id="invoice-done-close">Done</button>
+</div>
+</div>
+
+<div class="modal-step" data-step="send" hidden>
+<h3>One more step: please email your invoice</h3>
+<p class="modal-subtext">We couldn't send it automatically. Tap the button below to open your email app with the details filled in, attach the invoice (and any other documents), then press Send.</p>
+<p class="report-send-row"><a class="btn btn-primary" id="invoice-send-mail" href="mailto:uuffund@gmail.com">Open my email app</a></p>
+<p class="join-note">If your email app doesn't open, copy the details below and send them, with the invoice attached, to <a href="mailto:uuffund@gmail.com">uuffund@gmail.com</a>.</p>
+<textarea id="invoice-send-text" class="report-copy" rows="8" dir="ltr" readonly></textarea>
+<div class="modal-actions">
+<button type="button" class="btn btn-ghost" id="invoice-send-copy">Copy details</button>
+<button type="button" class="btn btn-primary" id="invoice-send-close">Done</button>
+</div>
+</div>
+</form>
   </div>
 </div>
 
 <script>
   (function () {
     const overlay = document.getElementById('invoice-modal');
-    const closeBtn = document.getElementById('invoice-modal-close');
-    const doneCloseBtn = document.getElementById('invoice-done-close');
-    const form = document.getElementById('invoice-modal-form');
-    const steps = Array.from(form.querySelectorAll('.modal-step'));
+  const closeBtn = document.getElementById('invoice-modal-close');
+  const doneCloseBtn = document.getElementById('invoice-done-close');
+  const sendCloseBtn = document.getElementById('invoice-send-close');
+  const copyBtn = document.getElementById('invoice-send-copy');
+  const form = document.getElementById('invoice-modal-form');
+  const steps = Array.from(form.querySelectorAll('.modal-step'));
+  const errorBox = document.getElementById('invoice-report-error');
+  // The payments server delivers invoices to the fund's inbox, documents attached.
+  const REPORTS_URL = 'https://stripe-api-783984253394.us-central1.run.app/report';
+  const FUND_EMAIL = 'uuffund@gmail.com';
+  const MAX_FILE_BYTES = 8 * 1024 * 1024;
+  const MAX_TOTAL_BYTES = 15 * 1024 * 1024;
 
-    function showStep(step) {
-      steps.forEach(s => { s.hidden = s.dataset.step !== String(step); });
-    }
+  function showStep(step) {
+    steps.forEach(s => { s.hidden = s.dataset.step !== String(step); });
+  }
 
-    function openModal() {
-      overlay.hidden = false;
-      document.body.style.overflow = 'hidden';
-      showStep(1);
-      form.reset();
-      document.getElementById('invoice-case-id-banner').innerHTML = '';
-      document.getElementById('invoice-report-error').style.display = 'none';
-      setTimeout(() => document.getElementById('if-deceased').focus(), 50);
-    }
+  function openModal() {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    showStep(1);
+    form.reset();
+    document.getElementById('invoice-case-id-banner').textContent = '';
+    errorBox.style.display = 'none';
+    setTimeout(() => document.getElementById('if-deceased').focus(), 50);
+  }
 
-    function closeModal() {
-      overlay.hidden = true;
-      document.body.style.overflow = '';
-    }
+  function closeModal() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
 
-    function validateStep1() {
-      const fields = Array.from(steps[0].querySelectorAll('input[required]'));
-      let valid = true;
-      fields.forEach(f => {
-        if (!f.value.trim()) {
-          valid = false;
-          f.style.borderColor = '#b3554a';
-        } else {
-          f.style.borderColor = '';
-        }
-      });
-      return valid;
-    }
-
-    document.querySelectorAll('.js-open-invoice').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const hamburgerMenu = document.getElementById('hamburger-menu');
-        const hamburgerBtn = document.getElementById('hamburger-btn');
-        if (hamburgerMenu) hamburgerMenu.hidden = true;
-        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
-        openModal();
-      });
+  function validateStep1() {
+    const fields = Array.from(steps[0].querySelectorAll('input[required]'));
+    let valid = true;
+    fields.forEach(f => {
+      const empty = f.type === 'file' ? !f.files.length : !f.value.trim();
+      if (empty) {
+        valid = false;
+        f.style.borderColor = '#b3554a';
+      } else {
+        f.style.borderColor = '';
+      }
     });
+    return valid;
+  }
 
-    closeBtn.addEventListener('click', closeModal);
-    doneCloseBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) closeModal(); });
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+  }
 
-    function readFileAsDataURL(file) {
-      return new Promise((resolve) => {
-        if (!file) { resolve(null); return; }
-        const reader = new FileReader();
-        reader.onload = () => resolve({ name: file.name, type: file.type, dataUrl: reader.result });
-        reader.onerror = () => resolve({ name: file.name, type: file.type, dataUrl: null });
-        reader.readAsDataURL(file);
-      });
-    }
-
-    form.addEventListener('submit', async (e) => {
+  document.querySelectorAll('.js-open-invoice').forEach(btn => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (!validateStep1()) return;
+      const hamburgerMenu = document.getElementById('hamburger-menu');
+      const hamburgerBtn = document.getElementById('hamburger-btn');
+      if (hamburgerMenu) hamburgerMenu.hidden = true;
+      if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+      openModal();
+    });
+  });
 
-      const deceased = document.getElementById('if-deceased').value.trim();
-      const caseIdInput = document.getElementById('if-case-id').value.trim();
-      const funeralHome = document.getElementById('if-funeral-home').value.trim();
-      const contactName = document.getElementById('if-contact-name').value.trim();
-      const contactPhone = document.getElementById('if-contact-phone').value.trim();
-      const contactEmail = document.getElementById('if-contact-email').value.trim();
-      const invoiceAmount = document.getElementById('if-invoice-amount').value.trim();
-      const invoiceFile = document.getElementById('if-invoice-file').files[0];
-      const deathCertFile = document.getElementById('if-death-cert-file').files[0];
-      const burialPermitFile = document.getElementById('if-burial-permit-file').files[0];
+  closeBtn.addEventListener('click', closeModal);
+  doneCloseBtn.addEventListener('click', closeModal);
+  sendCloseBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) closeModal(); });
 
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      const originalBtnText = submitBtn.textContent;
+  copyBtn.addEventListener('click', async () => {
+    const box = document.getElementById('invoice-send-text');
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(box.value);
+      copied = true;
+    } catch (_) {
+      box.focus();
+      box.select();
+      try { copied = document.execCommand('copy'); } catch (__) { copied = false; }
+    }
+    if (copied) {
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => { copyBtn.textContent = 'Copy details'; }, 2500);
+    }
+  });
 
-      if (window.UUFFUNDS_BACKEND_CONNECTED) {
-        submitBtn.textContent = 'Uploading documents\u2026';
-        try {
-          const formData = new FormData();
-          formData.append('deceasedName', deceased);
-          if (caseIdInput) formData.append('caseId', caseIdInput);
-          formData.append('funeralHomeName', funeralHome);
-          formData.append('contactName', contactName);
-          formData.append('contactPhone', contactPhone);
-          formData.append('contactEmail', contactEmail);
-          formData.append('invoiceAmount', invoiceAmount);
-          if (invoiceFile) formData.append('invoice', invoiceFile);
-          if (deathCertFile) formData.append('deathCertificate', deathCertFile);
-          if (burialPermitFile) formData.append('burialPermit', burialPermitFile);
+  function readFile(file) {
+    return new Promise((resolve) => {
+      if (!file) { resolve(null); return; }
+      const reader = new FileReader();
+      reader.onload = () => resolve({ name: file.name, type: file.type, data: String(reader.result || '') });
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  }
 
-          const result = await window.uuffundsApi('/api/cases/invoice', {
-            method: 'POST', body: formData, isFormData: true,
-          });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+    if (!validateStep1()) return;
+    const val = (id) => document.getElementById(id).value.trim();
+    const fileOf = (id) => document.getElementById(id).files[0] || null;
+    const chosen = [
+      ['invoice', 'Invoice', fileOf('if-invoice-file')],
+      ['deathCertificate', 'Death certificate', fileOf('if-death-cert-file')],
+      ['burialPermit', 'Burial permit', fileOf('if-burial-permit-file')]
+    ];
+    let total = 0;
+    for (const [, label, file] of chosen) {
+      if (!file) continue;
+      if (!/\.(pdf|jpe?g|png)$/i.test(file.name)) { showError(`${label}: please use a PDF, JPG or PNG file.`); return; }
+      if (file.size > MAX_FILE_BYTES) { showError(`${label} is too large. Please keep each file under 8 MB.`); return; }
+      total += file.size;
+    }
+    if (total > MAX_TOTAL_BYTES) { showError('The files are too large together. Please keep them under 15 MB in total.'); return; }
 
-          let banner = `This invoice is linked to <strong>${result.caseId}</strong>. The admin dashboard will show it as ready to review.`;
-          if (result.possibleDuplicateOf) {
-            banner += `<br><strong>Note:</strong> a case for "${deceased}" already exists (${result.possibleDuplicateOf}). If this is the same person, consider using that case ID instead. This has been flagged for admin review either way.`;
-          }
-          document.getElementById('invoice-case-id-banner').innerHTML = banner;
-          showStep('done');
-        } catch (err) {
-          document.getElementById('invoice-report-error').style.display = 'block';
-          document.getElementById('invoice-report-error').textContent = err.message || 'Something went wrong. Please try again.';
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-        }
+    const details = {
+      deceased: val('if-deceased'),
+      familyRef: val('if-case-id'),
+      funeralHome: val('if-funeral-home'),
+      contactName: val('if-contact-name'),
+      contactPhone: val('if-contact-phone'),
+      contactEmail: val('if-contact-email'),
+      amount: val('if-invoice-amount')
+    };
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const label = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending\u2026';
+    let ref = '';
+    try {
+      const files = {};
+      for (const [key, , file] of chosen) {
+        const read = await readFile(file);
+        if (read) files[key] = read;
+      }
+      const res = await fetch(REPORTS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.assign({ kind: 'invoice', website: val('if-website'), files }, details))
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ref) {
+        ref = String(data.ref);
+      } else if (res.status === 400 || res.status === 413 || res.status === 429) {
+        showError(data.error || 'Please check the form and try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = label;
         return;
       }
+    } catch (_) {
+      // No connection to the server: the funeral home emails it instead, below.
+    }
+    submitBtn.disabled = false;
+    submitBtn.textContent = label;
 
-      // --- Simulated fallback (no real backend configured yet) ---
-      submitBtn.textContent = 'Reading documents\u2026';
-
-      const [invoiceDoc, deathCertDoc, burialPermitDoc] = await Promise.all([
-        readFileAsDataURL(invoiceFile),
-        readFileAsDataURL(deathCertFile),
-        readFileAsDataURL(burialPermitFile),
-      ]);
-      const documents = { invoice: invoiceDoc, deathCert: deathCertDoc, burialPermit: burialPermitDoc };
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalBtnText;
-
-      let theCase = caseIdInput ? window.uuffundsFindCase(caseIdInput) : null;
-      if (theCase) {
-        theCase.deceased = theCase.deceased || deceased;
-        theCase.funeralHome = funeralHome;
-        theCase.contactName = contactName;
-        theCase.contactPhone = contactPhone;
-        theCase.contactEmail = contactEmail;
-        theCase.invoiceAmount = parseFloat(invoiceAmount) || null;
-        theCase.documents = documents;
-        theCase.documentsApproved = false;
-        theCase.status = 'Invoice submitted \u2014 pending admin review';
-      } else {
-        const duplicate = window.uuffundsCheckDuplicate(deceased, null);
-        theCase = window.uuffundsCreateCase({
-          deceased,
-          source: caseIdInput ? 'Funeral home invoice (case ID not found)' : 'Funeral home invoice',
-          funeralHome,
-          contactName,
-          contactPhone,
-          contactEmail,
-          invoiceAmount: parseFloat(invoiceAmount) || null,
-          documents,
-          status: 'Invoice submitted \u2014 pending admin review',
-          possibleDuplicateOf: duplicate ? duplicate.id : null,
-        });
-      }
-
-      const subject = `Funeral invoice: ${deceased} (${funeralHome}) [Case ${theCase.id}]`;
-      const body =
-        `Case ID: ${theCase.id}\n` +
-        `Deceased's full name: ${deceased}\n` +
-        `Funeral home name: ${funeralHome}\n` +
-        `Funeral home contact name: ${contactName}\n` +
-        `Funeral home phone number: ${contactPhone}\n` +
-        `Funeral home email: ${contactEmail}\n` +
-        `Invoice amount: $${invoiceAmount}\n\n` +
-        `Documents (now stored and viewable in the admin dashboard):\n` +
-        `- Invoice: ${invoiceFile ? invoiceFile.name : '(not selected)'}\n` +
-        `- Death certificate: ${deathCertFile ? deathCertFile.name : '(not selected)'}\n` +
-        `- Burial permit: ${burialPermitFile ? burialPermitFile.name : '(not selected)'}`;
-
-      let banner = `This invoice is linked to <strong>${theCase.id}</strong>. The admin dashboard will show it as ready to review.`;
-      if (theCase.possibleDuplicateOf) {
-        banner += `<br><strong>Note:</strong> a case for "${deceased}" already exists (${theCase.possibleDuplicateOf}). If this is the same person, consider using that case ID instead. This has been flagged for admin review either way.`;
-      }
-      document.getElementById('invoice-case-id-banner').innerHTML = banner;
-
-      const mailtoLink = `mailto:UUFFUND@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
-
+    if (ref) {
+      document.getElementById('invoice-case-id-banner').textContent = `Your reference number is ${ref}.`;
       showStep('done');
-    });
-  })();
+      return;
+    }
+
+    // The invoice could not be sent from here, so the funeral home emails it instead.
+    const attach = chosen.filter(([, , file]) => file).map(([, label, file]) => `${label}: ${file.name}`);
+    const body =
+      `Deceased's full name: ${details.deceased}\n` +
+      `Reference from the family: ${details.familyRef || '(none)'}\n` +
+      `Funeral home: ${details.funeralHome}\n` +
+      `Contact name: ${details.contactName}\n` +
+      `Phone: ${details.contactPhone}\n` +
+      `Email: ${details.contactEmail}\n` +
+      `Invoice amount: $${details.amount}\n\n` +
+      `Please attach: ${attach.join(', ')}`;
+    const subject = `Funeral invoice: ${details.deceased} (${details.funeralHome})`;
+    document.getElementById('invoice-send-mail').href = `mailto:${FUND_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    document.getElementById('invoice-send-text').value = `To: ${FUND_EMAIL}\nSubject: ${subject}\n\n${body}`;
+    showStep('send');
+  });
+})();
 </script>
 
 <!-- REPORT A DEATH MODAL (for individuals) -->
@@ -3869,6 +4094,7 @@
         <input type="text" id="df-name" placeholder="Your full name" required data-i18n-placeholder="ph_your_name">
         <input type="tel" id="df-phone" placeholder="Your phone number" required data-i18n-placeholder="ph_your_phone">
         <input type="text" id="df-address" placeholder="Your address" required data-i18n-placeholder="ph_your_address">
+<input type="text" id="df-website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="join-note" id="death-report-error" style="display:none; color:#b3554a;"></p>
         <div class="modal-actions">
           <span></span>
@@ -3879,13 +4105,25 @@
       <div class="modal-step" data-step="done" hidden>
         <h3 data-i18n="death_done_h3">Report received.</h3>
         <p class="modal-subtext" style="margin-bottom:6px; font-style:italic;" data-i18n="death_condolence">Inna lillahi wa inna ilayhi raji'un &mdash; verily we belong to Allah, and to Him we shall return.</p>
-        <p class="modal-subtext modal-done-text" data-i18n="death_done_text">We're sorry for the loss. We'll reach out to the funeral home directly to arrange payment once they submit the invoice, death certificate, and burial permit.</p>
+        <p class="modal-subtext modal-done-text" data-i18n="death_done_text">We're sorry for your loss. We'll reach out to the funeral home directly to arrange payment.</p>
         <div class="case-id-banner" id="death-case-id-banner"></div>
         <div class="modal-actions">
           <span></span>
           <button type="button" class="btn btn-primary" id="death-done-close" data-i18n="btn_done">Done</button>
         </div>
       </div>
+
+<div class="modal-step" data-step="send" hidden>
+<h3 data-i18n="death_send_h3">One more step: please send your report</h3>
+<p class="modal-subtext" data-i18n="death_send_text">We couldn't send your report automatically. Tap the button below to open your email app with the report already filled in, then press Send.</p>
+<p class="report-send-row"><a class="btn btn-primary" id="death-send-mail" href="mailto:uuffund@gmail.com" data-i18n="death_send_btn">Open my email app</a></p>
+<p class="join-note"><span data-i18n="death_send_alt">If your email app doesn't open, copy the report below and send it to</span> <a href="mailto:uuffund@gmail.com">uuffund@gmail.com</a></p>
+<textarea id="death-send-text" class="report-copy" rows="8" dir="ltr" readonly></textarea>
+<div class="modal-actions">
+<button type="button" class="btn btn-ghost" id="death-send-copy" data-i18n="death_copy_btn">Copy report</button>
+<button type="button" class="btn btn-primary" id="death-send-close" data-i18n="btn_done">Done</button>
+</div>
+</div>
     </form>
   </div>
 </div>
@@ -3893,137 +4131,150 @@
 <script>
   (function () {
     const overlay = document.getElementById('death-modal');
-    const closeBtn = document.getElementById('death-modal-close');
-    const doneCloseBtn = document.getElementById('death-done-close');
-    const form = document.getElementById('death-modal-form');
-    const steps = Array.from(form.querySelectorAll('.modal-step'));
+  const closeBtn = document.getElementById('death-modal-close');
+  const doneCloseBtn = document.getElementById('death-done-close');
+  const sendCloseBtn = document.getElementById('death-send-close');
+  const copyBtn = document.getElementById('death-send-copy');
+  const form = document.getElementById('death-modal-form');
+  const steps = Array.from(form.querySelectorAll('.modal-step'));
+  const errorBox = document.getElementById('death-report-error');
+  // The payments server delivers reports straight to the fund's inbox.
+  const REPORTS_URL = 'https://stripe-api-783984253394.us-central1.run.app/report';
+  const FUND_EMAIL = 'uuffund@gmail.com';
 
-    function showStep(step) {
-      steps.forEach(s => { s.hidden = s.dataset.step !== String(step); });
-    }
+  function t(key) {
+    const all = window.UUFFUNDS_TRANSLATIONS || {};
+    const lang = window.UUFFUNDS_CURRENT_LANG || 'en';
+    return (all[lang] && all[lang][key]) || (all.en && all.en[key]) || '';
+  }
 
-    function openModal() {
-      overlay.hidden = false;
-      document.body.style.overflow = 'hidden';
-      showStep(1);
-      form.reset();
-      document.getElementById('death-case-id-banner').innerHTML = '';
-      document.getElementById('death-report-error').style.display = 'none';
-      setTimeout(() => document.getElementById('df-deceased').focus(), 50);
-    }
+  function showStep(step) {
+    steps.forEach(s => { s.hidden = s.dataset.step !== String(step); });
+  }
 
-    function closeModal() {
-      overlay.hidden = true;
-      document.body.style.overflow = '';
-    }
+  function openModal() {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    showStep(1);
+    form.reset();
+    document.getElementById('death-case-id-banner').textContent = '';
+    errorBox.style.display = 'none';
+    setTimeout(() => document.getElementById('df-deceased').focus(), 50);
+  }
 
-    function validateStep1() {
-      const fields = Array.from(steps[0].querySelectorAll('input[required]'));
-      let valid = true;
-      fields.forEach(f => {
-        if (!f.value.trim()) {
-          valid = false;
-          f.style.borderColor = '#b3554a';
-        } else {
-          f.style.borderColor = '';
-        }
-      });
-      return valid;
-    }
+  function closeModal() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
 
-    document.querySelectorAll('.js-open-report').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openModal();
-      });
+  function validateStep1() {
+    const fields = Array.from(steps[0].querySelectorAll('input[required]'));
+    let valid = true;
+    fields.forEach(f => {
+      if (!f.value.trim()) {
+        valid = false;
+        f.style.borderColor = '#b3554a';
+      } else {
+        f.style.borderColor = '';
+      }
     });
+    return valid;
+  }
 
-    closeBtn.addEventListener('click', closeModal);
-    doneCloseBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) closeModal(); });
-
-    form.addEventListener('submit', async (e) => {
+  document.querySelectorAll('.js-open-report').forEach(btn => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (!validateStep1()) return;
+      openModal();
+    });
+  });
 
-      const deceased = document.getElementById('df-deceased').value.trim();
-      const hospital = document.getElementById('df-hospital').value.trim();
-      const hospitalAddress = document.getElementById('df-hospital-address').value.trim();
-      const relationship = document.getElementById('df-relationship').value.trim();
-      const name = document.getElementById('df-name').value.trim();
-      const phone = document.getElementById('df-phone').value.trim();
-      const address = document.getElementById('df-address').value.trim();
+  closeBtn.addEventListener('click', closeModal);
+  doneCloseBtn.addEventListener('click', closeModal);
+  sendCloseBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) closeModal(); });
 
-      if (window.UUFFUNDS_BACKEND_CONNECTED) {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        try {
-          const result = await window.uuffundsApi('/api/cases/report-death', {
-            method: 'POST',
-            body: { deceasedName: deceased, hospital, hospitalAddress, relationship, reporterName: name, reporterPhone: phone, reporterAddress: address },
-          });
-          let banner = `Your case ID is <strong>${result.caseId}</strong>. Please share it with the funeral home so their invoice gets linked to this same case.`;
-          if (result.possibleDuplicateOf) {
-            banner += `<br><strong>Note:</strong> we already have a case for someone named "${deceased}" (${result.possibleDuplicateOf}, reported earlier). If this is the same person, please use that case ID with the funeral home instead of a new one.`;
-          }
-          if (result.waitingPeriodFlagged) {
-            banner += `<br><strong>Note:</strong> since you joined as a contributor less than 30 days ago, this case has been flagged for admin review per the fund's waiting-period policy.`;
-          }
-          document.getElementById('death-case-id-banner').innerHTML = banner;
-          showStep('done');
-        } catch (err) {
-          document.getElementById('death-report-error').style.display = 'block';
-          document.getElementById('death-report-error').textContent = err.message || 'Something went wrong. Please try again.';
-        } finally {
-          submitBtn.disabled = false;
-        }
+  copyBtn.addEventListener('click', async () => {
+    const box = document.getElementById('death-send-text');
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(box.value);
+      copied = true;
+    } catch (_) {
+      box.focus();
+      box.select();
+      try { copied = document.execCommand('copy'); } catch (__) { copied = false; }
+    }
+    if (copied) {
+      copyBtn.textContent = t('death_copied') || 'Copied';
+      setTimeout(() => { copyBtn.textContent = t('death_copy_btn') || 'Copy report'; }, 2500);
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+    if (!validateStep1()) return;
+    const val = (id) => document.getElementById(id).value.trim();
+    const report = {
+      kind: 'death',
+      deceased: val('df-deceased'),
+      hospital: val('df-hospital'),
+      hospitalAddress: val('df-hospital-address'),
+      relationship: val('df-relationship'),
+      name: val('df-name'),
+      phone: val('df-phone'),
+      address: val('df-address'),
+      website: val('df-website')
+    };
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const label = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = t('death_sending') || 'Sending\u2026';
+    let ref = '';
+    try {
+      const res = await fetch(REPORTS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ref) {
+        ref = String(data.ref);
+      } else if (res.status === 400 || res.status === 429) {
+        errorBox.textContent = data.error || 'Please check the form and try again.';
+        errorBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = label;
         return;
       }
+    } catch (_) {
+      // No connection to the server: the visitor sends it by email below.
+    }
+    submitBtn.disabled = false;
+    submitBtn.textContent = label;
 
-      // --- Simulated fallback (no real backend configured yet) ---
-      const existingDuplicate = window.uuffundsCheckDuplicate(deceased, null);
-      const waitingPeriodFlag = window.uuffundsCheckWaitingPeriod(name);
-      const newCase = window.uuffundsCreateCase({
-        deceased,
-        source: 'Individual report',
-        hospital,
-        hospitalAddress,
-        reporterName: name,
-        reporterPhone: phone,
-        reporterRelationship: relationship,
-        reporterAddress: address,
-        status: 'Reported \u2014 awaiting funeral home invoice',
-        possibleDuplicateOf: existingDuplicate ? existingDuplicate.id : null,
-        waitingPeriodFlag,
-      });
-
-      const subject = `Death report: ${deceased} [Case ${newCase.id}]`;
-      const body =
-        `Case ID: ${newCase.id}\n` +
-        `Deceased's full name: ${deceased}\n` +
-        `Hospital name: ${hospital}\n` +
-        `Hospital address: ${hospitalAddress}\n` +
-        `Reporter's relationship to deceased: ${relationship}\n` +
-        `Reporter's full name: ${name}\n` +
-        `Reporter's phone number: ${phone}\n` +
-        `Reporter's address: ${address}`;
-
-      let banner = `Your case ID is <strong>${newCase.id}</strong>. Please share it with the funeral home so their invoice gets linked to this same case.`;
-      if (existingDuplicate) {
-        banner += `<br><strong>Note:</strong> we already have a case for someone named "${deceased}" (${existingDuplicate.id}, reported earlier). If this is the same person, please use that case ID with the funeral home instead of a new one.`;
-      }
-      if (waitingPeriodFlag) {
-        banner += `<br><strong>Note:</strong> since you joined as a contributor less than 30 days ago, this case has been flagged for admin review per the fund's waiting-period policy.`;
-      }
-      document.getElementById('death-case-id-banner').innerHTML = banner;
-
-      const mailtoLink = `mailto:UUFFUND@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
-
+    if (ref) {
+      document.getElementById('death-case-id-banner').textContent = (t('death_ref') || 'Your reference number is {ref}.').replace('{ref}', ref);
       showStep('done');
-    });
-  })();
+      return;
+    }
+
+    // The report could not be sent from here, so the visitor emails it instead.
+    const body =
+      `Deceased's full name: ${report.deceased}\n` +
+      `Hospital name: ${report.hospital}\n` +
+      `Hospital address: ${report.hospitalAddress || '(not given)'}\n` +
+      `Reporter's relationship to deceased: ${report.relationship}\n` +
+      `Reporter's full name: ${report.name}\n` +
+      `Reporter's phone number: ${report.phone}\n` +
+      `Reporter's address: ${report.address}`;
+    const subject = `Death report: ${report.deceased}`;
+    document.getElementById('death-send-mail').href = `mailto:${FUND_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    document.getElementById('death-send-text').value = `To: ${FUND_EMAIL}\nSubject: ${subject}\n\n${body}`;
+    showStep('send');
+  });
+})();
 </script>
 
 <!-- PRIVACY & SECURITY MODAL -->
@@ -4032,45 +4283,41 @@
     <button class="modal-close" id="privacy-modal-close" aria-label="Close">&times;</button>
 
     <h3 id="privacy-heading" data-i18n="privacy_h">Privacy &amp; Security</h3>
-    <p class="modal-subtext">This is a draft policy for a prototype in development &mdash; it is not legal advice and should be reviewed by a qualified attorney familiar with your state's privacy laws (CCPA and similar state statutes) before being published as a live policy.</p>
-    <p class="terms-lang-note" data-i18n="privacy_lang_note"></p>
+    <p class="modal-subtext">How United Ummah Funeral Funds (UUFFUNDS) collects, uses and protects your information.</p>
+<p class="terms-lang-note" data-i18n="privacy_lang_note"></p>
 
-    <div class="policy-body">
-      <h4>Information we collect</h4>
-      <p>When you become a contributor, we collect your name, date of birth, phone number, and (optionally) email address, along with a payment method to be charged for your equal share of funeral costs. When someone reports a death, we collect the deceased's name, hospital information, and the reporter's name, phone number, and address. When a funeral home submits an invoice, we collect the funeral home's name and contact information, the invoice amount, and copies of the death certificate and burial permit.</p>
+<div class="policy-body">
+<h4>Information we collect</h4>
+<p>When you become a contributor, we collect your name, date of birth, email address and phone number, and the card you add for your equal shares. When you make a donation, we collect your name (unless you give anonymously), the email address for your receipt, and your card. When someone reports a death, we collect the name of the person who passed away, the hospital, and the reporter's name, relationship, phone number and address. When a funeral home sends an invoice, we collect the funeral home's name and contact details, the invoice and its amount, and a death certificate and burial permit if the funeral home chooses to send them.</p>
 
-      <h4>How we use it</h4>
-      <p>We use this information to verify eligibility, calculate and collect equal shares, contact contributors about payment reminders and confirmations, pay funeral homes directly, and keep the records required for accounting and legal purposes. We do not sell or rent your personal information to third parties.</p>
+<h4>How we use it</h4>
+<p>We use this information only to run the fund: to manage contributor accounts, charge equal shares and process donations, send receipts and payment reminders, confirm reported deaths with funeral homes, pay funeral homes directly, and keep the records required for accounting and legal purposes. We do not sell or rent your personal information.</p>
 
-      <h4>Who can see it</h4>
-      <p>Contributor and case records are visible only to authorized fund administrators. Funeral home and reporter information tied to a specific case is shared only with the administrators processing that case &mdash; not with other contributors or the public.</p>
+<h4>Who can see it</h4>
+<p>Your account details are visible only to you and the fund administrator. Death reports and funeral home invoices are seen only by the administrator handling the case &mdash; never by other contributors or the public. We share information only with the services that run the fund for us, and only what they need: Stripe processes card payments and sends payment receipts, Google Firebase stores contributor accounts and log-ins, and our email provider delivers reminders and reports.</p>
 
-      <h4>How long we keep it</h4>
-      <p>Contributor records are retained while you're an active contributor and for a limited period afterward (e.g., 3 years) to satisfy accounting and legal recordkeeping needs, then deleted. Death certificates and burial permits are retained only as long as necessary to verify and process the associated case, then securely deleted. Exact retention periods should be finalized with legal counsel before launch.</p>
+<h4>Payment information</h4>
+<p>Card numbers are typed into Stripe's secure card form and go straight to Stripe, a PCI-compliant payment processor. UUFFUNDS never sees or stores your full card number &mdash; only the card brand and its last four digits.</p>
 
-      <h4>Payment information</h4>
-      <p>UUFFUNDS does not store your full card number. Once connected to a real payment processor, card details will be tokenized and handled by a PCI-DSS compliant processor (such as Stripe) &mdash; UUFFUNDS' own systems will never see or store raw card numbers.</p>
+<h4>How long we keep it</h4>
+<p>We keep contributor records while you are a contributor, and afterwards only as long as needed for accounting, tax and legal records. Death reports and funeral home documents are kept only as long as needed to handle the case and keep proper records.</p>
 
-      <h4>Your rights</h4>
-      <p>Depending on where you live, you may have the right to request access to, correction of, or deletion of your personal information, and to opt out of certain uses. To make a request, contact us at UUFFUND@gmail.com.</p>
+<h4>Your rights</h4>
+<p>Depending on where you live, you may have the right to request access to, correction of, or deletion of your personal information, and to opt out of certain uses. To make a request, email us at <a href="mailto:uuffund@gmail.com">uuffund@gmail.com</a>.</p>
 
-      <h4>How this will be kept secure</h4>
-      <p>The production version of this system is designed around these commitments:</p>
-      <ul>
-        <li><strong>Encryption in transit:</strong> all data submitted over HTTPS/TLS, so it can't be intercepted between your device and our servers.</li>
-        <li><strong>Encryption at rest:</strong> personal data stored in an encrypted production database, not in plain text.</li>
-        <li><strong>Individual admin accounts:</strong> each administrator will have their own credentials rather than a single shared keycode, with every action logged (who withdrew a contributor, who triggered a charge, and when).</li>
-        <li><strong>Payment tokenization:</strong> card data handled entirely by a PCI-compliant processor; never stored directly on UUFFUNDS servers.</li>
-        <li><strong>Data minimization:</strong> we only collect what's needed to operate the fund.</li>
-        <li><strong>Access reviews:</strong> administrator access is reviewed regularly and revoked promptly when no longer needed.</li>
-      </ul>
-      <p class="policy-note">Prototype status: this demo site does not yet implement server-side storage, encryption, or per-admin authentication. Death reports and invoices submitted here go through your own device's email client rather than a server, and the admin dashboard uses sample data. The items above are the security architecture required before this system handles real contributor data or real payments.</p>
+<h4>How we keep it secure</h4>
+<ul>
+<li><strong>Encrypted connections:</strong> everything you send through this site travels over HTTPS.</li>
+<li><strong>Secure card handling:</strong> card details are handled by Stripe and never touch our systems.</li>
+<li><strong>Protected accounts:</strong> each contributor can see only their own account, and the contributor list is limited to the fund administrator.</li>
+<li><strong>Only what we need:</strong> we collect only the information it takes to run the fund.</li>
+</ul>
 
-      <h4>Changes to this policy</h4>
-      <p>This policy may be updated as the system develops. Material changes will be communicated to active contributors.</p>
-    </div>
+<h4>Changes to this policy</h4>
+<p>We may update this policy from time to time. If we make important changes, we will let active contributors know.</p>
+</div>
 
-    <div class="modal-actions">
+<div class="modal-actions">
       <span></span>
       <button type="button" class="btn btn-primary" id="privacy-modal-done">Close</button>
     </div>
@@ -7117,7 +7364,7 @@
 
     <form id="donate-modal-form" novalidate>
       <div class="modal-step" data-step="1">
-        <h3 id="donate-heading">Make a donation</h3>
+        <h3 id="donate-heading" data-i18n="btn_make_donation">Make a donation</h3>
         <p class="modal-subtext" data-i18n="donate_subtext">Give Sadaqah &mdash; support the fund directly.</p>
         <input type="text" id="df-donor-name" placeholder="Your name (optional)" aria-label="Your name, optional">
         <input type="number" id="df-donation-amount" placeholder="Donation amount ($)" aria-label="Donation amount in dollars" min="1" step="1" required>
