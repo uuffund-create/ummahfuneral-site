@@ -7674,10 +7674,13 @@ if (summary) {
      STRIPE: real donations and saved cards
      - Donations: people type an amount and their card right here, in
        Stripe's own secure card box, and Stripe charges it.
-     - Joining: step 3 asks for a card and gives a $10 Sadaqah donation
-       to the fund, which also confirms the card works. Stripe then keeps the card
-       for future equal-share charges.
-     - My Account: shows the saved card and lets people add or change it.
+     - Joining: step 3 saves a card for future equal-share charges, with two
+       optional donations charged once with the same card: one to the funeral
+       fund ($10 recommended, $25, $50, $100 or none) and one to support the
+       platform ($25, $50, their own amount, or none, which is the default).
+     - My Account: shows the saved card and lets people add or change it,
+       and pay a funeral share that was declined (links in the reminder
+       emails open it with ?account=pay).
      Card numbers go straight from the browser to Stripe. This page and
      Firebase never see them. The secret Stripe key lives only on the
      payments server (server/stripe-api, running in Google Cloud).
@@ -7689,6 +7692,31 @@ if (summary) {
 .uuf-pay-error { color: #b3554a; font-size: 0.88rem; line-height: 1.45; margin: 0 0 12px; }
 .uuf-pay-error[hidden], .uuf-hide { display: none !important; }
 .uuf-card-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 6px 0 14px; }
+.uuf-gift { border: 0; padding: 0; margin: 0 0 14px; min-width: 0; }
+.uuf-gift legend { font-size: 0.9rem; font-weight: 600; color: var(--teal-dark); padding: 0; margin: 0 0 8px; }
+.uuf-gift-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.uuf-gift-chip { position: relative; display: block; margin: 0; cursor: pointer; }
+.uuf-gift-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.uuf-gift-chip span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; padding: 8px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); color: var(--teal-dark); font-weight: 600; font-size: 0.92rem; line-height: 1.2; text-align: center; transition: background .15s, color .15s, border-color .15s; }
+.uuf-gift-chip small { display: block; margin-top: 3px; font-size: 0.66rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gold); }
+.uuf-gift-chip:hover span { border-color: var(--teal); }
+.uuf-gift-chip input:checked + span { background: var(--teal); border-color: var(--teal); color: #fff; }
+.uuf-gift-chip input:checked + span small { color: #f1dfbd; }
+.uuf-gift-chip input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+.uuf-gift-chip input:disabled + span { opacity: .6; cursor: wait; }
+.uuf-gift-wide { grid-column: 1 / -1; }
+.uuf-gift-other { margin: 10px 0 0; }
+.uuf-gift-other label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--teal-dark); margin: 0 0 6px; }
+.uuf-gift-other-row { position: relative; }
+.uuf-gift-other-row span { position: absolute; left: 14px; top: 13px; font-size: 1rem; color: var(--teal-dark); pointer-events: none; }
+.modal-step .uuf-gift-other-row input { padding-left: 28px; margin-bottom: 0; }
+.uuf-gift-other[hidden] { display: none; }
+.uuf-gift-hint { font-size: 0.8rem; color: #6b6d63; line-height: 1.45; margin: -4px 0 8px; }
+.uuf-gift-total { font-size: 0.85rem; font-weight: 600; color: var(--teal-dark); margin: -4px 0 14px; }
+.uuf-gift-total[hidden] { display: none; }
+.uuf-gift-none span, .uuf-gift-other-chip span { min-height: 40px; font-weight: 500; }
+.uuf-owed { border: 1px solid #e3c9b8; background: #fbf3ee; border-radius: 4px; padding: 12px 14px 2px; margin: 0 0 14px; }
+.uuf-owed .join-note { margin: 0 0 8px; color: #23241f; }
 .uuf-test-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 2000; background: #7d5f27; color: #fff; text-align: center; font: 600 13px/1.4 Inter, system-ui, sans-serif; padding: 8px 12px; }
 .uuf-toast { position: fixed; left: 50%; bottom: 56px; transform: translateX(-50%); z-index: 2001; max-width: calc(100% - 32px); background: var(--teal-dark); color: #fff; padding: 12px 18px; border-radius: 6px; font: 500 14px/1.45 Inter, system-ui, sans-serif; box-shadow: 0 6px 24px rgba(20, 48, 42, .25); }
 </style>
@@ -7704,7 +7732,9 @@ const CONFIG = {
   // ummahfuneral.org/?stripe=test runs everything in Stripe test mode.
   LIVE_ON: true
 };
-const JOIN_DONATION = 10; // dollars, charged as Sadaqah when a contributor adds their first card
+const DONATION_CHOICES = [10, 25, 50, 100]; // dollars: the optional Sadaqah buttons when joining
+const RECOMMENDED_DONATION = 10;
+const PLATFORM_CHOICES = [25, 50]; // dollars: the platform-support buttons when joining (plus their own amount)
 const money = (n) => (Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`);
 
 const $ = (id) => document.getElementById(id);
@@ -7934,12 +7964,12 @@ if (MODE === 'test' && ACTIVE) {
   }, true);
 })();
 
-// ---- Joining: $10 Sadaqah donation when the card is added ---------------
+// ---- Joining: save the card, with an optional Sadaqah donation -------------
 (function setupJoin() {
   const form = $('join-modal-form');
   if (!form) return;
   if (BROKEN) {
-    // Joining needs the card check, so hold it until the card form loads.
+    // Joining needs the card box, so hold it until the card form loads.
     const step = form.querySelector('.modal-step[data-step="3"]');
     const msg = document.createElement('p');
     msg.className = 'uuf-pay-error';
@@ -7964,8 +7994,118 @@ if (MODE === 'test' && ACTIVE) {
   step3.querySelectorAll('.uuf-fb-note').forEach((n) => n.remove());
   const note = document.createElement('p');
   note.className = 'uuf-pay-note';
-  note.textContent = `When you join, we’ll charge a ${money(JOIN_DONATION)} Sadaqah donation to the fund. It also confirms your card works. Stripe then keeps your card safely for your equal shares, as the terms describe. Card numbers go straight to Stripe and never touch this website.`;
+  note.textContent = 'Stripe keeps your card safely for your equal shares, as the terms describe. Card numbers go straight to Stripe and never touch this website.';
   (step3.querySelector('.modal-subtext') || heading).after(note);
+
+  // Optional donations when joining, in two separate sections: one for the
+  // funeral fund (we recommend $10) and one for the platform's running costs
+  // (a few amounts, or their own). Each section is one choice, or none.
+  function giftSection(id, legendText, hintText, choices, recommended, allowOther) {
+    const fieldset = document.createElement('fieldset');
+    fieldset.className = 'uuf-gift';
+    fieldset.id = id;
+    const legend = document.createElement('legend');
+    legend.textContent = legendText;
+    fieldset.appendChild(legend);
+    if (hintText) {
+      const hint = document.createElement('p');
+      hint.className = 'uuf-gift-hint';
+      hint.textContent = hintText;
+      fieldset.appendChild(hint);
+    }
+    const options = document.createElement('div');
+    options.className = 'uuf-gift-options';
+    const chips = [];
+    const chip = (value, text, tag, extraClass) => {
+      const label = document.createElement('label');
+      label.className = `uuf-gift-chip${extraClass ? ` ${extraClass}` : ''}`;
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = id;
+      input.value = String(value);
+      const span = document.createElement('span');
+      span.textContent = text;
+      if (tag) {
+        const small = document.createElement('small');
+        small.textContent = tag;
+        span.appendChild(small);
+      }
+      label.append(input, span);
+      chips.push(label);
+    };
+    choices.forEach((d) => chip(d, `Donate ${money(d)}`, d === recommended ? 'Recommended' : ''));
+    if (allowOther) chip('other', 'Other amount', '', 'uuf-gift-other-chip');
+    chip(0, 'No donation', '', 'uuf-gift-none');
+    if (chips.length % 2) chips[chips.length - 1].classList.add('uuf-gift-wide');
+    options.append(...chips);
+    fieldset.appendChild(options);
+
+    // Their own amount, shown when "Other amount" is picked.
+    let other = null;
+    if (allowOther) {
+      const wrap = document.createElement('div');
+      wrap.className = 'uuf-gift-other';
+      wrap.hidden = true;
+      const label = document.createElement('label');
+      label.htmlFor = `${id}-amount`;
+      label.textContent = 'Your amount';
+      const row = document.createElement('div');
+      row.className = 'uuf-gift-other-row';
+      const dollar = document.createElement('span');
+      dollar.textContent = '$';
+      dollar.setAttribute('aria-hidden', 'true');
+      other = document.createElement('input');
+      other.type = 'text';
+      other.id = `${id}-amount`;
+      other.inputMode = 'decimal';
+      other.autocomplete = 'off';
+      other.placeholder = 'For example 15';
+      row.append(dollar, other);
+      wrap.append(label, row);
+      fieldset.appendChild(wrap);
+      fieldset.addEventListener('change', (e) => {
+        if (e.target.type !== 'radio') return; // leaving the amount box also fires "change"
+        const pickedOther = (fieldset.querySelector('input[type=radio]:checked') || {}).value === 'other';
+        wrap.hidden = !pickedOther;
+        if (pickedOther && document.activeElement !== other) setTimeout(() => other.focus(), 0);
+      });
+    }
+    const typedCents = () => {
+      const clean = String(other ? other.value : '').replace(/[$,\s]/g, '');
+      if (!/^\d+(\.\d{1,2})?$/.test(clean)) return NaN;
+      return Math.round(parseFloat(clean) * 100);
+    };
+    const picked = () => (fieldset.querySelector('input[type=radio]:checked') || {}).value || '0';
+    const reset = () => {
+      const input = fieldset.querySelector(`input[type=radio][value="${recommended || 0}"]`);
+      if (input) input.checked = true;
+      if (other) { other.value = ''; other.parentElement.parentElement.hidden = true; }
+    };
+    // Cents for this section (0 while "Other amount" is empty or not a valid amount).
+    const cents = () => {
+      const v = picked();
+      if (v !== 'other') return Number(v) * 100;
+      const c = typedCents();
+      return c >= 100 && c <= 1000000 ? c : 0;
+    };
+    // A message if "Other amount" is picked but the amount can't be used.
+    const problem = () => {
+      if (picked() !== 'other') return '';
+      const c = typedCents();
+      return c >= 100 && c <= 1000000 ? '' : 'Please type an amount between $1 and $10,000, or pick another choice.';
+    };
+    reset();
+    return { fieldset, reset, cents, problem, other };
+  }
+  const fund = giftSection('uuf-join-gift', 'Add a Sadaqah donation to the funeral fund (optional)', '', DONATION_CHOICES, RECOMMENDED_DONATION, false);
+  const platform = giftSection('uuf-join-platform', 'Support the platform (optional)',
+    'This helps pay for running UUFFUNDS: the website, card processing and emails. It is not used for funerals.', PLATFORM_CHOICES, 0, true);
+  const total = document.createElement('p');
+  total.className = 'uuf-gift-total';
+  total.hidden = true;
+  note.after(fund.fieldset, platform.fieldset, total);
+  const gifts = [fund.fieldset, platform.fieldset];
+
   const box = document.createElement('div');
   box.className = 'uuf-pay-box';
   box.id = 'uuf-join-card';
@@ -7973,13 +8113,49 @@ if (MODE === 'test' && ACTIVE) {
   error.className = 'uuf-pay-error';
   error.setAttribute('role', 'alert');
   error.hidden = true;
-  note.after(box, error);
+  total.after(box, error);
   submitBtn.removeAttribute('data-i18n');
-  const JOIN_LABEL = `Give ${money(JOIN_DONATION)} and join`;
-  submitBtn.textContent = JOIN_LABEL;
+
+  const giftCents = () => fund.cents() + platform.cents();
+  const labelFor = (c) => (c ? `Give ${money(c / 100)} and join` : 'Save card and join');
+  function showTotal() {
+    const f = fund.cents();
+    const p = platform.cents();
+    total.hidden = !(f && p);
+    total.textContent = f && p ? `Total today: ${money((f + p) / 100)} (${money(f / 100)} to the funeral fund, ${money(p / 100)} to the platform).` : '';
+  }
+  // The card box charges the chosen donation (and saves the card), or only saves it.
+  const optionsFor = (c) => (c
+    ? { mode: 'payment', amount: c, setupFutureUsage: 'off_session' }
+    : { mode: 'setup', amount: undefined, setupFutureUsage: undefined });
+  function pickRecommended() {
+    fund.reset();
+    platform.reset();
+  }
+  pickRecommended();
+  submitBtn.textContent = labelFor(giftCents());
 
   let card = null;
-  const ensureCard = () => card || (card = cardBox(box, { mode: 'payment', amount: Math.round(JOIN_DONATION * 100), setupFutureUsage: 'off_session' }));
+  const ensureCard = () => {
+    if (!card) {
+      const c = giftCents();
+      card = cardBox(box, c ? optionsFor(c) : { mode: 'setup' });
+      cardCents = c;
+    }
+    return card;
+  };
+  let cardCents = null; // the amount the card box is set to now
+  async function syncCard() {
+    const c = giftCents();
+    submitBtn.textContent = labelFor(c);
+    showTotal();
+    if (!card || c === cardCents) return;
+    cardCents = c;
+    const done = card.elements.update(optionsFor(c));
+    if (done && typeof done.then === 'function') await done;
+  }
+  gifts.forEach((g) => g.addEventListener('change', () => { showError(error, ''); syncCard().catch((err) => showError(error, err.message)); }));
+  platform.other.addEventListener('input', () => { syncCard().catch((err) => showError(error, err.message)); });
   new MutationObserver(() => { if (!step3.hidden) ensureCard(); })
     .observe(step3, { attributes: true, attributeFilter: ['hidden'] });
 
@@ -7988,8 +8164,9 @@ if (MODE === 'test' && ACTIVE) {
     if (card) card.element.clear(); // never show the last person's card
     created = null;
     if (backBtn) backBtn.hidden = false;
-    submitBtn.textContent = JOIN_LABEL;
+    pickRecommended();
     showError(error, '');
+    syncCard().catch(() => {});
   }));
 
   const visibleStep = () => (Array.from(form.querySelectorAll('.modal-step')).find((s) => !s.hidden) || {}).dataset?.step;
@@ -8000,11 +8177,16 @@ if (MODE === 'test' && ACTIVE) {
     return filled && dobOk;
   }
 
-  function showDone(first, savedCard) {
+  function showDone(first, savedCard, given) {
     $('modal-done-heading').textContent = `You're in, ${first}.`;
     const doneText = form.querySelector('.modal-step[data-step="done"] .modal-done-text');
     if (doneText) {
-      doneText.textContent = `Your ${savedCard ? cardLabel(savedCard) : 'card'} is saved, and your ${money(JOIN_DONATION)} Sadaqah went to the fund — jazak Allah khayr. We'll reach out if your equal share is ever needed, in sha'Allah. You can log in anytime from the menu to see or change your card.`;
+      const saved = `Your ${savedCard ? cardLabel(savedCard) : 'card'} is saved`;
+      const parts = [];
+      if (given.fund) parts.push(`${money(given.fund / 100)} Sadaqah to the funeral fund`);
+      if (given.platform) parts.push(`${money(given.platform / 100)} to support the platform`);
+      const thanks = parts.length ? `${saved}, and your ${parts.join(' and ')} went through — jazak Allah khayr.` : `${saved} for your equal shares.`;
+      doneText.textContent = `${thanks} We'll reach out if your equal share is ever needed, in sha'Allah. You can log in anytime from the menu to see or change your card.`;
     }
     form.querySelectorAll('.modal-step').forEach((s) => { s.hidden = s.dataset.step !== 'done'; });
     const progress = overlay && overlay.querySelector('.modal-progress');
@@ -8019,12 +8201,23 @@ if (MODE === 'test' && ACTIVE) {
     e.preventDefault();
     e.stopImmediatePropagation();
     if (busy) return;
+    const amountProblem = fund.problem() || platform.problem();
+    if (amountProblem) {
+      showError(error, amountProblem);
+      if (platform.problem()) platform.other.focus();
+      return;
+    }
     busy = true;
     showError(error, '');
     submitBtn.disabled = true;
+    gifts.forEach((g) => { g.disabled = true; });
+    const given = { fund: fund.cents(), platform: platform.cents() };
+    const giftGiven = given.fund + given.platform;
     submitBtn.textContent = 'Checking your card…';
     try {
       const { elements } = ensureCard();
+      await syncCard();
+      submitBtn.textContent = 'Checking your card…';
       const checked = await elements.submit();
       if (checked.error) throw new Error(checked.error.message);
 
@@ -8051,15 +8244,20 @@ if (MODE === 'test' && ACTIVE) {
 
       submitBtn.textContent = 'Checking your card…';
       const fullName = `${created.first} ${created.last}`.trim();
-      const start = await api('/card', { auth: true, body: { want: 'payment', name: fullName } });
-      const result = await stripe.confirmPayment({
-        elements, clientSecret: start.clientSecret,
-        confirmParams: { return_url: returnUrl('joined'), payment_method_data: { billing_details: { name: fullName, email: created.email } } },
-        redirect: 'if_required'
-      });
-      if (result.error) throw new Error(result.error.message);
-      const done = await api('/card/done', { auth: true, body: { intentId: result.paymentIntent.id } });
-      showDone(created.first, done.card);
+      const start = await api('/card', { auth: true, body: { want: giftGiven ? 'payment' : 'setup', donationCents: given.fund, platformCents: given.platform, name: fullName } });
+      const confirmParams = { return_url: returnUrl('joined'), payment_method_data: { billing_details: { name: fullName, email: created.email } } };
+      let intentId;
+      if (start.kind === 'payment') {
+        const result = await stripe.confirmPayment({ elements, clientSecret: start.clientSecret, confirmParams, redirect: 'if_required' });
+        if (result.error) throw new Error(result.error.message);
+        intentId = result.paymentIntent.id;
+      } else {
+        const result = await stripe.confirmSetup({ elements, clientSecret: start.clientSecret, confirmParams, redirect: 'if_required' });
+        if (result.error) throw new Error(result.error.message);
+        intentId = result.setupIntent.id;
+      }
+      const done = await api('/card/done', { auth: true, body: { intentId } });
+      showDone(created.first, done.card, start.kind === 'payment' ? given : { fund: 0, platform: 0 });
     } catch (err) {
       const msg = err.message || 'Something went wrong. Please try again.';
       showError(error, created
@@ -8068,12 +8266,13 @@ if (MODE === 'test' && ACTIVE) {
     } finally {
       busy = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = created ? 'Try again' : JOIN_LABEL;
+      gifts.forEach((g) => { g.disabled = false; });
+      submitBtn.textContent = labelFor(giftCents());
     }
   }, true);
 })();
 
-// ---- My Account: see, add or change the saved card ----------------------
+// ---- My Account: unpaid shares, credit, and the saved card ----------------
 (function setupAccount() {
   if (BROKEN) {
     const view = document.querySelector('#account-modal .modal-step[data-step="done"]');
@@ -8093,6 +8292,11 @@ if (MODE === 'test' && ACTIVE) {
   const section = document.createElement('div');
   section.id = 'uuf-account-card';
   section.innerHTML = `
+    <div id="uuf-acct-owed" hidden>
+      <p class="account-subheading">Unpaid funeral share</p>
+      <div id="uuf-acct-owed-list"></div>
+    </div>
+    <p class="uuf-pay-note" id="uuf-acct-credit" hidden></p>
     <p class="account-subheading">Your card</p>
     <p class="join-note" id="uuf-acct-card-text"></p>
     <div class="uuf-card-actions"><button type="button" class="btn btn-ghost" id="uuf-acct-card-btn" hidden>Add a card</button></div>
@@ -8106,6 +8310,9 @@ if (MODE === 'test' && ACTIVE) {
       </div>
     </div>`;
   summary.after(section);
+  const owedBox = $('uuf-acct-owed');
+  const owedList = $('uuf-acct-owed-list');
+  const creditEl = $('uuf-acct-credit');
   const text = $('uuf-acct-card-text');
   const openBtn = $('uuf-acct-card-btn');
   const formBox = $('uuf-acct-card-form');
@@ -8114,25 +8321,57 @@ if (MODE === 'test' && ACTIVE) {
   const error = $('uuf-acct-card-error');
   const saveBtn = $('uuf-acct-card-save');
   const cancelBtn = $('uuf-acct-card-cancel');
+  const dollars = (c) => money(c / 100);
 
-  let state = { card: null, joinPaid: false };
+  let state = { card: null, joinPaid: false, owed: [], creditCents: 0 };
   let card = null;
+  let paying = null; // the unpaid share being paid, or null when adding or changing the card
 
   function render() {
     const label = cardLabel(state.card);
     payValue.textContent = label || 'No card yet';
     text.textContent = label
       ? `${label} is saved with Stripe for your equal shares.`
-      : `No card yet. Adding your first card gives a ${money(JOIN_DONATION)} Sadaqah donation to the fund.`;
+      : 'No card yet. Add one for your equal shares.';
     openBtn.textContent = label ? 'Change card' : 'Add a card';
-    openBtn.hidden = false;
+    openBtn.hidden = !formBox.hidden;
+
+    const owed = state.owed || [];
+    owedBox.hidden = owed.length === 0;
+    owedList.replaceChildren(...owed.map((item) => {
+      const row = document.createElement('div');
+      row.className = 'uuf-owed';
+      const p = document.createElement('p');
+      p.className = 'join-note';
+      const name = document.createElement('strong');
+      name.textContent = item.caseName;
+      let line = `: your equal share of ${dollars(item.amountCents)} didn’t go through.`;
+      if (item.covered) line += ' The other contributors covered it for now. When you pay it, it counts toward your next share.';
+      if (item.writtenOff) line += ' It was written off after 32 hours, but you can still pay it here.';
+      p.append(name, line);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-primary';
+      btn.textContent = `Pay ${dollars(item.amountCents)} now`;
+      btn.disabled = !formBox.hidden;
+      btn.addEventListener('click', () => openForm(item));
+      const actions = document.createElement('div');
+      actions.className = 'uuf-card-actions';
+      actions.appendChild(btn);
+      row.append(p, actions);
+      return row;
+    }));
+    creditEl.hidden = !(state.creditCents > 0);
+    creditEl.textContent = state.creditCents > 0
+      ? `You have ${dollars(state.creditCents)} in credit from a late payment. It comes off your next equal share automatically.`
+      : '';
   }
 
   async function refresh() {
     if (!window.UUFFUNDS_FIREBASE || !window.UUFFUNDS_FIREBASE.auth.currentUser) return;
     payValue.textContent = 'Checking…';
     try {
-      state = await api('/card', { method: 'GET', auth: true });
+      state = Object.assign({ owed: [], creditCents: 0 }, await api('/card', { method: 'GET', auth: true }));
       render();
     } catch (err) {
       payValue.textContent = 'Could not load';
@@ -8143,24 +8382,40 @@ if (MODE === 'test' && ACTIVE) {
 
   new MutationObserver(() => {
     if (!view.hidden) refresh();
-    else { formBox.hidden = true; }
+    else { formBox.hidden = true; paying = null; }
   }).observe(view, { attributes: true, attributeFilter: ['hidden'] });
 
-  function openForm() {
-    const paying = !state.joinPaid;
-    noteEl.textContent = paying
-      ? `We’ll charge a ${money(JOIN_DONATION)} Sadaqah donation to the fund now. It also confirms your card works. Card numbers go straight to Stripe and never touch this website.`
-      : 'Your new card replaces the old one for future equal shares. Nothing is charged now.';
-    saveBtn.textContent = paying ? `Give ${money(JOIN_DONATION)} and save card` : 'Save card';
-    card = cardBox(box, paying
-      ? { mode: 'payment', amount: Math.round(JOIN_DONATION * 100), setupFutureUsage: 'off_session' }
-      : { mode: 'setup' });
+  function closeForm() {
+    formBox.hidden = true;
+    paying = null;
+    render();
+  }
+
+  // item: an unpaid share to pay now; otherwise add or change the saved card.
+  function openForm(item) {
+    paying = item && item.id ? item : null;
+    let options;
+    if (paying) {
+      noteEl.textContent = `Pay your ${dollars(paying.amountCents)} share of ${paying.caseName} (it includes Stripe’s fee). You can use the same card or a different one; it will be saved for your future shares. Card numbers go straight to Stripe and never touch this website.`;
+      saveBtn.textContent = `Pay ${dollars(paying.amountCents)}`;
+      options = { mode: 'payment', amount: paying.amountCents, setupFutureUsage: 'off_session' };
+    } else if (!state.card) {
+      noteEl.textContent = 'Your card is saved with Stripe for your equal shares. Card numbers go straight to Stripe and never touch this website.';
+      saveBtn.textContent = 'Save card';
+      options = { mode: 'setup' };
+    } else {
+      noteEl.textContent = 'Your new card replaces the old one for future equal shares. Nothing is charged now.';
+      saveBtn.textContent = 'Save card';
+      options = { mode: 'setup' };
+    }
+    card = cardBox(box, options);
     showError(error, '');
     formBox.hidden = false;
-    openBtn.hidden = true;
+    render();
+    formBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
-  openBtn.addEventListener('click', openForm);
-  cancelBtn.addEventListener('click', () => { formBox.hidden = true; openBtn.hidden = false; });
+  openBtn.addEventListener('click', () => openForm(null));
+  cancelBtn.addEventListener('click', closeForm);
 
   let busy = false;
   saveBtn.addEventListener('click', async () => {
@@ -8169,14 +8424,33 @@ if (MODE === 'test' && ACTIVE) {
     showError(error, '');
     saveBtn.disabled = true;
     const label = saveBtn.textContent;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = paying ? 'Paying…' : 'Saving…';
+    const item = paying;
     try {
       const checked = await card.elements.submit();
       if (checked.error) throw new Error(checked.error.message);
       const user = window.UUFFUNDS_FIREBASE.auth.currentUser;
       const fullName = (($('account-name-value') || {}).textContent || '').trim();
+      const billing = { email: user.email };
+      if (fullName) billing.name = fullName;
+      if (item) {
+        const start = await api('/share/pay', { auth: true, body: { intentId: item.id } });
+        const result = await stripe.confirmPayment({
+          elements: card.elements, clientSecret: start.clientSecret,
+          confirmParams: { return_url: returnUrl('paid'), payment_method_data: { billing_details: billing } },
+          redirect: 'if_required'
+        });
+        if (result.error) throw new Error(result.error.message);
+        const done = await api('/share/done', { auth: true, body: { intentId: result.paymentIntent.id } });
+        state.owed = (state.owed || []).filter((o) => o.id !== item.id);
+        if (done.card) state.card = done.card;
+        state.creditCents = done.creditCents || 0;
+        closeForm();
+        toast(`Paid, jazak Allah khayr. ${done.covered ? 'It counts toward your next equal share. ' : ''}Your ${cardLabel(done.card) || 'card'} is saved for future shares.`);
+        return;
+      }
       const start = await api('/card', { auth: true, body: { want: card.mode, name: fullName } });
-      const confirmParams = { return_url: returnUrl('account'), payment_method_data: { billing_details: { email: user.email, name: fullName || undefined } } };
+      const confirmParams = { return_url: returnUrl('account'), payment_method_data: { billing_details: billing } };
       let intentId;
       if (start.kind === 'setup') {
         const result = await stripe.confirmSetup({ elements: card.elements, clientSecret: start.clientSecret, confirmParams, redirect: 'if_required' });
@@ -8188,18 +8462,30 @@ if (MODE === 'test' && ACTIVE) {
         intentId = result.paymentIntent.id;
       }
       const done = await api('/card/done', { auth: true, body: { intentId } });
-      state = { card: done.card, joinPaid: true };
-      formBox.hidden = true;
-      render();
+      state.card = done.card;
+      state.joinPaid = true;
+      closeForm();
       toast(`Saved. Your ${cardLabel(done.card) || 'card'} is now on file.`);
     } catch (err) {
       showError(error, err.message || 'Something went wrong. Please try again.');
+      if (item && err.status === 409) refresh(); // already paid, or no longer payable
     } finally {
       busy = false;
       saveBtn.disabled = false;
-      saveBtn.textContent = label;
+      if (!formBox.hidden) saveBtn.textContent = label;
     }
   });
+})();
+
+// ---- Links in reminder emails open My Account ------------------------------
+(function openAccountFromEmail() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has('account')) return;
+  const clean = new URL(location.href);
+  clean.searchParams.delete('account');
+  history.replaceState(null, '', clean.toString());
+  const btn = $('menu-account-btn') || document.querySelector('.js-open-account');
+  if (btn) setTimeout(() => btn.click(), 0);
 })();
 
 // ---- Coming back from a bank's extra check (rare with cards) -------------
@@ -8215,7 +8501,7 @@ if (MODE === 'test' && ACTIVE) {
     .forEach((k) => clean.searchParams.delete(k));
   history.replaceState(null, '', clean.toString());
   if (status !== 'succeeded') {
-    toast('The card check did not go through. Please try again.');
+    toast(kind === 'paid' ? 'The payment did not go through. Please try again from My Account.' : 'The card check did not go through. Please try again.');
     return;
   }
   if (kind === 'donated') {
@@ -8224,10 +8510,15 @@ if (MODE === 'test' && ACTIVE) {
   }
   try {
     await window.UUFFUNDS_FIREBASE.auth.authStateReady();
+    if (kind === 'paid') {
+      const done = await api('/share/done', { auth: true, body: { intentId } });
+      toast(`Paid, jazak Allah khayr. ${done.covered ? 'It counts toward your next equal share.' : ''}`.trim());
+      return;
+    }
     const done = await api('/card/done', { auth: true, body: { intentId } });
     toast(`Your ${cardLabel(done.card) || 'card'} is saved. Jazak Allah khayr.`);
   } catch (_) {
-    toast('Your card went through. Log in from My Account to see it.');
+    toast(kind === 'paid' ? 'Your payment went through. Log in from My Account to see it.' : 'Your card went through. Log in from My Account to see it.');
   }
 })();
 </script>
