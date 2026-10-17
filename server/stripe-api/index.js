@@ -6,10 +6,10 @@
 //
 // What it does
 //   POST /donate      anyone       starts a donation and returns its client secret
-//   POST /card        contributor  starts the card step: the first time it is a
-//                                  $10 Sadaqah donation that also checks the card
-//                                  and saves it; after that it saves a new card with
-//                                  no charge
+//   POST /card        contributor  saves a card for equal shares; when joining they can
+//                                  add optional donations, one to the funeral fund (we
+//                                  suggest $10) and one to support the platform, charged
+//                                  once with the same card
 //   POST /card/done   contributor  after Stripe confirms: makes it the main card
 //   GET  /card        contributor  saved card, unpaid funeral shares and credit
 //   POST /share/pay   contributor  pay an unpaid funeral share (returns its client secret)
@@ -50,7 +50,7 @@ const crypto = require('node:crypto');
 const PROJECT_ID = 'united-ummah-funeral-funds';
 const ADMIN_EMAIL = 'uuffund@gmail.com';
 const SITE_URL = 'https://ummahfuneral.org';
-const JOIN_DONATION_CENTS = 1000; // $10 Sadaqah when a contributor first adds a card
+const OLD_JOIN_DONATION_CENTS = 1000; // pages from before the donation became optional always showed $10
 const DONATION_MIN_CENTS = 100; // $1
 const DONATION_MAX_CENTS = 1000000; // $10,000
 const ALLOWED_ORIGINS = ['https://ummahfuneral.org', 'https://www.ummahfuneral.org'];
@@ -549,40 +549,64 @@ async function startDonation(mode, req) {
   return { clientSecret: intent.client_secret };
 }
 
+// One optional donation amount: 0, or $1 to $10,000, in cents.
+function donationPart(value) {
+  if (value === undefined || value === null) return 0;
+  const amount = Number(value);
+  if (!Number.isInteger(amount) || (amount !== 0 && (amount < DONATION_MIN_CENTS || amount > DONATION_MAX_CENTS))) {
+    throw httpError(400, 'Please choose a donation between $1 and $10,000, or no donation.');
+  }
+  return amount;
+}
+
+// Saving a card. With donations (optional, chosen when joining: one to the
+// funeral fund, one to the platform) the card is charged their total once and
+// saved; without any it is only saved.
 async function startCardStep(mode, req) {
   const user = await requireUser(req);
   if (tooMany(`card:${user.uid}`, 10, 10 * 60 * 1000)) {
     throw httpError(429, 'Too many tries. Please wait a few minutes and try again.');
   }
   const body = req.body || {};
+  let fund = donationPart(body.donationCents);
+  const platform = donationPart(body.platformCents);
+  if ((body.donationCents === undefined || body.donationCents === null) && body.platformCents === undefined && body.want === 'payment') {
+    fund = OLD_JOIN_DONATION_CENTS; // a page from before the donation became optional
+  }
+  const donation = fund + platform;
+  if (donation > DONATION_MAX_CENTS) throw httpError(400, 'Please choose donations of $10,000 or less in total.');
   const name = cleanText(body.name, 100);
   const customer = await findOrCreateCustomer(mode, user, name);
   const metadata = { firebaseUID: user.uid, source: 'ummahfuneral.org' };
 
-  // Saving a new card with no charge is only for people who already gave
-  // the joining donation.
-  if (body.want === 'setup' && (await joinDonationPaid(mode, customer))) {
+  if (!donation) {
     const setup = await stripe(mode, 'POST', '/setup_intents', {
       customer: customer.id,
       usage: 'off_session',
       payment_method_types: ['card'],
-      metadata: Object.assign({ type: 'card_update' }, metadata)
+      metadata: Object.assign({ type: 'card_save' }, metadata)
     });
     return { kind: 'setup', clientSecret: setup.client_secret };
   }
-  if (body.want === 'setup') throw httpError(409, 'The joining donation is needed first.');
 
+  const destination = fund && platform ? 'both' : platform ? 'platform' : 'funeral';
+  const where = { both: 'Funeral fund and platform support', platform: 'Platform support', funeral: 'Funeral fund' }[destination];
   const intent = await stripe(mode, 'POST', '/payment_intents', {
-    amount: JOIN_DONATION_CENTS,
+    amount: donation,
     currency: 'usd',
     customer: customer.id,
     setup_future_usage: 'off_session',
     payment_method_types: ['card'],
-    description: 'Sadaqah donation - joining',
+    description: `Sadaqah donation - joining - ${where}`,
     receipt_email: user.email,
-    metadata: Object.assign({ type: 'joining_donation' }, metadata)
+    metadata: Object.assign({
+      type: 'joining_donation',
+      destination,
+      fundCents: String(fund),
+      platformCents: String(platform)
+    }, metadata)
   });
-  return { kind: 'payment', amount: JOIN_DONATION_CENTS, clientSecret: intent.client_secret };
+  return { kind: 'payment', amount: donation, clientSecret: intent.client_secret };
 }
 
 async function finishCardStep(mode, req) {
