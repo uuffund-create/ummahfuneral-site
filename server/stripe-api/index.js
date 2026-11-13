@@ -9,7 +9,8 @@
 //   POST /card        contributor  saves a card for equal shares; when joining they can
 //                                  add optional donations, one to the funeral fund (we
 //                                  suggest $10) and one to support the platform, charged
-//                                  once with the same card
+//                                  once with the same card. Joining also sends how many
+//                                  people are on their account (householdSize)
 //   POST /card/done   contributor  after Stripe confirms: makes it the main card
 //   GET  /card        contributor  saved card, unpaid funeral shares and credit
 //   POST /share/pay   contributor  pay an unpaid funeral share (returns its client secret)
@@ -19,9 +20,10 @@
 //                                  Stripe's fee) to every listed contributor's saved card,
 //                                  covers declined cards by splitting them among the
 //                                  others, and emails the people whose card was declined.
-//                                  The cost is split per PERSON: a contributor can add the
-//                                  people in their household, and their account pays one
-//                                  equal share for each person on it (5 people = 5 shares)
+//                                  The cost is split per PERSON: when joining, a contributor
+//                                  says how many people are in their household (saved on
+//                                  their Stripe customer), and their account pays one equal
+//                                  share for each person on it (5 people = 5 shares)
 //   GET  /admin/owed  admin only   unpaid shares and their reminder emails
 //   POST /admin/test-email         admin only: sends a test email to the admin
 //   POST /admin/run-reminders      admin only: sends any reminder emails that are due now
@@ -67,7 +69,7 @@ const withFee = (shareCents) => Math.ceil(((shareCents + FEE_FIXED_CENTS) * 1000
 const MAX_SHARE_CENTS = 500000; // $5,000 per person, as a safety limit
 const MIN_NET_CENTS = 18; // withFee(18) = 50c, the smallest card charge Stripe allows
 // People on one account: the contributor plus up to 19 people in their household.
-// Keep the same as MAX_PEOPLE in index.html, admin.html and the Firestore rules.
+// Keep the same as MAX_PEOPLE in index.html and admin.html.
 const MAX_PEOPLE = 20;
 const DAY = 86400;
 const HOUR = 3600;
@@ -338,16 +340,40 @@ async function findCustomer(mode, user, expandCard) {
   return list.data.find((c) => c.metadata && c.metadata.firebaseUID === user.uid) || null;
 }
 
-async function findOrCreateCustomer(mode, user, name) {
+// How many people a contributor's account pays for: they chose it when joining
+// (the contributor plus their household, no other details). It is kept on their
+// Stripe customer as metadata.householdSize, 2 to 20; missing means 1.
+// You can change it by hand in the Stripe dashboard (Customers > the person > Metadata).
+function peopleOn(customer) {
+  const n = Number(customer && customer.metadata && customer.metadata.householdSize);
+  return Number.isInteger(n) && n >= 1 && n <= MAX_PEOPLE ? n : 1;
+}
+
+// The number of people sent when joining: 1 to 20, or null when not sent.
+function householdSizeFrom(value) {
+  if (value === undefined || value === null) return null;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1 || n > MAX_PEOPLE) {
+    throw httpError(400, `Please choose 1 to ${MAX_PEOPLE} people for your account.`);
+  }
+  return n;
+}
+
+async function findOrCreateCustomer(mode, user, name, householdSize) {
   const found = await findCustomer(mode, user, false);
+  // The number of people is saved once, when they join, and the site never
+  // changes it after that (so nobody can lower it later to pay less).
+  const people = householdSize > 1 ? { householdSize: String(householdSize) } : null;
   if (found) {
-    if (name && !found.name) return stripe(mode, 'POST', `/customers/${found.id}`, { name });
-    return found;
+    const update = {};
+    if (name && !found.name) update.name = name;
+    if (people && !(found.metadata && found.metadata.householdSize)) update.metadata = people;
+    return Object.keys(update).length ? stripe(mode, 'POST', `/customers/${found.id}`, update) : found;
   }
   return stripe(mode, 'POST', '/customers', {
     email: user.email,
     name: name || undefined,
-    metadata: { firebaseUID: user.uid, source: 'ummahfuneral.org' }
+    metadata: Object.assign({ firebaseUID: user.uid, source: 'ummahfuneral.org' }, people || {})
   });
 }
 
@@ -715,7 +741,9 @@ async function startCardStep(mode, req) {
   const donation = fund + platform;
   if (donation > DONATION_MAX_CENTS) throw httpError(400, 'Please choose donations of $10,000 or less in total.');
   const name = cleanText(body.name, 100);
-  const customer = await findOrCreateCustomer(mode, user, name);
+  // Sent when joining: how many people are on their account, including them.
+  const householdSize = householdSizeFrom(body.householdSize);
+  const customer = await findOrCreateCustomer(mode, user, name, householdSize);
   const metadata = { firebaseUID: user.uid, source: 'ummahfuneral.org' };
 
   if (!donation) {
@@ -783,7 +811,7 @@ function owedView(pi, now) {
 async function cardStatus(mode, req) {
   const user = await requireUser(req);
   const customer = await findCustomer(mode, user, true);
-  if (!customer) return { card: null, joinPaid: false, owed: [], creditCents: 0 };
+  if (!customer) return { card: null, joinPaid: false, owed: [], creditCents: 0, people: 1 };
   const card = await ensureDefaultCard(mode, customer);
   const intents = await customerIntents(mode, customer.id);
   const joinPaid = await joinDonationPaid(mode, customer, intents);
@@ -791,7 +819,7 @@ async function cardStatus(mode, req) {
   const owed = intents
     .filter((pi) => isOwedShare(pi) && now - pi.created < SHOW_OWED_SECONDS)
     .map((pi) => owedView(pi, now));
-  return { card, joinPaid, owed, creditCents: creditFrom(intents) };
+  return { card, joinPaid, owed, creditCents: creditFrom(intents), people: peopleOn(customer) };
 }
 
 // The contributor pays a declined share themselves (any card; it is saved).
@@ -869,7 +897,7 @@ async function adminCards(mode, req) {
     if (entry.customer.metadata.hasCredit === 'yes') {
       creditCents = creditFrom(await customerIntents(mode, entry.customer.id));
     }
-    cards[uid] = { card: entry.card, joinPaid: entry.joinPaid, creditCents };
+    cards[uid] = { card: entry.card, joinPaid: entry.joinPaid, creditCents, people: peopleOn(entry.customer) };
   });
   return { cards };
 }
@@ -877,28 +905,6 @@ async function adminCards(mode, req) {
 // ---- charging a funeral's equal share ------------------------------------
 
 const caseIdFor = (caseName) => `case_${sha(cleanText(caseName, 60).toLowerCase()).slice(0, 24)}`;
-
-// How many people each account pays for: the contributor plus the people in
-// their household. The admin page reads this from the contributor records and
-// sends it with the charge ({ uid: number }); an account it leaves out counts
-// as 1 person, so a page from before households charges as it always did.
-function peopleCounts(raw, uids) {
-  const given = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
-  const out = {};
-  for (const uid of uids) {
-    const value = Object.prototype.hasOwnProperty.call(given, uid) ? given[uid] : undefined;
-    if (value === undefined || value === null) {
-      out[uid] = 1;
-      continue;
-    }
-    const n = Number(value);
-    if (!Number.isInteger(n) || n < 1 || n > MAX_PEOPLE) {
-      throw httpError(400, `Each account can have 1 to ${MAX_PEOPLE} people. Please press Refresh and preview again.`);
-    }
-    out[uid] = n;
-  }
-  return out;
-}
 
 function shareResult(person) {
   return {
@@ -953,11 +959,11 @@ async function findShareFor(mode, person, caseId, since) {
 
 // Charge one funeral's equal share to every listed contributor's saved card.
 // The cost is split per person: each account pays one equal share for every
-// person on it (the contributor plus their household).
-// The admin page sends the Active contributors, how many people are on each
-// account, and the per-person amount it showed in the preview; the server works
-// the amount out again and refuses if they differ, so nobody is charged a number
-// the admin did not see.
+// person on it (the contributor plus their household, saved on their Stripe
+// customer when they joined; see peopleOn).
+// The admin page sends the Active contributors and the per-person amount and
+// number of people it showed in the preview; the server works them out again
+// and refuses if they differ, so nobody is charged a number the admin did not see.
 async function chargeShares(mode, req) {
   await requireAdmin(req);
   const body = req.body || {};
@@ -972,11 +978,11 @@ async function chargeShares(mode, req) {
   if (donationCents >= totalCents) throw httpError(400, 'Donations already cover this cost, so nobody needs to be charged.');
   if (!uids.length || uids.length > 2000) throw httpError(400, 'No contributors to charge.');
   const caseId = caseIdFor(caseName);
-  const countOf = peopleCounts(body.people, uids);
 
   const byUid = await contributorCards(mode);
   const eligible = uids.filter((uid) => byUid[uid] && byUid[uid].card && byUid[uid].pmId);
   if (!eligible.length) throw httpError(400, 'None of these contributors has a saved card.');
+  const countOf = Object.fromEntries(eligible.map((uid) => [uid, peopleOn(byUid[uid].customer)]));
   const totalPeople = sum(eligible.map((uid) => countOf[uid]));
   const shareCents = Math.ceil((totalCents - donationCents) / totalPeople); // one person's share
   const chargeCents = withFee(shareCents); // what a one-person account is charged
@@ -1368,7 +1374,7 @@ async function handler(req, res) {
 
 exports.stripeApi = handler;
 // For tests.
-exports._internals = { withFee, creditFrom, creditToUse, dueStep, shareEmail, caseIdFor, memberReason, peopleCounts, MAX_PEOPLE };
+exports._internals = { withFee, creditFrom, creditToUse, dueStep, shareEmail, caseIdFor, memberReason, peopleOn, householdSizeFrom, MAX_PEOPLE };
 try {
   // Registers the function when running on Google Cloud.
   require('@google-cloud/functions-framework').http('stripeApi', handler);
