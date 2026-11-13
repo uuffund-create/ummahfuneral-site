@@ -18,7 +18,10 @@
 //   POST /admin/charge-shares      admin only: charges a funeral's equal share (plus
 //                                  Stripe's fee) to every listed contributor's saved card,
 //                                  covers declined cards by splitting them among the
-//                                  others, and emails the people whose card was declined
+//                                  others, and emails the people whose card was declined.
+//                                  The cost is split per PERSON: a contributor can add the
+//                                  people in their household, and their account pays one
+//                                  equal share for each person on it (5 people = 5 shares)
 //   GET  /admin/owed  admin only   unpaid shares and their reminder emails
 //   POST /admin/test-email         admin only: sends a test email to the admin
 //   POST /admin/run-reminders      admin only: sends any reminder emails that are due now
@@ -63,6 +66,9 @@ const FEE_KEEP_PER_THOUSAND = 971; // 1000 - 29 (2.9%)
 const withFee = (shareCents) => Math.ceil(((shareCents + FEE_FIXED_CENTS) * 1000) / FEE_KEEP_PER_THOUSAND);
 const MAX_SHARE_CENTS = 500000; // $5,000 per person, as a safety limit
 const MIN_NET_CENTS = 18; // withFee(18) = 50c, the smallest card charge Stripe allows
+// People on one account: the contributor plus up to 19 people in their household.
+// Keep the same as MAX_PEOPLE in index.html, admin.html and the Firestore rules.
+const MAX_PEOPLE = 20;
 const DAY = 86400;
 const HOUR = 3600;
 // The same funeral name charged again within 30 days is the same funeral:
@@ -489,6 +495,8 @@ function shareEmail(mode, pi, customer, step) {
   const last = step >= REMINDER_HOURS.length - 1;
   const card = cardLabel(failedCardOf(pi));
   const why = memberReason(pi.last_payment_error);
+  const count = cents(m.people); // people on their account (0 on shares from before households)
+  const forWhom = count > 1 ? ` (${count} people on your account)` : '';
   const link = `${SITE_URL}/?${mode === 'test' ? 'stripe=test&' : ''}account=pay`;
   const subject = `${mode === 'test' ? '[TEST] ' : ''}${step === 0
     ? 'Your funeral share didn’t go through'
@@ -496,8 +504,8 @@ function shareEmail(mode, pi, customer, step) {
   const top = [
     `As-salamu alaykum${first ? ` ${first}` : ''},`,
     step === 0
-      ? `We tried to charge your card${card ? ` (${card})` : ''} for your equal share of ${caseName}, but it didn’t go through${why ? ` because ${why}` : ''}.`
-      : `Your equal share of ${caseName} is still unpaid. The charge to your card${card ? ` (${card})` : ''} didn’t go through${why ? ` because ${why}` : ''}.`,
+      ? `We tried to charge your card${card ? ` (${card})` : ''} for your equal share of ${caseName}${forWhom}, but it didn’t go through${why ? ` because ${why}` : ''}.`
+      : `Your equal share of ${caseName}${forWhom} is still unpaid. The charge to your card${card ? ` (${card})` : ''} didn’t go through${why ? ` because ${why}` : ''}.`,
     covered
       ? `The other contributors covered your share for now, so the funeral is paid in full. You still owe your share of ${amount}. When you pay it, it counts toward your next equal share.`
       : `Please pay your share of ${amount}.`
@@ -765,6 +773,7 @@ function owedView(pi, now) {
     id: pi.id,
     caseName: m.caseName || 'Funeral share',
     amountCents: pi.amount,
+    people: cents(m.people) || 1,
     created: pi.created,
     covered: m.covered === 'yes',
     writtenOff: now - pi.created >= WRITE_OFF_SECONDS
@@ -869,9 +878,32 @@ async function adminCards(mode, req) {
 
 const caseIdFor = (caseName) => `case_${sha(cleanText(caseName, 60).toLowerCase()).slice(0, 24)}`;
 
+// How many people each account pays for: the contributor plus the people in
+// their household. The admin page reads this from the contributor records and
+// sends it with the charge ({ uid: number }); an account it leaves out counts
+// as 1 person, so a page from before households charges as it always did.
+function peopleCounts(raw, uids) {
+  const given = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  const out = {};
+  for (const uid of uids) {
+    const value = Object.prototype.hasOwnProperty.call(given, uid) ? given[uid] : undefined;
+    if (value === undefined || value === null) {
+      out[uid] = 1;
+      continue;
+    }
+    const n = Number(value);
+    if (!Number.isInteger(n) || n < 1 || n > MAX_PEOPLE) {
+      throw httpError(400, `Each account can have 1 to ${MAX_PEOPLE} people. Please press Refresh and preview again.`);
+    }
+    out[uid] = n;
+  }
+  return out;
+}
+
 function shareResult(person) {
   return {
     uid: person.uid,
+    people: person.count,
     status: person.status,
     already: !!person.already,
     amountCents: person.amountCents || 0,
@@ -920,9 +952,12 @@ async function findShareFor(mode, person, caseId, since) {
 }
 
 // Charge one funeral's equal share to every listed contributor's saved card.
-// The admin page sends the Active contributors and the per-person amount it
-// showed in the preview; the server works the amount out again and refuses
-// if they differ, so nobody is charged a number the admin did not see.
+// The cost is split per person: each account pays one equal share for every
+// person on it (the contributor plus their household).
+// The admin page sends the Active contributors, how many people are on each
+// account, and the per-person amount it showed in the preview; the server works
+// the amount out again and refuses if they differ, so nobody is charged a number
+// the admin did not see.
 async function chargeShares(mode, req) {
   await requireAdmin(req);
   const body = req.body || {};
@@ -937,31 +972,44 @@ async function chargeShares(mode, req) {
   if (donationCents >= totalCents) throw httpError(400, 'Donations already cover this cost, so nobody needs to be charged.');
   if (!uids.length || uids.length > 2000) throw httpError(400, 'No contributors to charge.');
   const caseId = caseIdFor(caseName);
+  const countOf = peopleCounts(body.people, uids);
 
   const byUid = await contributorCards(mode);
   const eligible = uids.filter((uid) => byUid[uid] && byUid[uid].card && byUid[uid].pmId);
   if (!eligible.length) throw httpError(400, 'None of these contributors has a saved card.');
-  const shareCents = Math.ceil((totalCents - donationCents) / eligible.length);
-  const chargeCents = withFee(shareCents);
-  if (chargeCents > MAX_SHARE_CENTS) throw httpError(400, 'Each share would be over $5,000. Please check the amount.');
-  if (shareCents < MIN_NET_CENTS) throw httpError(400, 'Each share would be under Stripe’s smallest charge (50¢). Please check the amount.');
-  if (Number(body.expectedChargeCents) !== chargeCents || Number(body.expectedCount) !== eligible.length) {
-    throw httpError(409, 'The numbers changed since your preview (someone added or removed a card). Please preview again.');
+  const totalPeople = sum(eligible.map((uid) => countOf[uid]));
+  const shareCents = Math.ceil((totalCents - donationCents) / totalPeople); // one person's share
+  const chargeCents = withFee(shareCents); // what a one-person account is charged
+  if (chargeCents > MAX_SHARE_CENTS) throw httpError(400, 'Each person’s share would be over $5,000. Please check the amount.');
+  if (shareCents < MIN_NET_CENTS) throw httpError(400, 'Each person’s share would be under Stripe’s smallest charge (50¢). Please check the amount.');
+  const expectedPeople = body.expectedPeople === undefined ? totalPeople : Number(body.expectedPeople);
+  if (Number(body.expectedChargeCents) !== chargeCents || Number(body.expectedCount) !== eligible.length || expectedPeople !== totalPeople) {
+    throw httpError(409, 'The numbers changed since your preview (someone added or removed a card or a household member). Please preview again.');
   }
 
   const since = nowSeconds() - SAME_CASE_SECONDS;
   const isThisCase = (pi) => metaOf(pi).caseId === caseId && pi.created >= since;
-  const people = eligible.map((uid) => ({ uid, customer: byUid[uid].customer, pmId: byUid[uid].pmId }));
+  // One entry per account. count = how many people it pays for; owes = its share before credit.
+  const people = eligible.map((uid) => ({
+    uid,
+    customer: byUid[uid].customer,
+    pmId: byUid[uid].pmId,
+    count: countOf[uid],
+    owes: shareCents * countOf[uid]
+  }));
   const shareMeta = (person, use, due, extra) => Object.assign({
     type: 'funeral_share',
     caseId,
     caseName,
-    shareCents: String(shareCents),
+    shareCents: String(person.owes),
+    perPersonCents: String(shareCents),
+    people: String(person.count),
     creditUsedCents: String(use),
     dueCents: String(due),
     firebaseUID: person.uid,
     source: 'ummahfuneral.org admin'
   }, extra);
+  const forPeople = (person) => (person.count > 1 ? ` (${person.count} people)` : '');
 
   // 1) Everyone's equal share (credit first, then the card).
   await inBatches(people, 5, async (person) => {
@@ -969,8 +1017,8 @@ async function chargeShares(mode, req) {
     try {
       const existing = await findShareFor(mode, person, caseId, since);
       if (existing) return useExistingShare(mode, person, existing);
-      const use = creditToUse(creditFrom(person.intents, isThisCase), shareCents);
-      const due = shareCents - use;
+      const use = creditToUse(creditFrom(person.intents, isThisCase), person.owes);
+      const due = person.owes - use;
       person.creditUsed = use;
       person.due = due;
       if (due === 0) {
@@ -981,7 +1029,7 @@ async function chargeShares(mode, req) {
           currency: 'usd',
           customer: person.customer.id,
           payment_method_types: ['card'],
-          description: `Funeral equal share - ${caseName} (paid from credit, nothing charged)`,
+          description: `Funeral equal share - ${caseName}${forPeople(person)} (paid from credit, nothing charged)`,
           metadata: shareMeta(person, use, 0, { feeCents: '0', creditOnly: 'yes' })
         }, key);
         await cancelPlaceholder(mode, record.id);
@@ -999,7 +1047,7 @@ async function chargeShares(mode, req) {
         payment_method_types: ['card'],
         off_session: 'true',
         confirm: 'true',
-        description: `Funeral equal share - ${caseName}`,
+        description: `Funeral equal share - ${caseName}${forPeople(person)}`,
         receipt_email: person.customer.email || undefined,
         metadata: shareMeta(person, use, due, { feeCents: String(amount - due) })
       }, key);
@@ -1028,7 +1076,8 @@ async function chargeShares(mode, req) {
     return undefined;
   });
 
-  // 2) Declined shares are split among everyone whose share went through.
+  // 2) Declined shares are split among everyone whose share went through,
+  //    per person again: an account with 5 people covers 5 parts.
   const uncovered = people.filter((p) => p.status === 'failed' && p.share && !metaOf(p.share).covered);
   const coverers = people.filter((p) => p.status === 'charged' || p.status === 'credit');
   let coverInfo = null;
@@ -1036,22 +1085,26 @@ async function chargeShares(mode, req) {
   let roundKey = '';
   if (uncovered.length) {
     const shortfall = sum(uncovered.map((p) => p.due || 0));
-    const coverShare = coverers.length ? Math.max(Math.ceil(shortfall / coverers.length), MIN_NET_CENTS) : 0;
+    const coverPeople = sum(coverers.map((p) => p.count));
+    const perPerson = coverPeople ? Math.ceil(shortfall / coverPeople) : 0;
+    // A card charge can't be under 50c, so an account never covers less than that.
+    const coverShareOf = (person) => Math.max(perPerson * person.count, MIN_NET_CENTS);
     if (!cover) {
       coverInfo = { skipped: 'off', shortfallCents: shortfall };
     } else if (!coverers.length) {
       coverInfo = { skipped: 'nobody', shortfallCents: shortfall };
-    } else if (coverShare > shareCents) {
+    } else if (Math.max(perPerson, MIN_NET_CENTS) > shareCents) {
       // Too many cards declined: never charge anyone more than double their share automatically.
       coverInfo = { skipped: 'too_many', shortfallCents: shortfall };
     } else {
       roundKey = sha(uncovered.map((p) => p.share.id).sort().join(',')).slice(0, 12);
-      const coverCharge = withFee(coverShare);
       const results = [];
       await inBatches(coverers, 5, async (person) => {
+        const coverShare = coverShareOf(person);
+        const coverCharge = withFee(coverShare);
         const done = (person.intents || []).find((pi) => metaOf(pi).type === 'funeral_share_cover' && metaOf(pi).round === roundKey && isThisCase(pi));
         if (done && (done.status === 'succeeded' || done.status === 'processing')) {
-          results.push({ uid: person.uid, status: 'charged', already: true, amountCents: done.amount, reason: '' });
+          results.push({ uid: person.uid, people: person.count, status: 'charged', already: true, amountCents: done.amount, netCents: cents(metaOf(done).coverShareCents), reason: '' });
           return;
         }
         try {
@@ -1063,13 +1116,15 @@ async function chargeShares(mode, req) {
             payment_method_types: ['card'],
             off_session: 'true',
             confirm: 'true',
-            description: `Funeral share cover - ${caseName}`,
+            description: `Funeral share cover - ${caseName}${forPeople(person)}`,
             receipt_email: person.customer.email || undefined,
             metadata: {
               type: 'funeral_share_cover',
               caseId,
               caseName,
               coverShareCents: String(coverShare),
+              perPersonCents: String(perPerson),
+              people: String(person.count),
               feeCents: String(coverCharge - coverShare),
               covers: String(uncovered.length),
               round: roundKey,
@@ -1078,18 +1133,23 @@ async function chargeShares(mode, req) {
             }
           }, `${caseId}-cover-${roundKey}-${person.uid}`);
           const ok = intent.status === 'succeeded' || intent.status === 'processing';
-          results.push({ uid: person.uid, status: ok ? 'charged' : 'failed', already: false, amountCents: coverCharge, reason: ok ? '' : 'The charge did not go through.' });
+          results.push({ uid: person.uid, people: person.count, status: ok ? 'charged' : 'failed', already: false, amountCents: coverCharge, netCents: coverShare, reason: ok ? '' : 'The charge did not go through.' });
         } catch (err) {
           if (!err.stripeError) console.error('charge-shares cover:', err.message);
-          results.push({ uid: person.uid, status: 'failed', already: false, amountCents: coverCharge, reason: declineReason(err.stripeError) });
+          results.push({ uid: person.uid, people: person.count, status: 'failed', already: false, amountCents: coverCharge, netCents: coverShare, reason: declineReason(err.stripeError) });
         }
       });
       const coverOk = results.filter((r) => r.status === 'charged').length;
       coveredMark = coverOk === coverers.length ? 'yes' : 'partial';
+      const onePerson = Math.max(perPerson, MIN_NET_CENTS);
       coverInfo = {
         shortfallCents: shortfall,
-        coverShareCents: coverShare,
-        coverChargeCents: coverCharge,
+        perPersonCents: perPerson,
+        // What a one-person account covered (bigger households covered more).
+        coverShareCents: onePerson,
+        coverChargeCents: withFee(onePerson),
+        // What the fund is still short because some cover charges were declined.
+        missedCents: sum(results.filter((r) => r.status !== 'charged').map((r) => r.netCents || 0)),
         charged: coverOk,
         failed: results.length - coverOk,
         results
@@ -1127,9 +1187,11 @@ async function chargeShares(mode, req) {
   return {
     caseId,
     caseName,
-    shareCents,
-    chargeCents,
+    shareCents, // one person's share
+    chargeCents, // what a one-person account is charged (share + fee)
     feeCents: chargeCents - shareCents,
+    totalPeople,
+    accounts: people.length,
     charged: newlyCharged.length,
     already: people.filter((p) => p.already).length,
     allAlready: people.every((p) => p.already),
@@ -1306,7 +1368,7 @@ async function handler(req, res) {
 
 exports.stripeApi = handler;
 // For tests.
-exports._internals = { withFee, creditFrom, creditToUse, dueStep, shareEmail, caseIdFor, memberReason };
+exports._internals = { withFee, creditFrom, creditToUse, dueStep, shareEmail, caseIdFor, memberReason, peopleCounts, MAX_PEOPLE };
 try {
   // Registers the function when running on Google Cloud.
   require('@google-cloud/functions-framework').http('stripeApi', handler);
