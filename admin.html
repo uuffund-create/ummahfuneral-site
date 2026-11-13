@@ -701,12 +701,14 @@ let sharePlan = null;
 
 // ---- People on an account: the contributor plus their household -----------
 // When they join (index.html), contributors say how many people are on their
-// account, including themselves (householdSize; missing means 1). No names.
+// account, including themselves. No names. It is saved with their card at Stripe,
+// so it comes with the saved cards from the payments server (cards[id].people;
+// 1 until the cards have loaded, and for anyone without a card).
 // Each person counts as one equal share, so the charge is multiplied.
-// Keep MAX_PEOPLE the same as the payments server, index.html and the Firestore rules.
+// Keep MAX_PEOPLE the same as the payments server and index.html.
 const MAX_PEOPLE = 20;
 const peopleOf = (c) => {
-  const n = Number(c.householdSize);
+  const n = Number(cards && cards[c.id] && cards[c.id].people);
   return Number.isInteger(n) && n >= 1 ? n : 1;
 };
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
@@ -750,7 +752,7 @@ function previewShare() {
   const noCard = active.filter((c) => !(cards[c.id] && cards[c.id].card));
   if (!eligible.length) return shareMsg('No Active contributor has a saved card yet, so nobody can be charged.');
   const tooBig = eligible.filter((c) => peopleOf(c) > MAX_PEOPLE);
-  if (tooBig.length) return shareMsg(`${tooBig.map(fullName).join(', ')}: more than ${MAX_PEOPLE} people on one account. Please fix that in Firebase first.`);
+  if (tooBig.length) return shareMsg(`${tooBig.map(fullName).join(', ')}: more than ${MAX_PEOPLE} people on one account. Please fix it in Stripe first (the customer's householdSize).`);
   // The cost is split per person; each account pays one share per person on it.
   const totalPeople = eligible.reduce((a, c) => a + peopleOf(c), 0);
   const netCents = totalCents - donationCents;
@@ -843,7 +845,7 @@ async function confirmShare(btn) {
       method: 'POST',
       body: {
         caseName: plan.caseName, totalCents: plan.totalCents, donationCents: plan.donationCents, cover: plan.cover,
-        uids: plan.uids, people: plan.people,
+        uids: plan.uids,
         expectedChargeCents: plan.chargeCents, expectedCount: plan.uids.length, expectedPeople: plan.totalPeople
       }
     });
@@ -1065,6 +1067,7 @@ function linkCell(label, text, href, className) {
 
 // How many people the account pays for: "1", or "3 people" for a household.
 function peopleCell(c) {
+  if (!cards && CARD_MODE !== 'off') return textCell('People', '…', 'nowrap people-one'); // still loading
   const n = peopleOf(c);
   return textCell('People', n > 1 ? `${n} people` : '1', n > 1 ? 'nowrap people-many' : 'nowrap people-one');
 }
